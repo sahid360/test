@@ -34,8 +34,8 @@
             text-align: center;
         }
     </style>
-    <!-- AdExtra SDK Script from Dashboard (ID 688) -->
-    <script async src="https://partner.adextra.io/jt/ec47ce5f549a1da793061abb691bfc6da41409a4.js" id="adextra-sdk"></script>
+    <!-- AdExtra SDK Script from Dashboard (ID 688) - UPDATED -->
+    <script async src="https://partner.adextra.io/jt/822f4e2f9ae1103c516991854e90b0f69ebae9fb.js" id="adextra-sdk"></script>
     <!-- Monetag SDK Script -->
     <script src='//libtl.com/sdk.js' data-zone='10033027' data-sdk='show_10033027'></script>
 </head>
@@ -45,7 +45,8 @@
     <button onclick="showAdExtraAd()">Watch AdExtra Ads</button>
     <!-- Monetag Button -->
     <button onclick="showMonetagAd()">Watch Monetag Ads</button>
-    <div id="ec47ce5f549a1da793061abb691bfc6da41409a4" style="width: 100%; height: 0;"></div>
+    <!-- Updated AdExtra Ad Container -->
+    <div id="822f4e2f9ae1103c516991854e90b0f69ebae9fb" style="width: 100%; height: 0;"></div>
     <div id="monetag-ad-container" style="width: 100%; height: 0; margin-top: 10px;"></div>
 
     <script>
@@ -58,11 +59,11 @@
         const adextraScript = document.getElementById('adextra-sdk');
         adextraScript.addEventListener('load', function() {
             console.log('AdExtra SDK script loaded successfully');
-            // AdExtra Initialization
+            // AdExtra Initialization - UPDATED adUnitId
             window.AdExtra = window.AdExtra || [];
             AdExtra.init({
                 appId: '688', // Energy Reward ID from dashboard
-                adUnitId: 'ec47ce5f549a1da793061abb691bfc6da41409a4',
+                adUnitId: '822f4e2f9ae1103c516991854e90b0f69ebae9fb',
                 onAdLoaded: function() {
                     console.log('AdExtra ad loaded successfully!');
                 },
@@ -77,11 +78,11 @@
             alert('AdExtra SDK script failed to load. Check network or dashboard for new script.');
         });
 
-        // Function to show AdExtra ad on button click
+        // Function to show AdExtra ad on button click - UPDATED adUnitId
         function showAdExtraAd() {
             console.log("Button clicked, attempting to show AdExtra ad...");
             if (window.AdExtra && typeof AdExtra.showAd === 'function') {
-                AdExtra.showAd('ec47ce5f549a1da793061abb691bfc6da41409a4', {
+                AdExtra.showAd('822f4e2f9ae1103c516991854e90b0f69ebae9fb', {
                     type: 'rewarded_video',
                     rewardCallback: function(reward) {
                         alert('AdExtra Reward earned: ' + reward + ' points!');
@@ -124,11 +125,11 @@
             }
         }
 
-        // Load ads when page loads
+        // Load ads when page loads - UPDATED adUnitId
         window.addEventListener('load', function() {
             console.log("Page loaded, initializing ads...");
             if (window.AdExtra && typeof AdExtra.loadAd === 'function') {
-                AdExtra.loadAd('ec47ce5f549a1da793061abb691bfc6da41409a4');
+                AdExtra.loadAd('822f4e2f9ae1103c516991854e90b0f69ebae9fb');
             }
             if (typeof window.show_10033027 === 'function') {
                 show_10033027({ type: 'preload', timeout: 5 })
