@@ -1,503 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>  
-  <meta charset="UTF-8"/>  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
-  <title>Canva Pro Team</title>  
-  
-  <!-- AdExtra Script - Keep it, assuming it might load global functions or trigger pop-unders -->
-  <script async src="https://partner.adextra.io/jt/f876f66c460290de2a5d83c060dfccaec15a21ea.js"></script>
-  
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
-  <style>
-    :root {
-      --primary: #6200ea;
-      --secondary: #03dac5;
-      --light: #ffffff;
-      --dark: #121212;
-      --card-bg: #1f1f1f;
-      --text-color: #ffffff;
-      --ad-bg: #222;
-      --ad-item-bg: #333;
-      --border-color: #444;
-    }
-
-    body.light-mode {
-      --dark: #ffffff;
-      --card-bg: #ffffff;
-      --text-color: #000000;
-      --ad-bg: #f9f9f9;
-      --ad-item-bg: #f1f1f1;
-      --border-color: #dddddd;
-      background: #ffffff !important;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, var(--dark), #1a1a2e);
-      color: var(--text-color);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.4s ease;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 500px;
-      background: var(--card-bg);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-      padding-bottom: 20px;
-      transition: all 0.4s ease;
-      position: relative;
-    }
-
-    .header {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      padding: 25px 20px;
-      text-align: center;
-    }
-
-    .header h1 {
-      font-size: 30px;
-      color: #fff;
-    }
-
-    .author {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #f5f5f5;
-    }
-
-    .content {
-      padding: 25px;
-    }
-
-    .progress-container {
-      width: 100%;
-      background: #333;
-      border-radius: 12px;
-      margin-bottom: 25px;
-      overflow: hidden;
-      height: 30px;
-      display: flex;
-      border: 1px solid var(--border-color);
-    }
-
-    .step-inner {
-      display: flex;
-      width: 100%;
-      height: 100%;
-    }
-
-    .step-box {
-      flex: 1;
-      text-align: center;
-      line-height: 26px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #fff;
-      background-color: #444;
-      transition: background 0.3s ease-in-out;
-    }
-
-    .step-box.done-1 { background-color: red; }
-    .step-box.done-2 { background-color: orange; }
-    .step-box.done-3 { background-color: limegreen; }
-    .step-box.done-4 { background-color: blueviolet; }
-    .step-box.done-5 { background-color: deepskyblue; }
-
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .btn-3d {
-      padding: 16px 20px;
-      border: none;
-      border-radius: 15px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      color: var(--light);
-      background: var(--primary);
-      transition: transform 0.2s ease, background 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn-3d:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-small {
-      padding: 10px 15px;
-      font-size: 14px;
-    }
-
-    .ad-notification {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: var(--light);
-      padding: 15px 30px;
-      border-radius: 10px;
-      z-index: 1000;
-      display: none;
-    }
-
-    .ads-section {
-      margin-top: 30px;
-      padding: 15px;
-      background: var(--ad-bg);
-      border-radius: 15px;
-      border: 1px solid var(--border-color);
-      transition: all 0.4s ease;
-    }
-
-    .ad-item {
-      background: var(--ad-item-bg);
-      border-radius: 10px;
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      transition: 0.3s;
-    }
-
-    .ad-item:hover {
-      background: #3d3d3d;
-    }
-
-    .ad-item a {
-      color: var(--text-color);
-      text-decoration: none;
-      font-weight: 400;
-      font-size: 13px;
-      display: block;
-    }
-
-    .ad-item a small {
-      color: #888;
-      font-size: 11px;
-      font-weight: 300;
-      display: block;
-      margin-top: 4px;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 15px;
-    }
-
-    .footer a {
-      color: var(--secondary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    #mode-toggle {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      padding: 4px 5px;
-      background: transparent;
-      color: #fff;
-      border: none;
-      border-radius: 100px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      z-index: 1100;
-    }
-
-    /* ✅ Copy section style */
-    #copy-section {
-      display: none;
-      margin-top: 15px;
-      background: var(--ad-item-bg);
-      padding: 15px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      font-size: 17px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.5s ease;
-    }
-
-    #copy-section.show {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #copy-section p {
-      margin-bottom: 10px;
-      font-weight: 500;
-    }
-
-    /* ✅ এক লাইনে Canva লিংক দেখাবে */
-    #canva-link {
-      display: block;
-      background: var(--card-bg);
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      color: var(--secondary);
-      font-size: 14px;
-      margin-bottom: 10px;
-      text-align: left;
-      user-select: all;
-      white-space: nowrap; /* এক লাইনে দেখাবে */
-      overflow: auto;      /* বড় হলে স্ক্রল হবে */
-    }
-
-    #copy-btn {
-      background: var(--secondary);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 14px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    #copy-btn:hover {
-      opacity: 0.9;
-    }
-  </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Watch Ads App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #006bb3;
+        }
+        #adContainer {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+    <!-- AdExtra SDK Script from Dashboard (ID 688) -->
+    <script async src="https://partner.adextra.io/jt/ec47ce5f549a1da793061abb691bfc6da41409a4.js" id="adextra-sdk"></script>
+    <!-- Monetag SDK Script -->
+    <script src='//libtl.com/sdk.js' data-zone='10033027' data-sdk='show_10033027'></script>
 </head>
 <body>
-  <div class="ad-notification" id="ad-notification"></div>
-  <div class="container">
-    <button id="mode-toggle" onclick="toggleMode()">🌙</button>
-    <div class="header">
-      <h1>Canva Pro Team</h1>
-      <p class="author">📢 After watching 5 ads, the Canva Pro button will be unlocked. Then click again to open Canva Pro.</p>
-    </div>
-    <div class="content">
-      <div class="progress-container">
-        <div class="step-inner">
-          <div class="step-box" id="step1">Step 1</div>
-          <div class="step-box" id="step2">Step 2</div>
-          <div class="step-box" id="step3">Step 3</div>
-          <div class="step-box" id="step4">Step 4</div>
-          <div class="step-box" id="step5">Step 5</div>
-        </div>
-      </div>
+    <h1>Watch Ads to Earn Rewards</h1>
+    <!-- AdExtra Button -->
+    <button onclick="showAdExtraAd()">Watch AdExtra Ads</button>
+    <!-- Monetag Button -->
+    <button onclick="showMonetagAd()">Watch Monetag Ads</button>
+    <div id="ec47ce5f549a1da793061abb691bfc6da41409a4" style="width: 100%; height: 0;"></div>
+    <div id="monetag-ad-container" style="width: 100%; height: 0; margin-top: 10px;"></div>
 
-      <div class="buttons">
-        <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
+    <script>
+        // Telegram Web App Initialization
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        console.log("Telegram WebApp initialized");
 
-        <!-- ✅ Copy link section -->
-        <div id="copy-section">
-          <p>🌐 Copy link and paste it in your browser:</p>
-          <span id="canva-link"></span>
-          <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
-        </div>
+        // Wait for AdExtra script to load before init
+        const adextraScript = document.getElementById('adextra-sdk');
+        adextraScript.addEventListener('load', function() {
+            console.log('AdExtra SDK script loaded successfully');
+            // AdExtra Initialization
+            window.AdExtra = window.AdExtra || [];
+            AdExtra.init({
+                appId: '688', // Energy Reward ID from dashboard
+                adUnitId: 'ec47ce5f549a1da793061abb691bfc6da41409a4',
+                onAdLoaded: function() {
+                    console.log('AdExtra ad loaded successfully!');
+                },
+                onAdError: function(error) {
+                    console.error('AdExtra ad error:', error);
+                    alert('AdExtra Error: ' + error);
+                }
+            });
+        });
+        adextraScript.addEventListener('error', function() {
+            console.error('AdExtra SDK script failed to load');
+            alert('AdExtra SDK script failed to load. Check network or dashboard for new script.');
+        });
 
-        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
-        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
-      </div>
-
-      <div class="ads-section">
-        <!-- This is a generic ad space, the "watch ads" functionality is simulated via the button click -->
-        <p style="color: grey; font-size: 12px; margin-bottom: 10px;">(Ad content would typically appear here, or as a pop-up.)</p>
-        <div class="ad-item">
-          <a href="https://t.me/FCanvaOwner" target="_blank">
-            💎 Ad Space Promote Your Channel
-            <small>💰 Low cost — get real traffic!</small>
-          </a>
-        </div>
-      </div>
-      <div class="footer">
-        <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDzZ7U0tUoaz7m9Dsl00ZmdHAVS49A4ERs",
-      authDomain: "canva-pro-team-bot.firebaseapp.com",
-      databaseURL: "https://canva-pro-team-bot-default-rtdb.firebaseio.com",
-      projectId: "canva-pro-team-bot",
-      storageBucket: "canva-pro-team-bot.firebasestorage.app",
-      messagingSenderId: "1030022013579",
-      appId: "1:1030022013579:web:54c6aab3288d43ec392a8e",
-      measurementId: "G-5B2FN88LQ1"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
-    let adCount = 0, adsCompleted = false;
-    const ADS_REQUIRED = 5; // Number of ads to "watch"
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedMode = localStorage.getItem("themeMode");
-      if (savedMode === "light") {
-        document.body.classList.add("light-mode");
-        document.getElementById("mode-toggle").textContent = "☀️";
-      }
-
-      // Load Canva link from Firebase
-      database.ref('canvaLink').on('value', (snapshot) => {
-        const link = snapshot.val();
-        if (link) {
-          CANVA_LINK = link;
-          document.getElementById('canva-link').textContent = CANVA_LINK;
+        // Function to show AdExtra ad on button click
+        function showAdExtraAd() {
+            console.log("Button clicked, attempting to show AdExtra ad...");
+            if (window.AdExtra && typeof AdExtra.showAd === 'function') {
+                AdExtra.showAd('ec47ce5f549a1da793061abb691bfc6da41409a4', {
+                    type: 'rewarded_video',
+                    rewardCallback: function(reward) {
+                        alert('AdExtra Reward earned: ' + reward + ' points!');
+                    },
+                    onClose: function() {
+                        console.log('AdExtra ad closed by user');
+                    }
+                });
+            } else {
+                console.error('AdExtra SDK not loaded or showAd function not available');
+                alert('AdExtra SDK not loaded. Check console for details.');
+            }
         }
-      });
 
-      // Track visitors
-      trackVisitor();
-    });
-
-    function trackVisitor() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = (today.getMonth() + 1).toString().padStart(2, '0');
-        const day = today.getDate().toString().padStart(2, '0');
-        const yearMonth = `${year}-${month}`;
-        const yearMonthDay = `${year}-${month}-${day}`; // Format YYYY-MM-DD
-
-        // Track total count
-        database.ref('visitors/total').transaction((currentCount) => {
-            return (currentCount || 0) + 1;
-        });
-
-        // Track monthly count
-        database.ref('visitors/monthly/' + yearMonth).transaction((currentCount) => {
-            return (currentCount || 0) + 1;
-        });
-
-        // Track daily count
-        database.ref('visitors/daily/' + yearMonthDay).transaction((currentCount) => {
-            return (currentCount || 0) + 1;
-        });
-    }
-
-    function handleClick() {
-      const button = document.getElementById('canva-pro-btn');
-      if (adsCompleted) {
-        openCommonLink(CANVA_LINK);
-        return;
-      }
-      showAds();
-    }
-
-    function openCommonLink(url) {
-      if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.openLink(url);
-      } else {
-        window.location.href = url;
-      }
-    }
-
-    function showAds() {
-      const button = document.getElementById('canva-pro-btn');
-      let countdown = 3; // Simulate a 3-second ad watch time
-      button.disabled = true;
-      button.style.background = 'gray';
-      
-      const interval = setInterval(() => {
-        button.textContent = `Please wait... ${countdown} sec (${adCount}/${ADS_REQUIRED})`;
-        countdown--;
-        if (countdown < 0) {
-          clearInterval(interval);
-          adCount++; // Increment ad count after simulated watch
-          updateSteps();
-          
-          if (adCount >= ADS_REQUIRED) {
-            unlockCanva(button);
-          } else {
-            resetButton(); // Reset button to click again for the next ad
-          }
+        // Function to show Monetag ad on button click
+        function showMonetagAd() {
+            console.log("Button clicked, attempting to show Monetag ad...");
+            if (typeof window.show_10033027 === 'function') {
+                show_10033027({
+                    type: 'end',
+                    ymid: 'user-' + Math.random().toString(36).slice(2),
+                    requestVar: 'watch_ads_button',
+                    catchIfNoFeed: true
+                })
+                .then((result) => {
+                    console.log('Monetag ad success:', result);
+                    if (result.reward_event_type === 'valued') {
+                        alert('Monetag Reward earned: ' + (result.estimated_price || 5) + ' points!');
+                    } else {
+                        alert('Monetag ad viewed but no reward.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Monetag ad error:', error.message);
+                    alert('Monetag ad failed: ' + error.message);
+                });
+            } else {
+                console.error('Monetag SDK not loaded or show_10033027 function not available');
+                alert('Monetag SDK not loaded.');
+            }
         }
-      }, 1000);
-    }
 
-    function unlockCanva(button) {
-      adsCompleted = true;
-      adCount = ADS_REQUIRED; // Ensure all steps are marked
-      updateSteps();
-      button.textContent = "🎉 Click to Open Canva Pro";
-      button.style.background = "green";
-      button.disabled = false;
-
-      // ✅ Show copy section + link
-      const copySection = document.getElementById('copy-section');
-      const linkDisplay = document.getElementById('canva-link');
-      linkDisplay.textContent = CANVA_LINK;
-      copySection.classList.add('show');
-    }
-
-    function updateSteps() {
-      if (adCount >= 1) document.getElementById('step1').classList.add('done-1');
-      if (adCount >= 2) document.getElementById('step2').classList.add('done-2');
-      if (adCount >= 3) document.getElementById('step3').classList.add('done-3');
-      if (adCount >= 4) document.getElementById('step4').classList.add('done-4');
-      if (adCount >= 5) document.getElementById('step5').classList.add('done-5');
-    }
-
-    function resetButton() {
-      const button = document.getElementById('canva-pro-btn');
-      setTimeout(() => {
-        button.textContent = `🔒 Watch Ads to Unlock Canva Pro (${adCount}/${ADS_REQUIRED})`;
-        button.disabled = false;
-        button.style.background = "var(--primary)";
-      }, 500);
-    }
-
-    function copyCanvaLink() {
-      navigator.clipboard.writeText(CANVA_LINK).then(() => {
-        showAdNotification("✅ Canva Pro link copied! Paste it in your browser.");
-      }).catch(err => {
-        console.error('Failed to copy text: ', err);
-        showAdNotification("Failed to copy link.");
-      });
-    }
-
-    function showAdNotification(msg) {
-      const el = document.getElementById('ad-notification');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(() => {
-        el.style.display = 'none';
-      }, 3000);
-    }
-
-    function toggleMode() {
-      const body = document.body;
-      const btn = document.getElementById('mode-toggle');
-      body.classList.toggle('light-mode');
-      if (body.classList.contains('light-mode')) {
-        btn.textContent = '☀️';
-        localStorage.setItem("themeMode", "light");
-      } else {
-        btn.textContent = '🌙';
-        localStorage.setItem("themeMode", "dark");
-      }
-    }
-  </script>
+        // Load ads when page loads
+        window.addEventListener('load', function() {
+            console.log("Page loaded, initializing ads...");
+            if (window.AdExtra && typeof AdExtra.loadAd === 'function') {
+                AdExtra.loadAd('ec47ce5f549a1da793061abb691bfc6da41409a4');
+            }
+            if (typeof window.show_10033027 === 'function') {
+                show_10033027({ type: 'preload', timeout: 5 })
+                    .then(() => console.log('Monetag preloaded'))
+                    .catch(() => console.error('Monetag preload failed'));
+            }
+        });
+    </script>
 </body>
 </html>
