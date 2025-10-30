@@ -1,80 +1,797 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার বিজ্ঞাপনের ওয়েবসাইট</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Earn Cash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <!-- Removed Adexora script -->
+    <!-- Added Adexium scripts -->
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+
     <style>
+        /* --- Global Styles & Resets --- */
+        :root {
+            --primary-green: #3D8B65;
+            --light-green: #E8F5E9;
+            --background-color: #F7F9FA;
+            --text-color: #333;
+            --text-light: #555;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+
+        /* --- Page Containers --- */
+        .page {
+            padding: 20px;
+            display: none; /* Hide pages by default */
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page.active {
+            display: flex; /* Show active page */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Reusable Components --- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .header .profile-pic {
+            font-size: 36px;
+        }
+        
+        .header .settings-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 28px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .header-text span {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-green);
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: -5px;
+        }
+
+        .btn {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #317252;
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        /* --- Home Page --- */
+        .welcome-card {
+            background-color: var(--light-green);
+            text-align: center;
+        }
+
+        .welcome-card h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .stat-box .icon {
+            font-size: 28px;
+            color: var(--primary-green);
+        }
+
+        .stat-box h3 {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .stat-box p {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* --- Earn Page --- */
+        .task-card .task-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        /* --- Profile Page --- */
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-card .profile-pic-large {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .profile-card h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .profile-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+        }
+        
+        .profile-info-item span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+        }
+
+        .profile-info-item span:last-child {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.2s;
+            width: 25%;
+        }
+
+        .nav-item.active {
+            color: var(--primary-green);
+        }
+
+        .nav-item .material-symbols-outlined {
+            font-size: 26px;
+        }
+        
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* --- Admin Panel --- */
+        #admin-page .card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        #admin-page .back-btn {
+            background-color: #6c757d;
+        }
+        
+        #admin-page .back-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            bottom: 100px;
+        }
+
+        /* --- Loading Overlay --- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            z-index: 9999;
+            display: none;
         }
-        .container {
-            text-align: center;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        button:hover {
-            background-color: #0056b3;
-        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>বিজ্ঞাপন দেখার জন্য ক্লিক করুন</h1>
-        <button id="showAdButton">বিজ্ঞাপন দেখান</button>
-        <p id="statusMessage" style="color: red;"></p>
+
+    <div id="toast-notification" class="toast"></div>
+    
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', () => {
-            const statusMessage = document.getElementById('statusMessage');
-            let adexiumWidget = null;
+    <main>
+        <div id="home-page" class="page active">
+            <div class="header">
+                <div class="profile-pic">😊</div>
+                <div class="header-text">
+                    <h1>Earn Cash</h1>
+                    <span id="home-balance">BDT 0.00</span>
+                </div>
+            </div>
+            
+            <div class="card welcome-card">
+                <h2>Welcome, Back!</h2>
+                <p>A new day brings new opportunities to grow your earnings.</p>
+                <button class="btn" onclick="showPage('earn-page')">
+                    <span class="material-symbols-outlined">rocket_launch</span>
+                    Start Growing
+                </button>
+            </div>
 
-            try {
-                adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
-                statusMessage.textContent = 'Adexium Widget initialized.';
-            } catch (e) {
-                statusMessage.textContent = 'Error initializing Adexium Widget: ' + e.message;
-                console.error('Adexium Widget initialization error:', e);
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="material-symbols-outlined icon">account_balance_wallet</span>
+                    <h3>Total Earnings</h3>
+                    <p id="home-total-earnings">BDT 0.00</p>
+                </div>
+                <div class="stat-box">
+                    <span class="material-symbols-outlined icon">visibility</span>
+                    <h3>Ads Watched</h3>
+                    <p id="home-ads-watched">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="earn-page" class="page">
+            <div class="header">
+                 <div class="profile-pic">😊</div>
+                <div class="header-text">
+                    <h1>Earn Cash</h1>
+                    <span id="earn-balance">BDT 0.00</span>
+                </div>
+            </div>
+            <h2 class="page-title">Earning Field</h2>
+            <div class="card task-card">
+                <h3>Ad Tasks</h3>
+                <p style="color: var(--text-light); margin-top: -5px; margin-bottom: 15px;">Watch ads to cultivate your earnings.</p>
+                <div class="task-progress">
+                    <span id="completed-ads">Completed: 0</span>
+                    <span id="remaining-ads">Remaining: 1000</span>
+                </div>
+                <button id="watch-ad-btn" class="btn" onclick="watchAd()">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    Watch Ad
+                </button>
+            </div>
+            <div class="card">
+                <h3>Bonus Tasks</h3>
+                <p style="color: var(--text-light);">No bonus tasks available.</p>
+            </div>
+        </div>
+
+        <div id="withdraw-page" class="page">
+            <h2 class="page-title">Cash out</h2>
+            <p>Harvest Your Earnings</p>
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="color: var(--text-light);">Available Balance</span>
+                    <h3 id="withdraw-balance" style="font-size: 28px; color: var(--primary-green);">BDT 0.00</h3>
+                </div>
+                <form id="withdrawal-form" onsubmit="requestWithdrawal(event)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="withdrawal-method">Withdrawal Method</label>
+                        <select id="withdrawal-method" required>
+                            <option value="Bkash">Bkash</option>
+                            <option value="Recharge">Recharge</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="withdrawal-amount">Amount</label>
+                        <input type="number" id="withdrawal-amount" placeholder="Enter amount" step="any" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="account-number">Account Number</label>
+                        <input type="text" id="account-number" placeholder="Enter your account number" required>
+                    </div>
+                    <button class="btn" type="submit">
+                        <span class="material-symbols-outlined">send</span>
+                        Request Withdrawal
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="profile-page" class="page">
+            <div class="header">
+                <div class="profile-pic">😊</div>
+                <div class="header-text">
+                    <h1>Earn Cash</h1>
+                    <span id="profile-balance">BDT 0.00</span>
+                </div>
+                <span class="material-symbols-outlined settings-icon" onclick="openAdminLogin()">settings</span>
+            </div>
+            <h2 class="page-title">Your Profile</h2>
+            <div class="card profile-card">
+                <div class="profile-pic-large">🎉</div>
+                <h2>Welcome!</h2>
+                <p>Dear User</p>
+            </div>
+
+            <div class="card" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="profile-info-item">
+                    <span><span class="material-symbols-outlined">account_balance_wallet</span>Balance</span>
+                    <span id="profile-info-balance">BDT 0.00</span>
+                </div>
+                <div class="profile-info-item">
+                    <span><span class="material-symbols-outlined">trending_up</span>Total Earnings</span>
+                    <span id="profile-total-earnings">BDT 0.00</span>
+                </div>
+                <div class="profile-info-item">
+                    <span><span class="material-symbols-outlined">visibility</span>Ads Watched</span>
+                    <span id="profile-ads-watched">0</span>
+                </div>
+                <div class="profile-info-item">
+                    <span><span class="material-symbols-outlined">group</span>Total Referrals</span>
+                    <span>0</span>
+                </div>
+            </div>
+            
+            <button class="btn" style="background-color: #f0f0f0; color: var(--text-color);">
+                <span class="material-symbols-outlined">support_agent</span>
+                Contact Developer
+            </button>
+        </div>
+        
+        <div id="admin-page" class="page">
+             <h2 class="page-title">Admin Control Panel</h2>
+             <div class="card">
+                 <div class="form-group">
+                     <label for="admin-ad-limit">Daily Ad Limit</label>
+                     <input type="number" id="admin-ad-limit">
+                 </div>
+                 <div class="form-group">
+                     <label for="admin-reward">Reward per Ad (BDT)</label>
+                     <input type="number" step="0.01" id="admin-reward">
+                 </div>
+                 <div class="form-group">
+                     <label for="admin-min-payout">Minimum Payout (BDT)</label>
+                     <input type="number" id="admin-min-payout">
+                 </div>
+                 <div class="form-group">
+                     <label for="admin-max-payout">Maximum Payout (BDT)</label>
+                     <input type="number" id="admin-max-payout">
+                 </div>
+                  <div class="form-group">
+                     <label for="admin-password">Change Admin Password</label>
+                     <input type="password" id="admin-password" placeholder="Enter new password">
+                 </div>
+                 <button class="btn" onclick="saveAdminSettings()">Save Changes</button>
+                 <button class="btn back-btn" onclick="showPage('profile-page')">Back to Profile</button>
+             </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home-page', this)">
+            <span class="material-symbols-outlined">home</span>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="showPage('earn-page', this)">
+            <span class="material-symbols-outlined">monetization_on</span>
+            <span>Earn</span>
+        </div>
+        <div class="nav-item" onclick="showPage('withdraw-page', this)">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Withdraw</span>
+        </div>
+        <div class="nav-item" onclick="showPage('profile-page', this)">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+        </div>
+    </nav>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let appState = {};
+        let adexiumWidget = null;
+
+        const defaultState = {
+            user: {
+                balance: 0.00,
+                totalEarnings: 0.00,
+                totalAdsWatched: 0,
+                adsWatchedToday: 0,
+                lastAdReset: new Date().toISOString().split('T')[0] // Store date as YYYY-MM-DD
+            },
+            settings: {
+                adLimit: 1000,
+                adReward: 0.30,
+                minWithdrawal: 20,
+                maxWithdrawal: 5000,
+                adminPassword: 'asdfgh',
+                paymentMethods: ['Bkash', 'Recharge']
+            }
+        };
+
+        function saveState() {
+            localStorage.setItem('earnCashState', JSON.stringify(appState));
+        }
+
+        function loadState() {
+            const savedState = localStorage.getItem('earnCashState');
+            if (savedState) {
+                appState = JSON.parse(savedState);
+                // Ensure all default keys exist in case of updates
+                appState.settings = { ...defaultState.settings, ...appState.settings };
+                appState.user = { ...defaultState.user, ...appState.user };
+            } else {
+                appState = JSON.parse(JSON.stringify(defaultState)); // Deep copy
+            }
+            checkAdReset();
+        }
+
+        // --- ADEXIUM WIDGET INITIALIZATION ---
+        function initializeAdexiumWidget() {
+            if (!adexiumWidget) {
+                adexiumWidget = new AdexiumWidget({
+                    wid: '8a716842-ba1e-4d53-91d4-383b48171547', 
+                    adFormat: 'interstitial'
+                });
+                // We won't use autoMode since we want to trigger ads manually
+            }
+            return adexiumWidget;
+        }
+
+        // --- UI RENDERING ---
+        function renderUI() {
+            const formatBDT = (amount) => `BDT ${parseFloat(amount).toFixed(2)}`;
+
+            // Balances
+            document.getElementById('home-balance').textContent = formatBDT(appState.user.balance);
+            document.getElementById('earn-balance').textContent = formatBDT(appState.user.balance);
+            document.getElementById('withdraw-balance').textContent = formatBDT(appState.user.balance);
+            document.getElementById('profile-balance').textContent = formatBDT(appState.user.balance);
+            document.getElementById('profile-info-balance').textContent = formatBDT(appState.user.balance);
+
+            // Stats
+            document.getElementById('home-total-earnings').textContent = formatBDT(appState.user.totalEarnings);
+            document.getElementById('profile-total-earnings').textContent = formatBDT(appState.user.totalEarnings);
+            document.getElementById('home-ads-watched').textContent = appState.user.totalAdsWatched;
+            document.getElementById('profile-ads-watched').textContent = appState.user.totalAdsWatched;
+            
+            // Earn Page
+            const remaining = appState.settings.adLimit - appState.user.adsWatchedToday;
+            document.getElementById('completed-ads').textContent = `Completed: ${appState.user.adsWatchedToday}`;
+            document.getElementById('remaining-ads').textContent = `Remaining: ${remaining}`;
+            document.getElementById('watch-ad-btn').disabled = remaining <= 0;
+            if (remaining <= 0) {
+                 document.getElementById('watch-ad-btn').textContent = 'Limit Reached for Today';
+            } else {
+                 document.getElementById('watch-ad-btn').innerHTML = '<span class="material-symbols-outlined">play_circle</span> Watch Ad';
+            }
+        }
+        
+        // --- NOTIFICATION / TOAST ---
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // --- NAVIGATION ---
+        function showPage(pageId, navElement = null) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            if (navElement) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                navElement.classList.add('active');
+            }
+             // For buttons that navigate without being in the nav bar
+            else {
+                const correspondingNavItem = document.querySelector(`.nav-item[onclick*="'${pageId}'"]`);
+                if(correspondingNavItem) {
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    correspondingNavItem.classList.add('active');
+                }
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // --- CORE LOGIC ---
+        function checkAdReset() {
+            const today = new Date().toISOString().split('T')[0];
+            if (appState.user.lastAdReset !== today) {
+                appState.user.adsWatchedToday = 0;
+                appState.user.lastAdReset = today;
+                saveState();
+            }
+        }
+
+        function watchAd() {
+            checkAdReset();
+            
+            if (appState.user.adsWatchedToday >= appState.settings.adLimit) {
+                showToast("You have reached your daily ad limit.");
+                return;
             }
 
-            document.getElementById('showAdButton').addEventListener('click', () => {
-                if (adexiumWidget) {
-                    try {
-                        adexiumWidget.show();
-                        statusMessage.textContent = 'Attempting to show ad...';
-                    } catch (e) {
-                        statusMessage.textContent = 'Error showing ad: ' + e.message;
-                        console.error('Adexium Widget show error:', e);
-                    }
+            // Show loading overlay
+            document.getElementById('loading-overlay').style.display = 'flex';
+            
+            // Disable the button to prevent multiple clicks
+            document.getElementById('watch-ad-btn').disabled = true;
+            
+            // Initialize Adexium widget if not already done
+            const widget = initializeAdexiumWidget();
+            
+            // Show the ad
+            try {
+                // Since we don't have direct documentation on how to trigger the ad,
+                // we'll try to use the widget's show method if available
+                if (widget && typeof widget.showAd === 'function') {
+                    widget.showAd()
+                        .then(() => {
+                            // Ad completed successfully
+                            appState.user.balance += appState.settings.adReward;
+                            appState.user.totalEarnings += appState.settings.adReward;
+                            appState.user.totalAdsWatched += 1;
+                            appState.user.adsWatchedToday += 1;
+                            
+                            showToast(`+${appState.settings.adReward.toFixed(2)} BDT added to your balance!`);
+                            
+                            saveState();
+                            renderUI();
+                        })
+                        .catch(error => {
+                            console.error('Adexium ad error:', error);
+                            showToast("Ad failed to load. Please try again.");
+                        })
+                        .finally(() => {
+                            // Hide loading overlay
+                            document.getElementById('loading-overlay').style.display = 'none';
+                            
+                            // Re-enable the button
+                            document.getElementById('watch-ad-btn').disabled = false;
+                        });
                 } else {
-                    statusMessage.textContent = 'Adexium Widget not initialized. Check console for errors.';
+                    // If we can't find a show method, try to trigger the ad differently
+                    // This is a fallback approach
+                    showToast("Ad service is initializing. Please try again.");
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    document.getElementById('watch-ad-btn').disabled = false;
                 }
-            });
+            } catch (error) {
+                console.error('Error showing Adexium ad:', error);
+                showToast("Ad service error. Please try again.");
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('watch-ad-btn').disabled = false;
+            }
+        }
 
-            // If you want to show ads automatically on page load, uncomment the line below
-            // adexiumWidget.autoMode();
+        function requestWithdrawal(event) {
+            event.preventDefault();
+            const amount = parseFloat(document.getElementById('withdrawal-amount').value);
+            const accountNumber = document.getElementById('account-number').value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast("Please enter a valid amount.");
+                return;
+            }
+            if (amount < appState.settings.minWithdrawal) {
+                showToast(`Minimum withdrawal is ${appState.settings.minWithdrawal} BDT.`);
+                return;
+            }
+            if (amount > appState.settings.maxWithdrawal) {
+                showToast(`Maximum withdrawal is ${appState.settings.maxWithdrawal} BDT.`);
+                return;
+            }
+            if (amount > appState.user.balance) {
+                showToast("Insufficient balance.");
+                return;
+            }
+
+            appState.user.balance -= amount;
+            saveState();
+            renderUI();
+            
+            document.getElementById('withdrawal-form').reset();
+            showToast("Withdrawal request submitted successfully!");
+        }
+
+        // --- ADMIN PANEL LOGIC ---
+        function openAdminLogin() {
+            const password = prompt("Enter Admin Password:");
+            if (password === appState.settings.adminPassword) {
+                loadAdminSettings();
+                showPage('admin-page');
+            } else if (password !== null) { // User didn't cancel prompt
+                alert("Incorrect Password!");
+            }
+        }
+
+        function loadAdminSettings() {
+            document.getElementById('admin-ad-limit').value = appState.settings.adLimit;
+            document.getElementById('admin-reward').value = appState.settings.adReward;
+            document.getElementById('admin-min-payout').value = appState.settings.minWithdrawal;
+            document.getElementById('admin-max-payout').value = appState.settings.maxWithdrawal;
+            document.getElementById('admin-password').value = ''; // Clear password field
+        }
+
+        function saveAdminSettings() {
+            appState.settings.adLimit = parseInt(document.getElementById('admin-ad-limit').value) || 1000;
+            appState.settings.adReward = parseFloat(document.getElementById('admin-reward').value) || 0.30;
+            appState.settings.minWithdrawal = parseInt(document.getElementById('admin-min-payout').value) || 20;
+            appState.settings.maxWithdrawal = parseInt(document.getElementById('admin-max-payout').value) || 5000;
+            
+            const newPassword = document.getElementById('admin-password').value.trim();
+            if (newPassword) {
+                appState.settings.adminPassword = newPassword;
+            }
+
+            saveState();
+            renderUI();
+            showToast("Admin settings saved successfully!");
+            showPage('profile-page');
+        }
+
+        // --- APP INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderUI();
+            
+            // Initialize Adexium widget when the app loads
+            initializeAdexiumWidget();
         });
+
     </script>
 </body>
 </html>
