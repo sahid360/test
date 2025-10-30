@@ -4,7 +4,15 @@
   <meta charset="UTF-8"/>  
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
   <title>Canva Pro Team</title>  
-  <script src='//libtl.com/sdk.js' data-zone='9644306' data-sdk='show_9644306'></script>  
+  
+  <!-- Adexium SDK -->
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+  <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+          const adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
+          adexiumWidget.autoMode();
+      });
+  </script>
   
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -426,30 +434,28 @@
         countdown--;
         if (countdown < 1) {
           clearInterval(interval);
-          showAd();
+          // Trigger Adexium interstitial ad
+          if (typeof AdexiumWidget !== 'undefined') {
+            const adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
+            adexiumWidget.showAd().then(() => {
+              adCount++;
+              updateSteps();
+              if (adCount >= 5) {
+                unlockCanva(button);
+              } else {
+                resetButton();
+              }
+            }).catch((error) => {
+              console.error('Adexium ad failed to show:', error);
+              showAdNotification("⚠️ Ad failed. Unlocking Canva Pro...");
+              unlockCanva(button); // Unlock even if ad fails to provide good UX
+            });
+          } else {
+            showAdNotification("⚠️ Ad service not available. Unlocking Canva Pro...");
+            unlockCanva(button);
+          }
         }
       }, 1000);
-    }
-
-    function showAd() {
-      const button = document.getElementById('canva-pro-btn');
-      if (typeof show_9644306 === 'function') {
-        show_9644306().then(() => {
-          adCount++;
-          updateSteps();
-          if (adCount >= 5) {
-            unlockCanva(button);
-          } else {
-            resetButton();
-          }
-        }).catch(() => {
-          showAdNotification("⚠️ Ad failed. Unlocking Canva Pro...");
-          unlockCanva(button);
-        });
-      } else {
-        showAdNotification("⚠️ Ad service not available. Unlocking Canva Pro...");
-        unlockCanva(button);
-      }
     }
 
     function unlockCanva(button) {
@@ -517,4 +523,4 @@
   </script>
 </body>
 </html>
-        
+    
