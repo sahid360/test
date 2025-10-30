@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
   <title>Canva Pro Team</title>  
   
-  <!-- AdExtra Script -->
+  <!-- AdExtra Script - Keep it, assuming it might load global functions or trigger pop-unders -->
   <script async src="https://partner.adextra.io/jt/f876f66c460290de2a5d83c060dfccaec15a21ea.js"></script>
   
   <!-- Firebase SDK -->
@@ -316,8 +316,8 @@
       </div>
 
       <div class="ads-section">
-        <!-- AdExtra Block -->
-        <div id="f876f66c460290de2a5d83c060dfccaec15a21ea"></div>
+        <!-- This is a generic ad space, the "watch ads" functionality is simulated via the button click -->
+        <p style="color: grey; font-size: 12px; margin-bottom: 10px;">(Ad content would typically appear here, or as a pop-up.)</p>
         <div class="ad-item">
           <a href="https://t.me/FCanvaOwner" target="_blank">
             💎 Ad Space Promote Your Channel
@@ -350,6 +350,7 @@
 
     let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
     let adCount = 0, adsCompleted = false;
+    const ADS_REQUIRED = 5; // Number of ads to "watch"
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedMode = localStorage.getItem("themeMode");
@@ -393,15 +394,7 @@
         database.ref('visitors/daily/' + yearMonthDay).transaction((currentCount) => {
             return (currentCount || 0) + 1;
         });
-        
-        // Optionally, track logs (can become large quickly)
-        // const timestamp = new Date().toISOString();
-        // database.ref('visitors/logs').push({
-        //     timestamp: timestamp,
-        //     userAgent: navigator.userAgent
-        // });
     }
-
 
     function handleClick() {
       const button = document.getElementById('canva-pro-btn');
@@ -422,24 +415,22 @@
 
     function showAds() {
       const button = document.getElementById('canva-pro-btn');
-      let countdown = 2;
+      let countdown = 3; // Simulate a 3-second ad watch time
       button.disabled = true;
       button.style.background = 'gray';
+      
       const interval = setInterval(() => {
-        button.textContent = `Please wait... ${countdown} sec`;
+        button.textContent = `Please wait... ${countdown} sec (${adCount}/${ADS_REQUIRED})`;
         countdown--;
-        if (countdown < 1) {
+        if (countdown < 0) {
           clearInterval(interval);
-          // Instead of calling a specific ad function, we can just increment adCount
-          // and rely on the user seeing the AdExtra block if it shows.
-          // For a true "watch ad" functionality, you'd need AdExtra's specific API for showing interstitial/rewarded ads.
-          // Since it's a display block, we'll just simulate the ad count.
-          adCount++;
+          adCount++; // Increment ad count after simulated watch
           updateSteps();
-          if (adCount >= 5) {
+          
+          if (adCount >= ADS_REQUIRED) {
             unlockCanva(button);
           } else {
-            resetButton();
+            resetButton(); // Reset button to click again for the next ad
           }
         }
       }, 1000);
@@ -447,7 +438,7 @@
 
     function unlockCanva(button) {
       adsCompleted = true;
-      adCount = 5;
+      adCount = ADS_REQUIRED; // Ensure all steps are marked
       updateSteps();
       button.textContent = "🎉 Click to Open Canva Pro";
       button.style.background = "green";
@@ -471,7 +462,7 @@
     function resetButton() {
       const button = document.getElementById('canva-pro-btn');
       setTimeout(() => {
-        button.textContent = "🔒 Watch Ads to Unlock Canva Pro";
+        button.textContent = `🔒 Watch Ads to Unlock Canva Pro (${adCount}/${ADS_REQUIRED})`;
         button.disabled = false;
         button.style.background = "var(--primary)";
       }, 500);
