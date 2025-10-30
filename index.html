@@ -1,799 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Earn Cash</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <!-- Removed Adexora script -->
-    <!-- Added Adexium scripts -->
-    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+<head>  
+  <meta charset="UTF-8"/>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Canva Pro Team</title>  
+  
+  <!-- AdExtra Script -->
+  <script async src="https://partner.adextra.io/jt/f876f66c460290de2a5d83c060dfccaec15a21ea.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
+  <style>
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+    }
 
-    <style>
-        /* --- Global Styles & Resets --- */
-        :root {
-            --primary-green: #3D8B65;
-            --light-green: #E8F5E9;
-            --background-color: #F7F9FA;
-            --text-color: #333;
-            --text-light: #555;
-            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            padding-bottom: 80px; /* Space for bottom nav */
-        }
+    body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      padding: 20px;
+      text-align: center;
+    }
 
-        /* --- Page Containers --- */
-        .page {
-            padding: 20px;
-            display: none; /* Hide pages by default */
-            flex-direction: column;
-            gap: 20px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      padding-bottom: 20px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
 
-        .page.active {
-            display: flex; /* Show active page */
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .header {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      padding: 25px 20px;
+      text-align: center;
+    }
 
-        /* --- Reusable Components --- */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-        }
+    .header h1 {
+      font-size: 30px;
+      color: #fff;
+    }
 
-        .header .profile-pic {
-            font-size: 36px;
-        }
-        
-        .header .settings-icon {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 28px;
-            color: var(--text-light);
-            cursor: pointer;
-        }
+    .author {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f5f5f5;
+    }
 
-        .header-text h1 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        
-        .header-text span {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--primary-green);
-        }
+    .content {
+      padding: 25px;
+    }
 
-        .card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            width: 100%;
-        }
+    .progress-container {
+      width: 100%;
+      background: #333;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      overflow: hidden;
+      height: 30px;
+      display: flex;
+      border: 1px solid var(--border-color);
+    }
 
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: -5px;
-        }
+    .step-inner {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
 
-        .btn {
-            background-color: var(--primary-green);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-        }
+    .step-box {
+      flex: 1;
+      text-align: center;
+      line-height: 26px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #444;
+      transition: background 0.3s ease-in-out;
+    }
 
-        .btn:hover {
-            background-color: #317252;
-        }
-        
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-        }
+    .step-box.done-1 { background-color: red; }
+    .step-box.done-2 { background-color: orange; }
+    .step-box.done-3 { background-color: limegreen; }
+    .step-box.done-4 { background-color: blueviolet; }
+    .step-box.done-5 { background-color: deepskyblue; }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .form-group label {
-            font-weight: 500;
-            color: var(--text-light);
-        }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-        /* --- Home Page --- */
-        .welcome-card {
-            background-color: var(--light-green);
-            text-align: center;
-        }
+    .btn-3d {
+      padding: 16px 20px;
+      border: none;
+      border-radius: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--light);
+      background: var(--primary);
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
 
-        .welcome-card h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .welcome-card p {
-            color: var(--text-light);
-            margin-bottom: 20px;
-        }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+    }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+    .btn-small {
+      padding: 10px 15px;
+      font-size: 14px;
+    }
 
-        .stat-box {
-            background-color: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
-        }
+    .ad-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--light);
+      padding: 15px 30px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
+    }
 
-        .stat-box .icon {
-            font-size: 28px;
-            color: var(--primary-green);
-        }
+    .ads-section {
+      margin-top: 30px;
+      padding: 15px;
+      background: var(--ad-bg);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      transition: all 0.4s ease;
+    }
 
-        .stat-box h3 {
-            font-size: 14px;
-            color: var(--text-light);
-            font-weight: 500;
-            margin-top: 5px;
-        }
-        
-        .stat-box p {
-            font-size: 22px;
-            font-weight: 600;
-        }
+    .ad-item {
+      background: var(--ad-item-bg);
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
 
-        /* --- Earn Page --- */
-        .task-card .task-progress {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            color: var(--text-light);
-        }
+    .ad-item:hover {
+      background: #3d3d3d;
+    }
 
-        /* --- Profile Page --- */
-        .profile-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .profile-card .profile-pic-large {
-            font-size: 80px;
-            margin-bottom: 10px;
-        }
-        
-        .profile-card h2 {
-            font-size: 22px;
-            font-weight: 600;
-        }
+    .ad-item a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 13px;
+      display: block;
+    }
 
-        .profile-info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-        }
-        
-        .profile-info-item span:first-child {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-light);
-        }
+    .ad-item a small {
+      color: #888;
+      font-size: 11px;
+      font-weight: 300;
+      display: block;
+      margin-top: 4px;
+    }
 
-        .profile-info-item span:last-child {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        /* --- Bottom Navigation --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: white;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-        }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
+    }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            cursor: pointer;
-            color: #aaa;
-            transition: color 0.2s;
-            width: 25%;
-        }
+    .footer a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
 
-        .nav-item.active {
-            color: var(--primary-green);
-        }
+    #mode-toggle {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 4px 5px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      z-index: 1100;
+    }
 
-        .nav-item .material-symbols-outlined {
-            font-size: 26px;
-        }
-        
-        .nav-item span {
-            font-size: 12px;
-            font-weight: 500;
-        }
+    /* ✅ Copy section style */
+    #copy-section {
+      display: none;
+      margin-top: 15px;
+      background: var(--ad-item-bg);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 17px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
 
-        /* --- Admin Panel --- */
-        #admin-page .card {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        #admin-page .back-btn {
-            background-color: #6c757d;
-        }
-        
-        #admin-page .back-btn:hover {
-            background-color: #5a6268;
-        }
-        
-        /* --- Toast Notification --- */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.75);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s, bottom 0.3s;
-            pointer-events: none;
-        }
+    #copy-section.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        .toast.show {
-            opacity: 1;
-            bottom: 100px;
-        }
+    #copy-section p {
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
 
-        /* --- Loading Overlay --- */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            display: none;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+    /* ✅ এক লাইনে Canva লিংক দেখাবে */
+    #canva-link {
+      display: block;
+      background: var(--card-bg);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      color: var(--secondary);
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+      user-select: all;
+      white-space: nowrap; /* এক লাইনে দেখাবে */
+      overflow: auto;      /* বড় হলে স্ক্রল হবে */
+    }
 
-    </style>
+    #copy-btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #copy-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
 </head>
 <body>
-
-    <div id="toast-notification" class="toast"></div>
-    
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-spinner"></div>
+  <div class="ad-notification" id="ad-notification"></div>
+  <div class="container">
+    <button id="mode-toggle" onclick="toggleMode()">🌙</button>
+    <div class="header">
+      <h1>Canva Pro Team</h1>
+      <p class="author">📢 After watching 5 ads, the Canva Pro button will be unlocked. Then click again to open Canva Pro.</p>
     </div>
+    <div class="content">
+      <div class="progress-container">
+        <div class="step-inner">
+          <div class="step-box" id="step1">Step 1</div>
+          <div class="step-box" id="step2">Step 2</div>
+          <div class="step-box" id="step3">Step 3</div>
+          <div class="step-box" id="step4">Step 4</div>
+          <div class="step-box" id="step5">Step 5</div>
+        </div>
+      </div>
 
-    <main>
-        <div id="home-page" class="page active">
-            <div class="header">
-                <div class="profile-pic">😊</div>
-                <div class="header-text">
-                    <h1>Earn Cash</h1>
-                    <span id="home-balance">BDT 0.00</span>
-                </div>
-            </div>
-            
-            <div class="card welcome-card">
-                <h2>Welcome, Back!</h2>
-                <p>A new day brings new opportunities to grow your earnings.</p>
-                <button class="btn" onclick="showPage('earn-page')">
-                    <span class="material-symbols-outlined">rocket_launch</span>
-                    Start Growing
-                </button>
-            </div>
+      <div class="buttons">
+        <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
 
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span class="material-symbols-outlined icon">account_balance_wallet</span>
-                    <h3>Total Earnings</h3>
-                    <p id="home-total-earnings">BDT 0.00</p>
-                </div>
-                <div class="stat-box">
-                    <span class="material-symbols-outlined icon">visibility</span>
-                    <h3>Ads Watched</h3>
-                    <p id="home-ads-watched">0</p>
-                </div>
-            </div>
+        <!-- ✅ Copy link section -->
+        <div id="copy-section">
+          <p>🌐 Copy link and paste it in your browser:</p>
+          <span id="canva-link"></span>
+          <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
         </div>
 
-        <div id="earn-page" class="page">
-            <div class="header">
-                 <div class="profile-pic">😊</div>
-                <div class="header-text">
-                    <h1>Earn Cash</h1>
-                    <span id="earn-balance">BDT 0.00</span>
-                </div>
-            </div>
-            <h2 class="page-title">Earning Field</h2>
-            <div class="card task-card">
-                <h3>Ad Tasks</h3>
-                <p style="color: var(--text-light); margin-top: -5px; margin-bottom: 15px;">Watch ads to cultivate your earnings.</p>
-                <div class="task-progress">
-                    <span id="completed-ads">Completed: 0</span>
-                    <span id="remaining-ads">Remaining: 1000</span>
-                </div>
-                <button id="watch-ad-btn" class="btn" onclick="watchAd()">
-                    <span class="material-symbols-outlined">play_circle</span>
-                    Watch Ad
-                </button>
-            </div>
-            <div class="card">
-                <h3>Bonus Tasks</h3>
-                <p style="color: var(--text-light);">No bonus tasks available.</p>
-            </div>
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
+      </div>
+
+      <div class="ads-section">
+        <!-- AdExtra Block -->
+        <div id="f876f66c460290de2a5d83c060dfccaec15a21ea"></div>
+        <div class="ad-item">
+          <a href="https://t.me/FCanvaOwner" target="_blank">
+            💎 Ad Space Promote Your Channel
+            <small>💰 Low cost — get real traffic!</small>
+          </a>
         </div>
+      </div>
+      <div class="footer">
+        <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
+      </div>
+    </div>
+  </div>
 
-        <div id="withdraw-page" class="page">
-            <h2 class="page-title">Cash out</h2>
-            <p>Harvest Your Earnings</p>
-            <div class="card">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <span style="color: var(--text-light);">Available Balance</span>
-                    <h3 id="withdraw-balance" style="font-size: 28px; color: var(--primary-green);">BDT 0.00</h3>
-                </div>
-                <form id="withdrawal-form" onsubmit="requestWithdrawal(event)">
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="withdrawal-method">Withdrawal Method</label>
-                        <select id="withdrawal-method" required>
-                            <option value="Bkash">Bkash</option>
-                            <option value="Recharge">Recharge</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="withdrawal-amount">Amount</label>
-                        <input type="number" id="withdrawal-amount" placeholder="Enter amount" step="any" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <label for="account-number">Account Number</label>
-                        <input type="text" id="account-number" placeholder="Enter your account number" required>
-                    </div>
-                    <button class="btn" type="submit">
-                        <span class="material-symbols-outlined">send</span>
-                        Request Withdrawal
-                    </button>
-                </form>
-            </div>
-        </div>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDzZ7U0tUoaz7m9Dsl00ZmdHAVS49A4ERs",
+      authDomain: "canva-pro-team-bot.firebaseapp.com",
+      databaseURL: "https://canva-pro-team-bot-default-rtdb.firebaseio.com",
+      projectId: "canva-pro-team-bot",
+      storageBucket: "canva-pro-team-bot.firebasestorage.app",
+      messagingSenderId: "1030022013579",
+      appId: "1:1030022013579:web:54c6aab3288d43ec392a8e",
+      measurementId: "G-5B2FN88LQ1"
+    };
 
-        <div id="profile-page" class="page">
-            <div class="header">
-                <div class="profile-pic">😊</div>
-                <div class="header-text">
-                    <h1>Earn Cash</h1>
-                    <span id="profile-balance">BDT 0.00</span>
-                </div>
-                <span class="material-symbols-outlined settings-icon" onclick="openAdminLogin()">settings</span>
-            </div>
-            <h2 class="page-title">Your Profile</h2>
-            <div class="card profile-card">
-                <div class="profile-pic-large">🎉</div>
-                <h2>Welcome!</h2>
-                <p>Dear User</p>
-            </div>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-            <div class="card" style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="profile-info-item">
-                    <span><span class="material-symbols-outlined">account_balance_wallet</span>Balance</span>
-                    <span id="profile-info-balance">BDT 0.00</span>
-                </div>
-                <div class="profile-info-item">
-                    <span><span class="material-symbols-outlined">trending_up</span>Total Earnings</span>
-                    <span id="profile-total-earnings">BDT 0.00</span>
-                </div>
-                <div class="profile-info-item">
-                    <span><span class="material-symbols-outlined">visibility</span>Ads Watched</span>
-                    <span id="profile-ads-watched">0</span>
-                </div>
-                <div class="profile-info-item">
-                    <span><span class="material-symbols-outlined">group</span>Total Referrals</span>
-                    <span>0</span>
-                </div>
-            </div>
-            
-            <button class="btn" style="background-color: #f0f0f0; color: var(--text-color);">
-                <span class="material-symbols-outlined">support_agent</span>
-                Contact Developer
-            </button>
-        </div>
-        
-        <div id="admin-page" class="page">
-             <h2 class="page-title">Admin Control Panel</h2>
-             <div class="card">
-                 <div class="form-group">
-                     <label for="admin-ad-limit">Daily Ad Limit</label>
-                     <input type="number" id="admin-ad-limit">
-                 </div>
-                 <div class="form-group">
-                     <label for="admin-reward">Reward per Ad (BDT)</label>
-                     <input type="number" step="0.01" id="admin-reward">
-                 </div>
-                 <div class="form-group">
-                     <label for="admin-min-payout">Minimum Payout (BDT)</label>
-                     <input type="number" id="admin-min-payout">
-                 </div>
-                 <div class="form-group">
-                     <label for="admin-max-payout">Maximum Payout (BDT)</label>
-                     <input type="number" id="admin-max-payout">
-                 </div>
-                  <div class="form-group">
-                     <label for="admin-password">Change Admin Password</label>
-                     <input type="password" id="admin-password" placeholder="Enter new password">
-                 </div>
-                 <button class="btn" onclick="saveAdminSettings()">Save Changes</button>
-                 <button class="btn back-btn" onclick="showPage('profile-page')">Back to Profile</button>
-             </div>
-        </div>
-    </main>
+    let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
+    let adCount = 0, adsCompleted = false;
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home-page', this)">
-            <span class="material-symbols-outlined">home</span>
-            <span>Home</span>
-        </div>
-        <div class="nav-item" onclick="showPage('earn-page', this)">
-            <span class="material-symbols-outlined">monetization_on</span>
-            <span>Earn</span>
-        </div>
-        <div class="nav-item" onclick="showPage('withdraw-page', this)">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <span>Withdraw</span>
-        </div>
-        <div class="nav-item" onclick="showPage('profile-page', this)">
-            <span class="material-symbols-outlined">person</span>
-            <span>Profile</span>
-        </div>
-    </nav>
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedMode = localStorage.getItem("themeMode");
+      if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
+      }
 
-    <script>
-        // --- STATE MANAGEMENT ---
-        let appState = {};
-        let adexiumWidget = null;
-
-        const defaultState = {
-            user: {
-                balance: 0.00,
-                totalEarnings: 0.00,
-                totalAdsWatched: 0,
-                adsWatchedToday: 0,
-                lastAdReset: new Date().toISOString().split('T')[0] // Store date as YYYY-MM-DD
-            },
-            settings: {
-                adLimit: 1000,
-                adReward: 0.30,
-                minWithdrawal: 20,
-                maxWithdrawal: 5000,
-                adminPassword: 'asdfgh',
-                paymentMethods: ['Bkash', 'Recharge']
-            }
-        };
-
-        function saveState() {
-            localStorage.setItem('earnCashState', JSON.stringify(appState));
+      // Load Canva link from Firebase
+      database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        if (link) {
+          CANVA_LINK = link;
+          document.getElementById('canva-link').textContent = CANVA_LINK;
         }
+      });
 
-        function loadState() {
-            const savedState = localStorage.getItem('earnCashState');
-            if (savedState) {
-                appState = JSON.parse(savedState);
-                // Ensure all default keys exist in case of updates
-                appState.settings = { ...defaultState.settings, ...appState.settings };
-                appState.user = { ...defaultState.user, ...appState.user };
-            } else {
-                appState = JSON.parse(JSON.stringify(defaultState)); // Deep copy
-            }
-            checkAdReset();
-        }
+      // Track visitors
+      trackVisitor();
+    });
 
-        // --- ADEXIUM WIDGET INITIALIZATION ---
-        function initializeAdexiumWidget() {
-            if (!adexiumWidget) {
-                adexiumWidget = new AdexiumWidget({
-                    wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', 
-                    adFormat: 'interstitial'
-                });
-                // We won't use autoMode since we want to trigger ads manually
-            }
-            return adexiumWidget;
-        }
+    function trackVisitor() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const yearMonth = `${year}-${month}`;
+        const yearMonthDay = `${year}-${month}-${day}`; // Format YYYY-MM-DD
 
-        // --- UI RENDERING ---
-        function renderUI() {
-            const formatBDT = (amount) => `BDT ${parseFloat(amount).toFixed(2)}`;
-
-            // Balances
-            document.getElementById('home-balance').textContent = formatBDT(appState.user.balance);
-            document.getElementById('earn-balance').textContent = formatBDT(appState.user.balance);
-            document.getElementById('withdraw-balance').textContent = formatBDT(appState.user.balance);
-            document.getElementById('profile-balance').textContent = formatBDT(appState.user.balance);
-            document.getElementById('profile-info-balance').textContent = formatBDT(appState.user.balance);
-
-            // Stats
-            document.getElementById('home-total-earnings').textContent = formatBDT(appState.user.totalEarnings);
-            document.getElementById('profile-total-earnings').textContent = formatBDT(appState.user.totalEarnings);
-            document.getElementById('home-ads-watched').textContent = appState.user.totalAdsWatched;
-            document.getElementById('profile-ads-watched').textContent = appState.user.totalAdsWatched;
-            
-            // Earn Page
-            const remaining = appState.settings.adLimit - appState.user.adsWatchedToday;
-            document.getElementById('completed-ads').textContent = `Completed: ${appState.user.adsWatchedToday}`;
-            document.getElementById('remaining-ads').textContent = `Remaining: ${remaining}`;
-            document.getElementById('watch-ad-btn').disabled = remaining <= 0;
-            if (remaining <= 0) {
-                 document.getElementById('watch-ad-btn').textContent = 'Limit Reached for Today';
-            } else {
-                 document.getElementById('watch-ad-btn').innerHTML = '<span class="material-symbols-outlined">play_circle</span> Watch Ad';
-            }
-        }
-        
-        // --- NOTIFICATION / TOAST ---
-        function showToast(message, duration = 3000) {
-            const toast = document.getElementById('toast-notification');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
-        }
-
-        // --- NAVIGATION ---
-        function showPage(pageId, navElement = null) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-
-            if (navElement) {
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                navElement.classList.add('active');
-            }
-             // For buttons that navigate without being in the nav bar
-            else {
-                const correspondingNavItem = document.querySelector(`.nav-item[onclick*="'${pageId}'"]`);
-                if(correspondingNavItem) {
-                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                    correspondingNavItem.classList.add('active');
-                }
-            }
-            window.scrollTo(0, 0);
-        }
-
-        // --- CORE LOGIC ---
-        function checkAdReset() {
-            const today = new Date().toISOString().split('T')[0];
-            if (appState.user.lastAdReset !== today) {
-                appState.user.adsWatchedToday = 0;
-                appState.user.lastAdReset = today;
-                saveState();
-            }
-        }
-
-        function watchAd() {
-            checkAdReset();
-            
-            if (appState.user.adsWatchedToday >= appState.settings.adLimit) {
-                showToast("You have reached your daily ad limit.");
-                return;
-            }
-
-            // Show loading overlay
-            document.getElementById('loading-overlay').style.display = 'flex';
-            
-            // Disable the button to prevent multiple clicks
-            document.getElementById('watch-ad-btn').disabled = true;
-            
-            // Initialize Adexium widget if not already done
-            const widget = initializeAdexiumWidget();
-            
-            // Show the ad
-            try {
-                // Since we don't have direct documentation on how to trigger the ad,
-                // we'll try to use the widget's show method if available
-                if (widget && typeof widget.showAd === 'function') {
-                    widget.showAd()
-                        .then(() => {
-                            // Ad completed successfully
-                            appState.user.balance += appState.settings.adReward;
-                            appState.user.totalEarnings += appState.settings.adReward;
-                            appState.user.totalAdsWatched += 1;
-                            appState.user.adsWatchedToday += 1;
-                            
-                            showToast(`+${appState.settings.adReward.toFixed(2)} BDT added to your balance!`);
-                            
-                            saveState();
-                            renderUI();
-                        })
-                        .catch(error => {
-                            console.error('Adexium ad error:', error);
-                            showToast("Ad failed to load. Please try again.");
-                        })
-                        .finally(() => {
-                            // Hide loading overlay
-                            document.getElementById('loading-overlay').style.display = 'none';
-                            
-                            // Re-enable the button
-                            document.getElementById('watch-ad-btn').disabled = false;
-                        });
-                } else {
-                    // If we can't find a show method, try to trigger the ad differently
-                    // This is a fallback approach
-                    showToast("Ad service is initializing. Please try again.");
-                    document.getElementById('loading-overlay').style.display = 'none';
-                    document.getElementById('watch-ad-btn').disabled = false;
-                }
-            } catch (error) {
-                console.error('Error showing Adexium ad:', error);
-                showToast("Ad service error. Please try again.");
-                document.getElementById('loading-overlay').style.display = 'none';
-                document.getElementById('watch-ad-btn').disabled = false;
-            }
-        }
-
-        function requestWithdrawal(event) {
-            event.preventDefault();
-            const amount = parseFloat(document.getElementById('withdrawal-amount').value);
-            const accountNumber = document.getElementById('account-number').value;
-
-            if (isNaN(amount) || amount <= 0) {
-                showToast("Please enter a valid amount.");
-                return;
-            }
-            if (amount < appState.settings.minWithdrawal) {
-                showToast(`Minimum withdrawal is ${appState.settings.minWithdrawal} BDT.`);
-                return;
-            }
-            if (amount > appState.settings.maxWithdrawal) {
-                showToast(`Maximum withdrawal is ${appState.settings.maxWithdrawal} BDT.`);
-                return;
-            }
-            if (amount > appState.user.balance) {
-                showToast("Insufficient balance.");
-                return;
-            }
-
-            appState.user.balance -= amount;
-            saveState();
-            renderUI();
-            
-            document.getElementById('withdrawal-form').reset();
-            showToast("Withdrawal request submitted successfully!");
-        }
-
-        // --- ADMIN PANEL LOGIC ---
-        function openAdminLogin() {
-            const password = prompt("Enter Admin Password:");
-            if (password === appState.settings.adminPassword) {
-                loadAdminSettings();
-                showPage('admin-page');
-            } else if (password !== null) { // User didn't cancel prompt
-                alert("Incorrect Password!");
-            }
-        }
-
-        function loadAdminSettings() {
-            document.getElementById('admin-ad-limit').value = appState.settings.adLimit;
-            document.getElementById('admin-reward').value = appState.settings.adReward;
-            document.getElementById('admin-min-payout').value = appState.settings.minWithdrawal;
-            document.getElementById('admin-max-payout').value = appState.settings.maxWithdrawal;
-            document.getElementById('admin-password').value = ''; // Clear password field
-        }
-
-        function saveAdminSettings() {
-            appState.settings.adLimit = parseInt(document.getElementById('admin-ad-limit').value) || 1000;
-            appState.settings.adReward = parseFloat(document.getElementById('admin-reward').value) || 0.30;
-            appState.settings.minWithdrawal = parseInt(document.getElementById('admin-min-payout').value) || 20;
-            appState.settings.maxWithdrawal = parseInt(document.getElementById('admin-max-payout').value) || 5000;
-            
-            const newPassword = document.getElementById('admin-password').value.trim();
-            if (newPassword) {
-                appState.settings.adminPassword = newPassword;
-            }
-
-            saveState();
-            renderUI();
-            showToast("Admin settings saved successfully!");
-            showPage('profile-page');
-        }
-
-        // --- APP INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            renderUI();
-            
-            // Initialize Adexium widget when the app loads
-            initializeAdexiumWidget();
+        // Track total count
+        database.ref('visitors/total').transaction((currentCount) => {
+            return (currentCount || 0) + 1;
         });
 
-    </script>
+        // Track monthly count
+        database.ref('visitors/monthly/' + yearMonth).transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+
+        // Track daily count
+        database.ref('visitors/daily/' + yearMonthDay).transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+        
+        // Optionally, track logs (can become large quickly)
+        // const timestamp = new Date().toISOString();
+        // database.ref('visitors/logs').push({
+        //     timestamp: timestamp,
+        //     userAgent: navigator.userAgent
+        // });
+    }
+
+
+    function handleClick() {
+      const button = document.getElementById('canva-pro-btn');
+      if (adsCompleted) {
+        openCommonLink(CANVA_LINK);
+        return;
+      }
+      showAds();
+    }
+
+    function openCommonLink(url) {
+      if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.openLink(url);
+      } else {
+        window.location.href = url;
+      }
+    }
+
+    function showAds() {
+      const button = document.getElementById('canva-pro-btn');
+      let countdown = 2;
+      button.disabled = true;
+      button.style.background = 'gray';
+      const interval = setInterval(() => {
+        button.textContent = `Please wait... ${countdown} sec`;
+        countdown--;
+        if (countdown < 1) {
+          clearInterval(interval);
+          // Instead of calling a specific ad function, we can just increment adCount
+          // and rely on the user seeing the AdExtra block if it shows.
+          // For a true "watch ad" functionality, you'd need AdExtra's specific API for showing interstitial/rewarded ads.
+          // Since it's a display block, we'll just simulate the ad count.
+          adCount++;
+          updateSteps();
+          if (adCount >= 5) {
+            unlockCanva(button);
+          } else {
+            resetButton();
+          }
+        }
+      }, 1000);
+    }
+
+    function unlockCanva(button) {
+      adsCompleted = true;
+      adCount = 5;
+      updateSteps();
+      button.textContent = "🎉 Click to Open Canva Pro";
+      button.style.background = "green";
+      button.disabled = false;
+
+      // ✅ Show copy section + link
+      const copySection = document.getElementById('copy-section');
+      const linkDisplay = document.getElementById('canva-link');
+      linkDisplay.textContent = CANVA_LINK;
+      copySection.classList.add('show');
+    }
+
+    function updateSteps() {
+      if (adCount >= 1) document.getElementById('step1').classList.add('done-1');
+      if (adCount >= 2) document.getElementById('step2').classList.add('done-2');
+      if (adCount >= 3) document.getElementById('step3').classList.add('done-3');
+      if (adCount >= 4) document.getElementById('step4').classList.add('done-4');
+      if (adCount >= 5) document.getElementById('step5').classList.add('done-5');
+    }
+
+    function resetButton() {
+      const button = document.getElementById('canva-pro-btn');
+      setTimeout(() => {
+        button.textContent = "🔒 Watch Ads to Unlock Canva Pro";
+        button.disabled = false;
+        button.style.background = "var(--primary)";
+      }, 500);
+    }
+
+    function copyCanvaLink() {
+      navigator.clipboard.writeText(CANVA_LINK).then(() => {
+        showAdNotification("✅ Canva Pro link copied! Paste it in your browser.");
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showAdNotification("Failed to copy link.");
+      });
+    }
+
+    function showAdNotification(msg) {
+      const el = document.getElementById('ad-notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 3000);
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const btn = document.getElementById('mode-toggle');
+      body.classList.toggle('light-mode');
+      if (body.classList.contains('light-mode')) {
+        btn.textContent = '☀️';
+        localStorage.setItem("themeMode", "light");
+      } else {
+        btn.textContent = '🌙';
+        localStorage.setItem("themeMode", "dark");
+      }
+    }
+  </script>
 </body>
 </html>
-  
-
