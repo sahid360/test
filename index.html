@@ -357,25 +357,6 @@
     body:not(.light-mode) .chartjs-render-monitor canvas {
         color: var(--text-color) !important; 
     }
-    
-    /* New styles for see more button */
-    .see-more-btn {
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 15px;
-        cursor: pointer;
-        font-weight: 600;
-        margin-top: 10px;
-        width: 100%;
-        transition: background 0.2s ease;
-        font-size: 14px;
-    }
-    .see-more-btn:hover {
-        opacity: 0.9;
-    }
-
 
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
@@ -550,12 +531,9 @@
             </div>
         </div>
         <div style="flex: 1;">
-            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
-            <div id="daily-stats-list-container">
-                <div id="daily-stats-list">
-                    <p>Select a month to see daily views.</p>
-                </div>
-                <button id="see-more-daily-btn" class="see-more-btn" style="display: none;" onclick="toggleDailyView()">See All Days</button>
+            <h3>Daily Views for <span id="selected-month-display">Select a month</span>:</h3>
+            <div id="daily-stats-list">
+                <p>Select a month to see daily views.</p>
             </div>
         </div>
     </div>
@@ -579,17 +557,14 @@
       measurementId: "G-5B2FN88LQ1"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const auth = firebase.auth();
 
-    const ADMIN_UID = "1AH2DkzjEpVIQxIchsjVxCEWR543"; 
-    let dailyMonthlyVisitorsChart; 
-    let currentSelectedMonth = ''; 
-    let allDailyDataForMonth = {}; // To store all daily data for the selected month
-    let showingFullDailyList = false; // To track current view state
-
-    // Variable to track if the auth state has been checked for the first time
+    const ADMIN_UID = "1AH2DkzjEpVIQxIchsjVxCEWR543";
+    let dailyMonthlyVisitorsChart;
+    let currentSelectedMonth = '';
     let isInitialAuthCheckComplete = false;
 
     // Helper function to convert a UTC Date object to Bangladesh Time (UTC+6) Date object
@@ -600,63 +575,16 @@
         return new Date(utcMillis + (offsetBDT * 60 * 1000)); // Add BDT offset
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedMode = localStorage.getItem("themeMode");
-      if (savedMode === "light") {
-        document.body.classList.add("light-mode");
-        document.getElementById("mode-toggle").textContent = "☀️";
-      }
+    // Function to get current month key in BDT
+    function getCurrentMonthKeyBDT() {
+        const nowUTC = new Date();
+        const nowBDT = convertUTCToBDT(nowUTC);
+        const year = nowBDT.getFullYear();
+        const month = (nowBDT.getMonth() + 1).toString().padStart(2, '0');
+        return `${year}-${month}`;
+    }
 
-      // Show loading overlay immediately when the page starts loading
-      showLoadingOverlay();
-
-      auth.onAuthStateChanged((user) => {
-        if (!isInitialAuthCheckComplete) {
-            // This is the first time onAuthStateChanged runs after page load.
-            if (user && user.uid === ADMIN_UID) {
-                // User is already logged in as admin.
-                setTimeout(() => { // Simulate loading time before showing content
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block'; // Show toggle
-                    hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500); // 1.5 seconds loading animation
-            } else {
-                // No user or not admin, show login.
-                setTimeout(() => { // Small delay to show loading briefly
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('admin-content').style.display = 'none'; // Ensure admin content is hidden
-                    document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on login
-                    hideLoadingOverlay();
-                }, 1000); // 1 second loading before showing login
-            }
-            isInitialAuthCheckComplete = true; // Mark as complete
-        } else {
-            // Subsequent auth state changes (e.g., after login/logout button click)
-            if (user && user.uid === ADMIN_UID) {
-                // If login was successful via button, this state change occurs.
-                // Loading overlay should already be shown by loginAdminWithEmailPassword.
-                // We'll hide the login and show admin content after loading.
-                setTimeout(() => { // Simulate loading time before showing content
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block'; // Show toggle
-                    hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500);
-            } else {
-                // User logged out or unauthorized. Show login page.
-                document.getElementById('admin-content').style.display = 'none';
-                document.getElementById('login-container').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle
-                hideLoadingOverlay(); // Ensure hidden on logout
-            }
-        }
-      });
-    });
-
-    // Modified to get today's date in Bangladesh Time
+    // Function to get today's date in Bangladesh Time
     function getTodayKeyBDT() {
         const nowUTC = new Date();
         const nowBDT = convertUTCToBDT(nowUTC);
@@ -666,263 +594,152 @@
         return `${year}-${month}-${day}`;
     }
 
-    // Modified to format date in Bangladesh Time
+    // Function to format date in Bangladesh Time
     function getFormattedDateBDT(year, month, day) {
         const date = new Date(year, month - 1, day); // Create date object in local timezone
         const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Dhaka' };
         return date.toLocaleDateString('en-US', options);
     }
 
-    // Modified to format month in Bangladesh Time
+    // Function to format month in Bangladesh Time
     function getFormattedMonthBDT(year, month) {
         const date = new Date(year, month - 1, 1); // Create date object in local timezone
         const options = { year: 'numeric', month: 'long', timeZone: 'Asia/Dhaka' };
         return date.toLocaleDateString('en-US', options);
     }
 
-    function loadAdminData() {
-      database.ref('canvaLink').on('value', (snapshot) => {
-        const link = snapshot.val();
-        document.getElementById('current-canva-link').textContent = link || 'N/A';
-        document.getElementById('new-canva-link').value = ''; 
-      });
-
-      database.ref('visitors/total').on('value', (snapshot) => {
-        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-      });
-
-      // Use BDT key for daily visitors
-      const fullCurrentDatePath = getTodayKeyBDT(); 
-      database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-          document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-      });
-
-      database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-        const monthlyStatsList = document.getElementById('monthly-stats-list');
-        monthlyStatsList.innerHTML = '';
-
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const months = Object.keys(data).sort((a, b) => {
-              const [yearA, monthA] = a.split('-').map(Number);
-              const [yearB, monthB] = b.split('-').map(Number);
-              if (yearA !== yearB) return yearB - yearA;
-              return monthB - monthA;
-          }); 
-
-          months.forEach(monthKey => {
-            const [year, monthNum] = monthKey.split('-');
-            // Use BDT formatting for month name
-            const formattedMonthName = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
-
-            const div = document.createElement('div');
-            div.className = 'monthly-list-item';
-            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-            div.onclick = () => selectMonthForDailyView(monthKey, div); 
-            monthlyStatsList.appendChild(div);
-          });
-
-          if (months.length > 0) {
-              const latestMonthKey = months[0]; 
-              const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-              selectMonthForDailyView(latestMonthKey, latestMonthElement);
-          }
-
-        } else {
-          monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-          if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.destroy();
-            dailyMonthlyVisitorsChart = null;
-          }
+    window.addEventListener("DOMContentLoaded", () => {
+        const savedMode = localStorage.getItem("themeMode");
+        if (savedMode === "light") {
+            document.body.classList.add("light-mode");
+            document.getElementById("mode-toggle").textContent = "☀️";
         }
-      });
+
+        showLoadingOverlay();
+
+        auth.onAuthStateChanged((user) => {
+            if (!isInitialAuthCheckComplete) {
+                if (user && user.uid === ADMIN_UID) {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('admin-content').style.display = 'block';
+                        document.getElementById('mode-toggle').style.display = 'block';
+                        hideLoadingOverlay();
+                        loadAdminData();
+                        // Initial load will automatically select current month, this is handled in loadAdminData now
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'block';
+                        document.getElementById('admin-content').style.display = 'none';
+                        document.getElementById('mode-toggle').style.display = 'none';
+                        hideLoadingOverlay();
+                    }, 1000);
+                }
+                isInitialAuthCheckComplete = true;
+            } else {
+                if (user && user.uid === ADMIN_UID) {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('admin-content').style.display = 'block';
+                        document.getElementById('mode-toggle').style.display = 'block';
+                        hideLoadingOverlay();
+                        loadAdminData();
+                    }, 1500);
+                } else {
+                    document.getElementById('admin-content').style.display = 'none';
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'none';
+                    hideLoadingOverlay();
+                }
+            }
+        });
+    });
+
+    function loadAdminData() {
+        database.ref('canvaLink').on('value', (snapshot) => {
+            const link = snapshot.val();
+            document.getElementById('current-canva-link').textContent = link || 'N/A';
+            document.getElementById('new-canva-link').value = '';
+        });
+
+        database.ref('visitors/total').on('value', (snapshot) => {
+            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+        });
+
+        const fullCurrentDatePath = getTodayKeyBDT();
+        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+        });
+
+        // This section will be heavily modified in step 2 for full monthly/daily stats logic
+        database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+            const monthlyStatsList = document.getElementById('monthly-stats-list');
+            monthlyStatsList.innerHTML = ''; // Clear previous content
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const months = Object.keys(data).sort((a, b) => {
+                    const [yearA, monthA] = a.split('-').map(Number);
+                    const [yearB, monthB] = b.split('-').map(Number);
+                    if (yearA !== yearB) return yearB - yearA;
+                    return monthB - monthA;
+                });
+
+                months.forEach(monthKey => {
+                    const [year, monthNum] = monthKey.split('-');
+                    const formattedMonthName = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+
+                    const div = document.createElement('div');
+                    div.className = 'monthly-list-item';
+                    div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+                    div.onclick = () => {
+                        if (currentSelectedMonth === monthKey) {
+                            unselectMonthForDailyView();
+                        } else {
+                            selectMonthForDailyView(monthKey, div);
+                        }
+                    };
+                    monthlyStatsList.appendChild(div);
+                });
+
+                // Auto-select current month if no month is selected yet
+                const currentMonthKey = getCurrentMonthKeyBDT();
+                if (!currentSelectedMonth && months.includes(currentMonthKey)) {
+                    const currentMonthElement = Array.from(monthlyStatsList.children).find(item => {
+                        const [year, monthNum] = currentMonthKey.split('-');
+                        const formattedCurrentMonth = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+                        return item.querySelector('span').textContent.startsWith(formattedCurrentMonth);
+                    });
+                    if (currentMonthElement) {
+                        selectMonthForDailyView(currentMonthKey, currentMonthElement);
+                    }
+                } else if (currentSelectedMonth && months.includes(currentSelectedMonth)) {
+                    // Re-select if currentSelectedMonth is set and still exists
+                    const previouslySelectedElement = Array.from(monthlyStatsList.children).find(item => {
+                        const [year, monthNum] = currentSelectedMonth.split('-');
+                        const formattedPreviouslySelectedMonth = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+                        return item.querySelector('span').textContent.startsWith(formattedPreviouslySelectedMonth);
+                    });
+                    if (previouslySelectedElement) {
+                        selectMonthForDailyView(currentSelectedMonth, previouslySelectedElement);
+                    } else {
+                        unselectMonthForDailyView();
+                    }
+                } else {
+                    unselectMonthForDailyView(); // No current month, or previously selected month not found
+                }
+            } else {
+                monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+                unselectMonthForDailyView();
+            }
+        });
     }
 
     function getChartTextColor() {
         return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
     }
 
-    function selectMonthForDailyView(monthKey, clickedElement) {
-        currentSelectedMonth = monthKey;
-        const [year, monthNum] = monthKey.split('-');
-        document.getElementById('selected-month-display').textContent = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
-        
-        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-        if (clickedElement) {
-            clickedElement.classList.add('selected');
-        }
-
-        const dailyStatsList = document.getElementById('daily-stats-list');
-        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-        document.getElementById('see-more-daily-btn').style.display = 'none'; // Hide button initially
-        showingFullDailyList = false; // Reset view state
-
-        database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-            allDailyDataForMonth = {}; // Clear previous data
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const days = Object.keys(data).filter(fullDateKey => 
-                    fullDateKey.startsWith(monthKey)
-                ).sort((a, b) => new Date(b) - new Date(a)); // Sort in descending order (recent first)
-                
-                days.forEach(fullDateKey => {
-                    allDailyDataForMonth[fullDateKey] = data[fullDateKey];
-                });
-            }
-            renderDailyStatsList(); // Render the initial (limited) list
-            updateChartForMonth(); // Update the chart with all data for the month
-        });
-    }
-
-    // Renders either the limited 3 days or all days based on showingFullDailyList
-    function renderDailyStatsList() {
-        const dailyStatsList = document.getElementById('daily-stats-list');
-        dailyStatsList.innerHTML = ''; // Clear previous content
-        const seeMoreBtn = document.getElementById('see-more-daily-btn');
-        seeMoreBtn.textContent = 'See All Days';
-
-        const days = Object.keys(allDailyDataForMonth).sort((a, b) => new Date(b) - new Date(a)); // Always sort recent first
-
-        if (days.length === 0) {
-            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-            seeMoreBtn.style.display = 'none';
-            return;
-        }
-
-        const daysToShow = showingFullDailyList ? days : days.slice(0, 3);
-
-        daysToShow.forEach(fullDateKey => {
-            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-            const div = document.createElement('div');
-            div.className = 'daily-item';
-            div.innerHTML = `<span>${getFormattedDateBDT(dayYear, dayMonth, dayDay)}</span><span>${allDailyDataForMonth[fullDateKey]} views</span>`;
-            dailyStatsList.appendChild(div);
-        });
-
-        if (days.length > 3) {
-            seeMoreBtn.style.display = 'block';
-            if (showingFullDailyList) {
-                seeMoreBtn.textContent = 'Show Less';
-            } else {
-                seeMoreBtn.textContent = 'See All Days';
-            }
-        } else {
-            seeMoreBtn.style.display = 'none';
-        }
-    }
-
-    // Toggles between showing 3 days and all days
-    function toggleDailyView() {
-        showingFullDailyList = !showingFullDailyList;
-        renderDailyStatsList();
-    }
-
-    // Updates the chart with data for the selected month
-    function updateChartForMonth() {
-        const [year, monthNum] = currentSelectedMonth.split('-');
-        const days = Object.keys(allDailyDataForMonth).sort(); // Sort ascending for chart (chronological)
-
-        const dayLabels = [];
-        const fullDateLabels = [];
-        const dayCounts = [];
-
-        days.forEach(fullDateKey => {
-            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-            dayLabels.push(dayDay.toString());
-            fullDateLabels.push(getFormattedDateBDT(dayYear, dayMonth, dayDay));
-            dayCounts.push(allDailyDataForMonth[fullDateKey]);
-        });
-
-        if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.data.labels = dayLabels;
-            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
-            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`;
-            updateChartColors(dailyMonthlyVisitorsChart);
-            dailyMonthlyVisitorsChart.update();
-        } else {
-            const ctx = document.getElementById
-          const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-            dailyMonthlyVisitorsChart = new Chart(ctx, {
-                type: 'line', 
-                data: {
-                    labels: dayLabels,
-                    datasets: [{
-                        label: 'Daily Views',
-                        data: dayCounts,
-                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                        borderColor: 'rgba(3, 218, 197, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 6, 
-                        pointHoverRadius: 8, 
-                        pointHitRadius: 10, 
-                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                        fullDateLabels: fullDateLabels 
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    
-                    interaction: {
-                        mode: 'index', 
-                        intersect: false 
-                    },
-
-                    plugins: {
-                        title: {
-                            display: true,
-                            // Use BDT formatting for chart title
-                            text: `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`,
-                            color: getChartTextColor(),
-                            font: {
-                                size: 18
-                            }
-                        },
-                        legend: {
-                            labels: {
-                                color: getChartTextColor()
-                            }
-                        },
-                        tooltip: { 
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const dataset = tooltipItems[0].dataset;
-                                    const index = tooltipItems[0].dataIndex;
-                                    return dataset.fullDateLabels[index];
-                                },
-                                label: function(tooltipItem) {
-                                    return `Views: ${tooltipItem.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: getChartTextColor(),
-                                precision: 0 
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: getChartTextColor()
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
     function updateChartColors(chart) {
         const textColor = getChartTextColor();
         chart.options.scales.x.ticks.color = textColor;
@@ -937,124 +754,321 @@
     }
 
     function loginAdminWithEmailPassword() {
-      const email = document.getElementById('admin-email').value;
-      const password = document.getElementById('admin-password').value;
+        const email = document.getElementById('admin-email').value;
+        const password = document.getElementById('admin-password').value;
 
-      if (!email || !password) {
-        showAdNotification("Please enter both email and password.");
-        return;
-      }
+        if (!email || !password) {
+            showAdNotification("Please enter both email and password.");
+            return;
+        }
 
-      showLoadingOverlay("Logging in..."); // Show loading for login process
-      document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle during login attempt
+        showLoadingOverlay("Logging in...");
+        document.getElementById('mode-toggle').style.display = 'none';
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          if (user.uid === ADMIN_UID) {
-            // Success will be handled by onAuthStateChanged, which will then show loading overlay and content
-            // We ensure login-container is hidden immediately so it doesn't flash
-            document.getElementById('login-container').style.display = 'none';
-          } else {
-            auth.signOut(); 
-            showAdNotification("You are not authorized to access this panel.");
-            hideLoadingOverlay(); // Hide loading overlay if unauthorized
-            document.getElementById('login-container').style.display = 'block'; // Show login again
-            document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on unauthorized
-          }
-        })
-        .catch((error) => {
-          console.error("Admin login failed:", error);
-          showAdNotification("Login failed: " + error.message);
-          hideLoadingOverlay(); // Hide loading overlay on login error
-          document.getElementById('login-container').style.display = 'block'; // Show login again
-          document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on error
-        });
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                if (user.uid === ADMIN_UID) {
+                    // Success handled by onAuthStateChanged
+                } else {
+                    auth.signOut();
+                    showAdNotification("You are not authorized to access this panel.");
+                    hideLoadingOverlay();
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'none';
+                }
+            })
+            .catch((error) => {
+                console.error("Admin login failed:", error);
+                showAdNotification("Login failed: " + error.message);
+                hideLoadingOverlay();
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none';
+            });
     }
 
     function logoutAdmin() {
-      showLoadingOverlay("Logging out...");
-      document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle immediately on logout
-      auth.signOut().then(() => {
-        showAdNotification("Admin logged out.");
-        // onAuthStateChanged will handle hiding admin-content and showing login,
-        // so we just ensure loading overlay hides after a moment for notification
-        setTimeout(() => { 
+        showLoadingOverlay("Logging out...");
+        document.getElementById('mode-toggle').style.display = 'none';
+        auth.signOut().then(() => {
+            showAdNotification("Admin logged out.");
+            setTimeout(() => {
+                hideLoadingOverlay();
+            }, 500);
+        }).catch((error) => {
+            console.error("Logout error:", error);
+            showAdNotification("Logout error: " + error.message);
             hideLoadingOverlay();
-        }, 500);
-      }).catch((error) => {
-        console.error("Logout error:", error);
-        showAdNotification("Logout error: " + error.message);
-        hideLoadingOverlay();
-      });
+        });
     }
 
     function updateCanvaLink() {
-      const newLinkInput = document.getElementById('new-canva-link');
-      const newLink = newLinkInput.value.trim();
+        const newLinkInput = document.getElementById('new-canva-link');
+        const newLink = newLinkInput.value.trim();
 
-      if (newLink) {
-        database.ref('canvaLink').set(newLink)
-          .then(() => {
-            showAdNotification("Canva Pro link updated successfully!");
-            newLinkInput.value = ''; 
-          })
-          .catch((error) => {
-            console.error("Error updating Canva link:", error);
-            showAdNotification("Failed to update Canva Pro link.");
-          });
-      } else {
-        showAdNotification("Please enter a valid link.");
-      }
+        if (newLink) {
+            database.ref('canvaLink').set(newLink)
+                .then(() => {
+                    showAdNotification("Canva Pro link updated successfully!");
+                    newLinkInput.value = '';
+                })
+                .catch((error) => {
+                    console.error("Error updating Canva link:", error);
+                    showAdNotification("Failed to update Canva Pro link.");
+                });
+        } else {
+            showAdNotification("Please enter a valid link.");
+        }
     }
 
     function showAdNotification(msg) {
-      const el = document.getElementById('ad-notification');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(() => {
-        el.style.display = 'none';
-      }, 3000);
+        const el = document.getElementById('ad-notification');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 3000);
     }
 
     function showLoadingOverlay(message = "Loading...") {
         const loadingOverlay = document.getElementById('loading-overlay');
         loadingOverlay.querySelector('p').textContent = message;
         loadingOverlay.style.display = 'flex';
-        document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle when loading
+        document.getElementById('mode-toggle').style.display = 'none';
     }
 
     function hideLoadingOverlay() {
         document.getElementById('loading-overlay').style.display = 'none';
-        // The mode-toggle visibility will be handled by the auth.onAuthStateChanged logic
-        // to show/hide based on whether admin-content is visible.
     }
 
     function toggleMode() {
-      const body = document.body;
-      const btn = document.getElementById('mode-toggle');
-      body.classList.toggle('light-mode');
-      if (body.classList.contains('light-mode')) {
-        btn.textContent = '☀️';
-        localStorage.setItem("themeMode", "light");
-      } else {
-        btn.textContent = '🌙';
-        localStorage.setItem("themeMode", "dark");
-      }
-      // Update --h3-color variable based on theme mode
-      document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+        const body = document.body;
+        const btn = document.getElementById('mode-toggle');
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) {
+            btn.textContent = '☀️';
+            localStorage.setItem("themeMode", "light");
+        } else {
+            btn.textContent = '🌙';
+            localStorage.setItem("themeMode", "dark");
+        }
+        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
-      if (dailyMonthlyVisitorsChart) {
-          updateChartColors(dailyMonthlyVisitorsChart);
-          dailyMonthlyVisitorsChart.update();
-      }
+        if (dailyMonthlyVisitorsChart) {
+            updateChartColors(dailyMonthlyVisitorsChart);
+            dailyMonthlyVisitorsChart.update();
+        }
     }
 
-    // Initialize h3 color based on current mode on load
     window.addEventListener('load', () => {
-        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+        document.documentElement.style.setProperty('--h3-color', document.body.
+                                                   
+                                                   classList.contains('light-mode') ? '#000000' : '#ffffff');
     });
-  </script>
+
+    // --- New / Modified functions for Step 2 ---
+
+    function unselectMonthForDailyView() {
+        currentSelectedMonth = '';
+        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+        document.getElementById('selected-month-display').textContent = 'Select a month';
+        document.getElementById('daily-stats-list').innerHTML = '<p>Select a month to see daily views.</p>';
+        
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.destroy();
+            dailyMonthlyVisitorsChart = null;
+        }
+        // Detach any previous listeners for daily data
+        if (window._currentDailyDataRef) {
+            window._currentDailyDataRef.off();
+            window._currentDailyDataRef = null;
+        }
+    }
+
+    function selectMonthForDailyView(monthKey, clickedElement) {
+        // First, check if this month is already selected and if the click is on the same element
+        if (currentSelectedMonth === monthKey && clickedElement && clickedElement.classList.contains('selected')) {
+            unselectMonthForDailyView();
+            return;
+        }
+
+        currentSelectedMonth = monthKey;
+        const [year, monthNum] = monthKey.split('-');
+        // Use BDT formatting for selected month display
+        document.getElementById('selected-month-display').textContent = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+
+        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+        if (clickedElement) {
+            clickedElement.classList.add('selected');
+        } else {
+            // If clickedElement is not provided (e.g., auto-selection on load), find it
+            const monthListItems = document.querySelectorAll('.monthly-list-item');
+            monthListItems.forEach(item => {
+                const itemMonthText = item.querySelector('span:first-child').textContent;
+                const formattedMonthName = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+                if (itemMonthText.startsWith(formattedMonthName)) {
+                    item.classList.add('selected');
+                }
+            });
+        }
+
+
+        const dailyStatsList = document.getElementById('daily-stats-list');
+        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+
+        // Detach any previous listeners for daily data to prevent multiple updates
+        if (window._currentDailyDataRef) {
+            window._currentDailyDataRef.off();
+        }
+
+        const dailyRef = database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31');
+        window._currentDailyDataRef = dailyRef; // Store reference to current listener
+
+        dailyRef.on('value', (snapshot) => {
+            dailyStatsList.innerHTML = '';
+            const dayLabels = []; 
+            const fullDateLabels = []; 
+            const dayCounts = [];
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const days = Object.keys(data).filter(fullDateKey => 
+                    fullDateKey.startsWith(monthKey)
+                ).sort(); 
+                
+                days.forEach(fullDateKey => {
+                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                    
+                    dayLabels.push(dayDay.toString()); 
+                    // Use BDT formatting for full date labels
+                    fullDateLabels.push(getFormattedDateBDT(dayYear, dayMonth, dayDay));
+                    dayCounts.push(data[fullDateKey]);
+
+                    const div = document.createElement('div');
+                    div.className = 'daily-item';
+                    div.innerHTML = `<span>${getFormattedDateBDT(dayYear, dayMonth, dayDay)}
+                    </span><span>${data[fullDateKey]} views</span>`;
+                    dailyStatsList.appendChild(div);
+                });
+
+                if (dailyStatsList.children.length === 0) {
+                    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+                }
+
+            } else {
+                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            }
+
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.data.labels = dayLabels;
+                dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+                dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+                
+                dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+                dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+                dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+
+                // Use BDT formatting for chart title
+                dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`;
+                updateChartColors(dailyMonthlyVisitorsChart);
+                
+                dailyMonthlyVisitorsChart.options.interaction = {
+                    mode: 'index', 
+                    intersect: false 
+                };
+
+                dailyMonthlyVisitorsChart.update();
+            } else {
+                const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+                dailyMonthlyVisitorsChart = new Chart(ctx, {
+                    type: 'line', 
+                    data: {
+                        labels: dayLabels,
+                        datasets: [{
+                            label: 'Daily Views',
+                            data: dayCounts,
+                            backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                            borderColor: 'rgba(3, 218, 197, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 6, 
+                            pointHoverRadius: 8, 
+                            pointHitRadius: 10, 
+                            pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                            fullDateLabels: fullDateLabels 
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        
+                        interaction: {
+                            mode: 'index', 
+                            intersect: false 
+                        },
+
+                        plugins: {
+                            title: {
+                                display: true,
+                                // Use BDT formatting for chart title
+                                text: `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`,
+                                color: getChartTextColor(),
+                                font: {
+                                    size: 18 
+                                  }
+                            },
+                            legend: {
+                                labels: {
+                                    color: getChartTextColor()
+                                }
+                            },
+                            tooltip: { 
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const dataset = tooltipItems[0].dataset;
+                                        const index = tooltipItems[0].dataIndex;
+                                        return dataset.fullDateLabels[index];
+                                    },
+                                    label: function(tooltipItem) {
+                                        return `Views: ${tooltipItem.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: getChartTextColor(),
+                                    precision: 0 
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: getChartTextColor()
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // Existing functions from Step 1 (unmodified, for completeness)
+    // getChartTextColor, updateChartColors, loginAdminWithEmailPassword, logoutAdmin,
+    // updateCanvaLink, showAdNotification, showLoadingOverlay, hideLoadingOverlay, toggleMode
+    // ... (these functions would be here if this was a complete file,
+    // but as per your request, we are only providing the missing part)
+
+</script>
 
 </body>
 </html>
