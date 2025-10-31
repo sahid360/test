@@ -1,220 +1,1087 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Watch Ads App</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh; /* Use min-height for better mobile responsiveness */
-            margin: 0;
-            background-color: #e6f2ff; /* Light blue background */
-            color: #333;
-        }
-        h1 {
-            color: #0056b3;
-            margin-bottom: 30px;
-        }
-        button {
-            padding: 12px 25px;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #0088cc; /* Telegram blue */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            margin: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        button:hover {
-            background-color: #006bb3;
-            transform: translateY(-2px);
-        }
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .ad-message {
-            margin-top: 20px;
-            font-style: italic;
-            color: #666;
-            text-align: center;
-        }
-        /* Style for the ad containers - they might be initially hidden or zero height */
-        #adextra-ad-container, #monetag-ad-container {
-            margin-top: 15px;
-            width: 100%; /* Take full width */
-            text-align: center;
-            /* Consider adding a min-height if you expect banner ads here */
-            /* min-height: 50px; */
-        }
-    </style>
-    <!-- Telegram Web App SDK (always include if building for TWA) -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
 
-    <!-- AdExtra SDK Script from Dashboard -->
-    <!-- Make sure this URL is the CURRENT one from your AdExtra dashboard for appId 688 -->
-    <script async src="https://partner.adextra.io/jt/822f4e2f9ae1103c516991854e90b0f69ebae9fb.js" id="adextra-sdk"></script>
+  <!-- Firebase SDK -->
 
-    <!-- Monetag SDK Script -->
-    <!-- Make sure data-zone is correct for your Monetag setup -->
-    <script src='//libtl.com/sdk.js' data-zone='10033027' data-sdk='show_10033027'></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Chart.js for graphs -->
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+      --danger: #dc3545;
+      --success: #28a745;
+      --info: #17a2b8;
+      --h3-color: var(--text-color);
+    }
+
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 30px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--ad-item-bg);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+      font-size: 26px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+    
+    .card h3 {
+        color: var(--h3-color);
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+      gap: 10px; 
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: var(--card-bg);
+      padding: 10px; 
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px; 
+      min-height: 70px; 
+      text-align: center; 
+      word-break: break-word; 
+    }
+
+    .stat-item span {
+      font-size: 26px; 
+      font-weight: bold;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+
+    .input-with-button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 5px; /* Reduced margin-top */
+        margin-bottom: 5px; /* Reduced margin-bottom */
+    }
+
+    .card input[type="text"], .card input[type="password"], .card select {
+      flex-grow: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 16px;
+      margin-right: 0px; 
+    }
+
+    .card input[type="text"]:last-child {
+        margin-right: 0; 
+    }
+
+    .btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 0px; 
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      margin-top: 10px; /* Adjusted for better spacing */
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    #login-container {
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    #login-container input {
+        display: block;
+        margin: 10px auto;
+        width: 80%;
+        max-width: 300px;
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-size: 17px;
+    }
+
+    #login-button {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 10px;
+      font-size: 19px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s ease;
+      margin-top: 20px;
+    }
+
+    #login-button:hover {
+      filter: brightness(1.2);
+    }
+
+    /* Initially hide everything except loading, or login based on JS */
+    #admin-content, #login-container {
+      display: none;
+    }
+    
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex; /* Changed to flex to show initially */
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+        color: var(--light);
+        font-size: 24px;
+        flex-direction: column;
+    }
+
+    .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-top: 8px solid var(--primary);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+
+    #mode-toggle {
+      position: absolute;
+      top: 15px;
+      right: 30px; 
+      padding: 5px; 
+      background: transparent; 
+      color: var(--primary); 
+      border: none; 
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 18px; 
+      transition: all 0.3s ease;
+      z-index: 1100;
+      /* Initially hidden, will be shown by JS when admin content is visible */
+      display: none; 
+    }
+    #mode-toggle:hover {
+      background-color: rgba(98, 0, 234, 0.1); 
+    }
+
+    .ad-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: var(--light);
+      padding: 20px 40px;
+      border-radius: 12px;
+      z-index: 1000;
+      display: none;
+      font-size: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
+
+    .monthly-list-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        border-bottom: 1px dashed var(--border-color);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .monthly-list-item:hover {
+        background-color: rgba(3, 218, 197, 0.05);
+    }
+    .monthly-list-item:last-child {
+        border-bottom: none;
+    }
+    .monthly-list-item span {
+        font-weight: 500;
+        font-size: 15px;
+    }
+    .monthly-list-item.selected {
+        background-color: rgba(3, 218, 197, 0.15);
+        border-radius: 5px;
+        padding: 10px;
+    }
+    #daily-stats-list, #monthly-stats-list {
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px;
+        background-color: var(--card-bg);
+    }
+    #daily-stats-list .daily-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dotted var(--border-color);
+    }
+    #daily-stats-list .daily-item:last-child {
+        border-bottom: none;
+    }
+    #daily-stats-list .daily-item span {
+        font-size: 15px;
+    }
+    /* Style for the "See More" button */
+    #daily-stats-list .see-more-btn-container {
+        text-align: center;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dotted var(--border-color);
+    }
+    #daily-stats-list .see-more-btn {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+    #daily-stats-list .see-more-btn:hover {
+        opacity: 0.9;
+    }
+
+
+    .monthly-daily-flex {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    /* --- CHART CONTAINER STYLES --- */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      margin-top: 15px;
+    }
+    .chart-container canvas {
+      max-width: 100%;
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    /* Override Chart.js default font color for dark mode */
+    body:not(.light-mode) .chartjs-render-monitor,
+    body:not(.light-mode) .chartjs-render-monitor canvas {
+        color: var(--text-color) !important; 
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 15px;
+      }
+
+      h1 {
+        font-size: 30px;
+        margin-bottom: 25px;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+      }
+      
+      .card h3 {
+        font-size: 18px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
+        gap: 5px; 
+      }
+      
+      .stat-item {
+        padding: 8px; 
+        font-size: 11px; 
+        min-height: 60px; 
+      }
+
+      .stat-item span {
+        font-size: 22px; 
+      }
+
+      .card input[type="text"], .card input[type="password"], .card select {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        margin-right: 0;
+      }
+
+      .input-with-button {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-with-button input {
+        margin-right: 0;
+        margin-bottom: 0px; /* Reduced margin-bottom */
+      }
+      /* .input-with-button .btn-paste rules removed */
+
+      .btn {
+        width: 100%;
+        margin-right: 0;
+        margin-top: 10px; /* Adjusted for consistency */
+        padding: 10px 15px;
+        font-size: 15px;
+      }
+      
+      .btn-primary + .btn {
+        margin-top: 10px;
+      }
+
+      #login-container input {
+        width: 90%;
+        max-width: none;
+        padding: 12px;
+        font-size: 16px;
+      }
+
+      #login-button {
+        padding: 12px 25px;
+        font-size: 17px;
+      }
+
+      #mode-toggle {
+        right: 20px; 
+        font-size: 16px; 
+        padding: 3px;
+      }
+
+      .chart-container {
+        height: 200px; 
+      }
+
+      .monthly-daily-flex {
+          grid-template-columns: 1fr;
+          gap: 15px;
+      }
+
+      .ad-notification {
+        width: 90%;
+        padding: 15px 25px;
+        font-size: 16px;
+      }
+    }
+  </style>
+
 </head>
 <body>
-    <h1>Watch Ads to Earn Rewards</h1>
+  <div class="ad-notification" id="ad-notification"></div>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading Admin Panel...</p>
+  </div>
+  <div class="container">
+    <button id="mode-toggle" onclick="toggleMode()">🌙</button>
 
-    <!-- AdExtra Button -->
-    <button onclick="showAdExtraAd()">Watch AdExtra Ads</button>
-    <!-- Monetag Button -->
-    <button onclick="showMonetagAd()">Watch Monetag Ads</button>
+<div id="login-container">
+  <h1>Admin Login</h1>
+  <input type="text" id="admin-email" placeholder="Admin Email" autocomplete="username">
+  <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+  <button id="login-button" onclick="loginAdminWithEmailPassword()">Login</button>
+</div>
 
-    <p class="ad-message">
-        (Ads will appear in a new window/overlay or reward will be credited directly.)
-    </p>
+<div id="admin-content">
+  <h1>Admin Panel</h1>
 
-    <!-- AdExtra Ad Container -->
-    <!-- This div is where AdExtra might render banners or take control for rewarded videos -->
-    <div id="822f4e2f9ae1103c516991854e90b0f69ebae9fb" class="adextra-ad-container"></div>
-    
-    <!-- Monetag Ad Container (if Monetag uses one, though often it's overlays) -->
-    <div id="monetag-ad-container"></div>
+  <div class="card">
+    <h2>Visitor Overview</h2>
+    <div class="stat-grid">
+      <div class="stat-item">
+        Total Views
+        <span id="total-visitors">0</span>
+      </div>
+      <div class="stat-item">
+        Today's Views
+        <span id="daily-visitors">0</span>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        // Telegram Web App Initialization
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-            console.log("Telegram WebApp initialized and expanded.");
-            // You can send a message back to Telegram if needed, e.g.:
-            // window.Telegram.WebApp.sendData(JSON.stringify({ status: 'ready' }));
+  <div class="card">
+    <h2>Canva Pro Link</h2>
+    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
+    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label> <!-- Adjusted margin-top -->
+    <div class="input-with-button">
+        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+    </div>
+    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+  </div>
+
+  <div class="card">
+    <h2>Monthly Daily Visitor</h2>
+    <div class="chart-container">
+        <canvas id="daily-monthly-visitors-chart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Visitor Details</h2>
+    <div class="monthly-daily-flex">
+        <div style="flex: 1;">
+            <h3>Select Month:</h3>
+            <div id="monthly-stats-list">
+                <p>Loading monthly data...</p>
+            </div>
+        </div>
+        <div style="flex: 1;">
+            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
+            <div id="daily-stats-list">
+                <p>Select a month to see daily views.</p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+<button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
+
+</div>
+
+</div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDzZ7U0tUoaz7m9Dsl00ZmdHAVS49A4ERs",
+      authDomain: "canva-pro-team-bot.firebaseapp.com",
+      databaseURL: "https://canva-pro-team-bot-default-rtdb.firebaseio.com",
+      projectId: "canva-pro-team-bot",
+      storageBucket: "canva-pro-team-bot.firebasestorage.app",
+      messagingSenderId: "1030022013579",
+      appId: "1:1030022013579:web:54c6aab3288d43ec392a8e",
+      measurementId: "G-5B2FN88LQ1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const auth = firebase.auth();
+
+    const ADMIN_UID = "1AH2DkzjEpVIQxIchsjVxCEWR543"; 
+    let dailyMonthlyVisitorsChart; 
+    let currentSelectedMonth = ''; 
+
+    // Variable to track if the auth state has been checked for the first time
+    let isInitialAuthCheckComplete = false;
+
+    // Helper function to convert a UTC Date object to Bangladesh Time (UTC+6) Date object
+    function convertUTCToBDT(utcDate) {
+        const offsetBDT = 6 * 60; // BDT is UTC+6
+        const localOffset = utcDate.getTimezoneOffset(); // Difference in minutes between UTC and local time
+        const utcMillis = utcDate.getTime() + (localOffset * 60 * 1000); // Convert to UTC milliseconds
+        return new Date(utcMillis + (offsetBDT * 60 * 1000)); // Add BDT offset
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedMode = localStorage.getItem("themeMode");
+      if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
+      }
+
+      // Show loading overlay immediately when the page starts loading
+      showLoadingOverlay();
+
+      auth.onAuthStateChanged((user) => {
+        if (!isInitialAuthCheckComplete) {
+            // This is the first time onAuthStateChanged runs after page load.
+            if (user && user.uid === ADMIN_UID) {
+                // User is already logged in as admin.
+                setTimeout(() => { // Simulate loading time before showing content
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block'; // Show toggle
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500); // 1.5 seconds loading animation
+            } else {
+                // No user or not admin, show login.
+                setTimeout(() => { // Small delay to show loading briefly
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('admin-content').style.display = 'none'; // Ensure admin content is hidden
+                    document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on login
+                    hideLoadingOverlay();
+                }, 1000); // 1 second loading before showing login
+            }
+            isInitialAuthCheckComplete = true; // Mark as complete
         } else {
-            console.warn("Telegram WebApp object not found. Running in a regular browser environment.");
+            // Subsequent auth state changes (e.g., after login/logout button click)
+            if (user && user.uid === ADMIN_UID) {
+                // If login was successful via button, this state change occurs.
+                // Loading overlay should already be shown by loginAdminWithEmailPassword.
+                // We'll hide the login and show admin content after loading.
+                setTimeout(() => { // Simulate loading time before showing content
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block'; // Show toggle
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500);
+            } else {
+                // User logged out or unauthorized. Show login page.
+                document.getElementById('admin-content').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle
+                hideLoadingOverlay(); // Ensure hidden on logout
+            }
+        }
+      });
+    });
+
+    // Modified to get today's date in Bangladesh Time
+    function getTodayKeyBDT() {
+        const nowUTC = new Date();
+        const nowBDT = convertUTCToBDT(nowUTC);
+        const year = nowBDT.getFullYear();
+        const month = (nowBDT.getMonth() + 1).toString().padStart(2, '0');
+        const day = nowBDT.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Modified to format date in Bangladesh Time
+    function getFormattedDateBDT(year, month, day) {
+        const date = new Date(year, month - 1, day); // Create date object in local timezone
+        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Dhaka' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    // Modified to format month in Bangladesh Time
+    function getFormattedMonthBDT(year, month) {
+        const date = new Date(year, month - 1, 1); // Create date object in local timezone
+        const options = { year: 'numeric', month: 'long', timeZone: 'Asia/Dhaka' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    function loadAdminData() {
+      database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        document.getElementById('current-canva-link').textContent = link || 'N/A';
+        document.getElementById('new-canva-link').value = ''; 
+      });
+
+      database.ref('visitors/total').on('value', (snapshot) => {
+        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+      });
+
+      // Use BDT key for daily visitors
+      const fullCurrentDatePath = getTodayKeyBDT(); 
+      database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+          document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+      });
+
+      database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+        const monthlyStatsList = document.getElementById('monthly-stats-list');
+        monthlyStatsList.innerHTML = '';
+
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const months = Object.keys(data).sort((a, b) => {
+              const [yearA, monthA] = a.split('-').map(Number);
+              const [yearB, monthB] = b.split('-').map(Number);
+              if (yearA !== yearB) return yearB - yearA;
+              return monthB - monthA;
+          }); 
+
+          months.forEach(monthKey => {
+            const [year, monthNum] = monthKey.split('-');
+            // Use BDT formatting for month name
+            const formattedMonthName = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+
+            const div = document.createElement('div');
+            div.className = 'monthly-list-item';
+            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+            div.onclick = () => selectMonthForDailyView(monthKey, div); 
+            monthlyStatsList.appendChild(div);
+          });
+
+          if (months.length > 0) {
+              const latestMonthKey = months[0]; 
+              const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+              selectMonthForDailyView(latestMonthKey, latestMonthElement);
+          }
+
+        } else {
+          monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+          if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.destroy();
+            dailyMonthlyVisitorsChart = null;
+          }
+        }
+      });
+    }
+
+    function getChartTextColor() {
+        return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+    }
+
+    // Helper function to render daily data items
+    function displayDailyData(dailyStatsListElement, dataToDisplay, showSeeMoreButton = false) {
+        dailyStatsListElement.innerHTML = ''; // Clear existing content
+
+        if (dataToDisplay.length === 0) {
+            dailyStatsListElement.innerHTML = '<p>No daily data available for this month.</p>';
+            return;
         }
 
-        // --- AdExtra SDK Logic ---
-        const adextraScript = document.getElementById('adextra-sdk');
+        dataToDisplay.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'daily-item';
+            div.innerHTML = `<span>${getFormattedDateBDT(item.year, item.month, item.day)}</span><span>${item.views} views</span>`;
+            dailyStatsListElement.appendChild(div);
+        });
 
-        adextraScript.addEventListener('load', function() {
-            console.log('AdExtra SDK script loaded successfully.');
-            window.AdExtra = window.AdExtra || [];
-            AdExtra.init({
-                appId: '688', // Ensure this matches your AdExtra dashboard
-                adUnitId: '822f4e2f9ae1103c516991854e90b0f69ebae9fb', // Ensure this matches your AdExtra dashboard
-                onAdLoaded: function() {
-                    console.log('AdExtra ad unit loaded (ready to show)!');
-                    // Optionally enable the button here if you want it enabled only when ads are ready
+        if (showSeeMoreButton) {
+            const seeMoreContainer = document.createElement('div');
+            seeMoreContainer.className = 'see-more-btn-container';
+            const seeMoreButton = document.createElement('button');
+            seeMoreButton.className = 'see-more-btn';
+            seeMoreButton.textContent = 'See More';
+            seeMoreButton.onclick = () => {
+                // When 'See More' is clicked, re-render all data and remove the button
+                const allDailyData = JSON.parse(dailyStatsListElement.dataset.allDailyData);
+                displayDailyData(dailyStatsListElement, allDailyData, false); // Render all, no 'See More'
+                dailyStatsListElement.dataset.fullListLoaded = 'true'; // Mark as fully loaded
+            };
+            seeMoreContainer.appendChild(seeMoreButton);
+            dailyStatsListElement.appendChild(seeMoreContainer);
+        }
+    }
+
+    function selectMonthForDailyView(monthKey, clickedElement) {
+        currentSelectedMonth = monthKey;
+        const [year, monthNum] = monthKey.split('-');
+        document.getElementById('selected-month-display').textContent = getFormattedMonthBDT(parseInt(year), parseInt(monthNum));
+        
+        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+        if (clickedElement) {
+            clickedElement.classList.add('selected');
+        }
+
+        const dailyStatsList = document.getElementById('daily-stats-list');
+        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+        dailyStatsList.dataset.fullListLoaded = 'false'; // Reset state for new month
+        dailyStatsList.dataset.allDailyData = '[]'; // Clear previous month's full data
+
+        database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+            const allDailyItems = []; // To store all daily data for the selected month
+            const dayLabels = []; 
+            const fullDateLabels = []; 
+            const dayCounts = [];
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const days = Object.keys(data).filter(fullDateKey => 
+                    fullDateKey.startsWith(monthKey)
+                ).sort(); 
+                
+                days.forEach(fullDateKey => {
+                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                    
+                    const dailyItem = {
+                        year: dayYear,
+                        month: dayMonth,
+                        day: dayDay,
+                        views: data[fullDateKey]
+                    };
+                    allDailyItems.push(dailyItem);
+
+                    dayLabels.push(dayDay.toString()); 
+                    fullDateLabels.push(getFormattedDateBDT(dayYear, dayMonth, dayDay));
+                    dayCounts.push(data[fullDateKey]);
+                });
+
+                // Sort daily items from most recent to oldest for initial display
+                allDailyItems.sort((a, b) => {
+                    const dateA = new Date(a.year, a.month - 1, a.day);
+                    const dateB = new Date(b.year, b.month - 1, b.day);
+                    return dateB - dateA; // Descending order (latest first)
+                });
+                
+                dailyStatsList.dataset.allDailyData = JSON.stringify(allDailyItems); // Store all data
+
+                const initialDisplayItems = allDailyItems.slice(0, 3);
+                const hasMoreData = allDailyItems.length > 3;
+
+                displayDailyData(dailyStatsList, initialDisplay
+
+                                 ); // Only display latest 3 initially
+            if (hasMoreData) {
+                // If there are more than 3 items, show the "See More" button
+                displayDailyData(dailyStatsList, initialDisplayItems, true); 
+            } else {
+                // If 3 or fewer, just display them all without "See More"
+                displayDailyData(dailyStatsList, initialDisplayItems, false);
+            }
+
+        } else {
+            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+        }
+
+        // --- Chart.js Integration ---
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.data.labels = dayLabels;
+            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+            
+            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+
+            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`;
+            updateChartColors(dailyMonthlyVisitorsChart);
+            
+            dailyMonthlyVisitorsChart.options.interaction = {
+                mode: 'index', 
+                intersect: false 
+            };
+
+            dailyMonthlyVisitorsChart.update();
+        } else {
+            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+            dailyMonthlyVisitorsChart = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Daily Views',
+                        data: dayCounts,
+                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                        borderColor: 'rgba(3, 218, 197, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                        fullDateLabels: fullDateLabels 
+                    }]
                 },
-                onAdError: function(error) {
-                    console.error('AdExtra ad initialization error:', error);
-                    alert('AdExtra Error during init: ' + error);
-                },
-                // Additional callbacks for rewarded videos
-                onReward: function(reward) {
-                    console.log('AdExtra Reward earned:', reward);
-                    window.Telegram.WebApp.showPopup({
-                        title: 'Reward Earned!',
-                        message: `You earned ${reward} points from AdExtra!`,
-                        buttons: [{id: 'ok', type: 'ok'}],
-                    });
-                    // Here you would typically update user's balance in your backend
-                },
-                onClose: function() {
-                    console.log('AdExtra ad closed.');
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    
+                    interaction: {
+                        mode: 'index', 
+                        intersect: false 
+                    },
+
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Daily Views for ${getFormattedMonthBDT(parseInt(year), parseInt(monthNum))}`,
+                            color: getChartTextColor(),
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: getChartTextColor()
+                            }
+                        },
+                        tooltip: { 
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const dataset = tooltipItems[0].dataset;
+                                    const index = tooltipItems[0].dataIndex;
+                                    return dataset.fullDateLabels[index];
+                                },
+                                label: function(tooltipItem) {
+                                    return `Views: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: getChartTextColor(),
+                                precision: 0 
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: getChartTextColor()
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
                 }
             });
-            // Attempt to load the ad immediately after init
-            if (window.AdExtra && typeof AdExtra.loadAd === 'function') {
-                AdExtra.loadAd('822f4e2f9ae1103c516991854e90b0f69ebae9fb');
-            }
-        });
-
-        adextraScript.addEventListener('error', function() {
-            console.error('AdExtra SDK script failed to load. Check URL or network.');
-            alert('AdExtra SDK script failed to load. Please check your network and the script URL.');
-        });
-
-        function showAdExtraAd() {
-            console.log("Attempting to show AdExtra ad...");
-            if (window.AdExtra && typeof AdExtra.showAd === 'function') {
-                AdExtra.showAd('822f4e2f9ae1103c516991854e90b0f69ebae9fb', {
-                    type: 'rewarded_video', // Make sure this matches your ad unit type
-                    // rewardCallback and onClose are handled by the init function's callbacks
-                });
-            } else {
-                console.error('AdExtra SDK not fully loaded or initialized. Cannot show ad.');
-                alert('AdExtra is not ready. Please check console for errors.');
-                // Try to reload or re-init if you suspect a temporary issue
-                if (adextraScript.src) { // Check if script src is defined to avoid errors
-                    const currentSrc = adextraScript.src;
-                    adextraScript.remove(); // Remove old script
-                    const newScript = document.createElement('script');
-                    newScript.id = 'adextra-sdk';
-                    newScript.async = true;
-                    newScript.src = currentSrc;
-                    document.head.appendChild(newScript); // Add new script to re-trigger load
-                    console.log('Attempting to reload AdExtra SDK...');
-                }
-            }
         }
+    });
+}
 
-        // --- Monetag SDK Logic ---
-        // The Monetag SDK usually creates a global function (e.g., show_10033027) upon loading.
-        // We can check for its existence to confirm loading.
-        window.addEventListener('load', function() {
-            // Give Monetag a moment to process, as it's not strictly tied to a specific script ID like AdExtra
-            setTimeout(() => {
-                if (typeof window.show_10033027 === 'function') {
-                    console.log('Monetag SDK detected and show_10033027 function is available.');
-                    // Preload Monetag ads
-                    show_10033027({ type: 'preload', timeout: 5 })
-                        .then(() => console.log('Monetag preloaded successfully.'))
-                        .catch(error => console.error('Monetag preload failed:', error.message));
-                } else {
-                    console.error('Monetag SDK (show_10033027 function) not found after page load. Check script src or zone ID.');
-                    alert('Monetag SDK not loaded. Check console for details.');
-                }
-            }, 1000); // Give it a short delay
-        });
+function updateChartColors(chart) {
+    const textColor = getChartTextColor();
+    chart.options.scales.x.ticks.color = textColor;
+    chart.options.scales.y.ticks.color = textColor;
+    chart.options.plugins.title.color = textColor;
+    if (chart.options.plugins.legend) {
+        chart.options.plugins.legend.labels.color = textColor;
+    }
+    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    chart.options.scales.x.grid.color = gridColor;
+    chart.options.scales.y.grid.color = gridColor;
+}
 
-        function showMonetagAd() {
-            console.log("Attempting to show Monetag ad...");
-            if (typeof window.show_10033027 === 'function') {
-                show_10033027({
-                    type: 'end', // Often used for rewarded/interstitial types
-                    ymid: 'user-' + Math.random().toString(36).slice(2), // Unique user ID
-                    requestVar: 'watch_ads_button', // Custom variable for reporting
-                    catchIfNoFeed: true // Try to show something even if main feed is empty
-                })
-                .then((result) => {
-                    console.log('Monetag ad operation success:', result);
-                    if (result && result.reward_event_type === 'valued') {
-                        const rewardPoints = result.estimated_price || 5; // Default if price not given
-                        window.Telegram.WebApp.showPopup({
-                            title: 'Reward Earned!',
-                            message: `You earned ${rewardPoints} points from Monetag!`,
-                            buttons: [{id: 'ok', type: 'ok'}],
-                        });
-                        // Here you would update user's balance in your backend
-                    } else {
-                        window.Telegram.WebApp.showAlert('Monetag ad viewed, but no specific reward was triggered or reported.');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Monetag ad operation failed:', error.message);
-                    alert('Monetag ad failed: ' + error.message);
-                });
-            } else {
-                console.error('Monetag SDK (show_10033027 function) not available. Cannot show ad.');
-                alert('Monetag SDK not ready. Check console for errors.');
-            }
-        }
-    </script>
+function loginAdminWithEmailPassword() {
+  const email = document.getElementById('admin-email').value;
+  const password = document.getElementById('admin-password').value;
+
+  if (!email || !password) {
+    showAdNotification("Please enter both email and password.");
+    return;
+  }
+
+  showLoadingOverlay("Logging in..."); // Show loading for login process
+  document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle during login attempt
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      if (user.uid === ADMIN_UID) {
+        // Success will be handled by onAuthStateChanged, which will then show loading overlay and content
+        // We ensure login-container is hidden immediately so it doesn't flash
+        document.getElementById('login-container').style.display = 'none';
+      } else {
+        auth.signOut(); 
+        showAdNotification("You are not authorized to access this panel.");
+        hideLoadingOverlay(); // Hide loading overlay if unauthorized
+        document.getElementById('login-container').style.display = 'block'; // Show login again
+        document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on unauthorized
+      }
+    })
+    .catch((error) => {
+      console.error("Admin login failed:", error);
+      showAdNotification("Login failed: " + error.message);
+      hideLoadingOverlay(); // Hide loading overlay on login error
+      document.getElementById('login-container').style.display = 'block'; // Show login again
+      document.getElementById('mode-toggle').style.display = 'none'; // Ensure hidden on error
+    });
+}
+
+function logoutAdmin() {
+  showLoadingOverlay("Logging out...");
+  document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle immediately on logout
+  auth.signOut().then(() => {
+    showAdNotification("Admin logged out.");
+    // onAuthStateChanged will handle hiding admin-content and showing login,
+    // so we just ensure loading overlay hides after a moment for notification
+    setTimeout(() => { 
+        hideLoadingOverlay();
+    }, 500);
+  }).catch((error) => {
+    console.error("Logout error:", error);
+    showAdNotification("Logout error: " + error.message);
+    hideLoadingOverlay();
+  });
+}
+
+function updateCanvaLink() {
+  const newLinkInput = document.getElementById('new-canva-link');
+  const newLink = newLinkInput.value.trim();
+
+  if (newLink) {
+    database.ref('canvaLink').set(newLink)
+      .then(() => {
+        showAdNotification("Canva Pro link updated successfully!");
+        newLinkInput.value = ''; 
+      })
+      .catch((error) => {
+        console.error("Error updating Canva link:", error);
+        showAdNotification("Failed to update Canva Pro link.");
+      });
+  } else {
+    showAdNotification("Please enter a valid link.");
+  }
+}
+
+function showAdNotification(msg) {
+  const el = document.getElementById('ad-notification');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => {
+    el.style.display = 'none';
+  }, 3000);
+}
+
+function showLoadingOverlay(message = "Loading...") {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.querySelector('p').textContent = message;
+    loadingOverlay.style.display = 'flex';
+    document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle when loading
+}
+
+function hideLoadingOverlay() {
+    document.getElementById('loading-overlay').style.display = 'none';
+    // The mode-toggle visibility will be handled by the auth.onAuthStateChanged logic
+    // to show/hide based on whether admin-content is visible.
+}
+
+function toggleMode() {
+  const body = document.body;
+  const btn = document.getElementById('mode-toggle');
+  body.classList.toggle('light-mode');
+  if (body.classList.contains('light-mode')) {
+    btn.textContent = '☀️';
+    localStorage.setItem("themeMode", "light");
+  } else {
+    btn.textContent = '🌙';
+    localStorage.setItem("themeMode", "dark");
+  }
+  // Update --h3-color variable based on theme mode
+  document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+
+  if (dailyMonthlyVisitorsChart) {
+      updateChartColors(dailyMonthlyVisitorsChart);
+      dailyMonthlyVisitorsChart.update();
+  }
+}
+
+// Initialize h3 color based on current mode on load
+window.addEventListener('load', () => {
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+});
+  </script>
+
 </body>
 </html>
+        
