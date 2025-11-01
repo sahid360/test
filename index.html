@@ -1,125 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Exclusive Video Preview | Limited Time Offer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adexium Demo</title>
 
-    <!-- =============================================================== -->
-    <!-- Facebook, Instagram, WhatsApp এর জন্য Open Graph Meta Tags -->
-    <!-- =============================================================== -->
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-    <!-- (ঐচ্ছিক) এখানে আপনার পোস্টের আকর্ষণীয় টাইটেল দিন -->
-    <meta property="og:title" content="🎬 Exclusive Video Preview | Watch Now!">
+  <!-- Adexium Ads Script -->
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
 
-    <!-- (ঐচ্ছিক) এখানে পোস্টের একটি ছোট আকর্ষণীয় বর্ণনা দিন -->
-    <meta property="og:description" content="Watch this exclusive preview before it's gone! Click now for a special viewing experience.">
-
-    <!-- ১. === আপনার GIF লিংক === -->
-    <!-- (প্রয়োজনীয়) এখানে আপনার GIF ফাইলের সরাসরি লিংক দিন। এই ছবিটিই Facebook/WhatsApp-এ প্রিভিউ হিসেবে দেখাবে। -->
-    <meta property="og:image" content="https://i.postimg.cc/Pq2TyWYW/lv-0-20251006222541.gif">
-
-    <!-- ২. === আপনার ব্লগ পোস্টের লিংক === -->
-    <!-- (প্রয়োজনীয়) ব্লগ পোস্টটি পাবলিশ করার পর সেই পোস্টের আসল লিংকটি এখানে দিন। -->
-    <meta property="og:url" content="https://YOUR-BLOG-NAME.blogspot.com/YOUR-POST-URL.html">
-
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Exclusive Previews">
-
-    <!-- =============================================================== -->
-    <!-- X (Twitter) এর জন্য Twitter Card Meta Tags -->
-    <!-- =============================================================== -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🎬 Exclusive Video Preview | Watch Now!">
-    <meta name="twitter:description" content="Watch this exclusive preview before it's gone! Click now for a special viewing experience.">
-    
-    <!-- (প্রয়োজনীয়) এখানেও আপনার একই GIF ফাইলের সরাসরি লিংক দিন। এই ছবিটিই Twitter-এ প্রিভিউ হিসেবে দেখাবে। -->
-    <meta name="twitter:image" content="https://i.postimg.cc/Pq2TyWYW/lv-0-20251006222541.gif">
-
-
-    <style>
-        body { background-color: #111; text-align: center; color: #f0f0f0; font-family: 'Arial', sans-serif; padding-top: 25px; margin: 0; line-height: 1.7; overflow: hidden; }
-        .container { max-width: 95%; width: 550px; margin: 0 auto; padding: 15px; }
-        .gif-container { cursor: pointer; display: inline-block; border: 4px solid #E1306C; border-radius: 10px; overflow: hidden; transition: transform 0.2s ease-in-out; box-shadow: 0 5px 15px rgba(225, 48, 108, 0.4); margin: 10px 0; background: linear-gradient(45deg, #405DE6, #C13584, #FD1D1D, #FCAF45); padding: 4px; }
-        .gif-container img { display: block; width: 100%; height: auto; border-radius: 6px; }
-        .gif-container:hover { transform: scale(1.03); }
-        h2 { margin: 15px 0 10px; font-size: 20px; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        p { margin: 10px 0; font-size: 15px; color: #ccc; }
-        a { color: #FCAF45; text-decoration: none; font-weight: bold; }
-        a:hover { text-decoration: underline; color: #F77737; }
-        .disclaimer { font-size: 11px; color: #777; margin-top: 25px; padding-top: 10px; border-top: 1px solid #444; line-height: 1.4; }
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; color: white; opacity: 0; transition: opacity 0.2s ease-in-out; visibility: hidden; }
-        #loadingOverlay.show { opacity: 1; visibility: visible; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #444; border-top: 5px solid #E1306C; border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="loadingOverlay">
-        <h2>Loading... Please wait</h2>
-        <div class="spinner"></div>
-    </div>
+  <button id="earnBtn">$Earn Money</button>
 
-    <div class="container">
-        <h2>Your exclusive preview is loading... ⏳</h2>
-        <div class="gif-container" id="redirectTrigger">
-             <!-- এখানেও আপনার GIF লিংকটি দিন, যা পেইজে দেখানো হবে -->
-             <img src="https://i.postimg.cc/Pq2TyWYW/lv-0-20251006222541.gif" alt="Click to watch the exclusive preview">
-        </div>
-        <p>If the preview doesn't start automatically, <a id="manualLink" href="#">click here to watch now</a>.</p>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Adexium widget
+      const adexiumWidget = new AdexiumWidget({
+        wid: '0ce8100c-9e73-48d1-bca1-655b8078443b',
+        adFormat: 'interstitial'
+      });
 
-        <div class="disclaimer">
-            This is an independent preview page. The content displayed is for promotional purposes only.
-        </div>
-    </div>
+      // Show ad on button click
+      document.getElementById('earnBtn').addEventListener('click', () => {
+        adexiumWidget.showAd();
+      });
+    });
+  </script>
 
-    <script>
-        // ৩. === সবচেয়ে গুরুত্বপূর্ণ: আপনার আসল রিডাইরেক্ট লিংক ===
-        // (প্রয়োজনীয়) ব্যবহারকারীকে যে লিংকে পাঠাতে চান, সেই ফাইনাল লিংকটি এখানে দিন।
-        const directLink = "ADSLINK";
-
-        // ---- নিচের কোডে কোনো পরিবর্তনের প্রয়োজন নেই ----
-        
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const redirectTrigger = document.getElementById('redirectTrigger');
-        const manualLink = document.getElementById('manualLink');
-
-        manualLink.href = directLink;
-
-        function performRedirect() {
-            if (!loadingOverlay.classList.contains('show')) {
-                 loadingOverlay.classList.add('show');
-            }
-            try {
-                 window.location.replace(directLink);
-            } catch (e) {
-                console.error("Redirect using replace failed, falling back to href:", e);
-                window.location.href = directLink;
-            }
-        }
-
-        const autoRedirectTimeout = setTimeout(performRedirect, 500); // 0.5 সেকেন্ড পরে অটো রিডাইরেক্ট হবে
-        
-        function handleUserClick(event) {
-            event.preventDefault(); 
-            clearTimeout(autoRedirectTimeout); 
-            performRedirect(); 
-        }
-
-        redirectTrigger.addEventListener('click', handleUserClick);
-        manualLink.addEventListener('click', handleUserClick);
-        
-        setTimeout(() => {
-            if (!loadingOverlay.classList.contains('show')) {
-                 performRedirect();
-            }
-        }, 5000); 
-
-    </script>
 </body>
 </html>
-
-
-
- 
