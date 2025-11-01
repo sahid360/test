@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adexium Demo</title>
+  <title>Adexium AutoMode Demo</title>
 
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -20,37 +20,45 @@
       height: 100vh;
       background: #f5f5f5;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
     }
-    button {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #218838;
+    p {
+      color: #333;
+      font-size: 1.2em;
+      max-width: 600px;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
 
-  <button id="earnBtn">$Earn Money</button>
+  <p>This page demonstrates Adexium's interstitial ad in auto mode. An ad should appear shortly after the page loads (if available and not blocked by an ad blocker).</p>
 
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Adexium widget
+      // Initialize Adexium widget with your widget ID and ad format
       const adexiumWidget = new AdexiumWidget({
-        wid: '0ce8100c-9e73-48d1-bca1-655b8078443b',
+        wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', // Make sure this is your correct widget ID
         adFormat: 'interstitial'
       });
 
-      // Show ad on button click
-      document.getElementById('earnBtn').addEventListener('click', () => {
-        adexiumWidget.showAd();
+      // Enable auto mode to display ads automatically
+      adexiumWidget.autoMode();
+
+      // You can also add event listeners if you need to react to ad events
+      // For example, to log when an ad is shown or an error occurs:
+      adexiumWidget.on('ad_shown', () => {
+        console.log('Adexium: Interstitial ad shown');
       });
+
+      adexiumWidget.on('ad_error', (error) => {
+        console.error('Adexium: Ad error:', error);
+      });
+
+      // It's good practice to also log when the Adexium widget is initialized
+      console.log('Adexium Widget initialized in autoMode.');
     });
   </script>
 
