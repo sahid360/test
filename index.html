@@ -1,66 +1,580 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adexium AutoMode Demo</title>
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-
-  <!-- Adexium Ads Script -->
-  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-
+<head>  
+  <meta charset="UTF-8"/>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Canva Pro Team</title>  
+  
+  <!-- Monetag SDK -->
+  <script src='//libtl.com/sdk.js' data-zone='10130652' data-sdk='show_10130652' async></script>  
+  
+  <!-- Adexium SDK (Added defer for better loading) -->
+  <script src="https://telegram.org/js/telegram-web-app.js?56" defer></script>
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" defer></script>
+  
+  <!-- Gigapub SDK (Added defer) -->
+  <script src="https://ad.gigapub.tech/script?id=3472" defer></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
   <style>
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+    }
+
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
     body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: #f5f5f5;
-      font-family: Arial, sans-serif;
-      margin: 0;
+      transition: all 0.4s ease;
       padding: 20px;
       text-align: center;
     }
-    p {
-      color: #333;
-      font-size: 1.2em;
-      max-width: 600px;
-      line-height: 1.5;
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      padding-bottom: 20px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .header {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      color: #fff;
+    }
+
+    .author {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f5f5f5;
+    }
+
+    .content {
+      padding: 25px;
+    }
+
+    .progress-container {
+      width: 100%;
+      background: #333;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      overflow: hidden;
+      height: 30px;
+      display: flex;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-inner {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .step-box {
+      flex: 1;
+      text-align: center;
+      line-height: 26px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #444;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .step-box.done-1 { background-color: red; }
+    .step-box.done-2 { background-color: orange; }
+    .step-box.done-3 { background-color: limegreen; }
+    .step-box.done-4 { background-color: blueviolet; }
+    .step-box.done-5 { background-color: deepskyblue; }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn-3d {
+      padding: 16px 20px;
+      border: none;
+      border-radius: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--light);
+      background: var(--primary);
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-small {
+      padding: 10px 15px;
+      font-size: 14px;
+    }
+
+    .ad-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--light);
+      padding: 15px 30px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .ads-section {
+      margin-top: 30px;
+      padding: 15px;
+      background: var(--ad-bg);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      transition: all 0.4s ease;
+    }
+
+    .ad-item {
+      background: var(--ad-item-bg);
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
+
+    .ad-item:hover {
+      background: #3d3d3d;
+    }
+
+    .ad-item a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 13px;
+      display: block;
+    }
+
+    .ad-item a small {
+      color: #888;
+      font-size: 11px;
+      font-weight: 300;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    .footer a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    #mode-toggle {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 4px 5px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      z-index: 1100;
+    }
+
+    /* ✅ Copy section style */
+    #copy-section {
+      display: none;
+      margin-top: 15px;
+      background: var(--ad-item-bg);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 17px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+
+    #copy-section.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #copy-section p {
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    /* ✅ এক লাইনে Canva লিংক দেখাবে */
+    #canva-link {
+      display: block;
+      background: var(--card-bg);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      color: var(--secondary);
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+      user-select: all;
+      white-space: nowrap; /* এক লাইনে দেখাবে */
+      overflow: auto;      /* বড় হলে স্ক্রল হবে */
+    }
+
+    #copy-btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #copy-btn:hover {
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
+  <div class="ad-notification" id="ad-notification"></div>
+  <div class="container">
+    <button id="mode-toggle" onclick="toggleMode()">🌙</button>
+    <div class="header">
+      <h1>Canva Pro Team</h1>
+      <p class="author">📢 After watching 5 ads, the Canva Pro button will be unlocked. Then click again to open Canva Pro.</p>
+    </div>
+    <div class="content">
+      <div class="progress-container">
+        <div class="step-inner">
+          <div class="step-box" id="step1">Step 1</div>
+          <div class="step-box" id="step2">Step 2</div>
+          <div class="step-box" id="step3">Step 3</div>
+          <div class="step-box" id="step4">Step 4</div>
+          <div class="step-box" id="step5">Step 5</div>
+        </div>
+      </div>
 
-  <p>This page demonstrates Adexium's interstitial ad in auto mode. An ad should appear shortly after the page loads (if available and not blocked by an ad blocker).</p>
+      <div class="buttons">
+        <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
 
-  <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Adexium widget with your widget ID and ad format
-      const adexiumWidget = new AdexiumWidget({
-        wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', // Make sure this is your correct widget ID
-        adFormat: 'interstitial'
+        <!-- ✅ Copy link section -->
+        <div id="copy-section">
+          <p>🌐 Copy link and paste it in your browser:</p>
+          <span id="canva-link"></span>
+          <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
+        </div>
+
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
+      </div>
+
+      <div class="ads-section">
+        <div class="ad-item">
+          <a href="https://t.me/FCanvaOwner" target="_blank">
+            💎 Ad Space Promote Your Channel
+            <small>💰 Low cost — get real traffic!</small>
+          </a>
+        </div>
+      </div>
+      <div class="footer">
+        <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCo_MXgG-9Dj7KFscUn8ImyfDsLafVxxv4",
+      authDomain: "test-bot-31901.firebaseapp.com",
+      databaseURL: "https://test-bot-31901-default-rtdb.firebaseio.com",
+      projectId: "test-bot-31901",
+      storageBucket: "test-bot-31901.firebaseapp.com",
+      messagingSenderId: "469559142693",
+      appId: "1:469559142693:web:9ba084f19cc03723fc12cc"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
+    let adCount = 0;
+    let adsCompleted = false;
+    let adexiumWidget; // To store Adexium widget instance
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedMode = localStorage.getItem("themeMode");
+      if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
+      }
+
+      // Load Canva link from Firebase
+      database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        if (link) {
+          CANVA_LINK = link;
+          document.getElementById('canva-link').textContent = CANVA_LINK;
+        }
       });
 
-      // Enable auto mode to display ads automatically
-      adexiumWidget.autoMode();
+      // Initialize Adexium widget once on DOMContentLoaded
+      if (typeof AdexiumWidget !== 'undefined') {
+          adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
+          // Adexium might auto-mode, but we'll call it manually when needed
+      }
 
-      // You can also add event listeners if you need to react to ad events
-      // For example, to log when an ad is shown or an error occurs:
-      adexiumWidget.on('ad_shown', () => {
-        console.log('Adexium: Interstitial ad shown');
-      });
-
-      adexiumWidget.on('ad_error', (error) => {
-        console.error('Adexium: Ad error:', error);
-      });
-
-      // It's good practice to also log when the Adexium widget is initialized
-      console.log('Adexium Widget initialized in autoMode.');
+      // Track visitors
+      trackVisitor();
     });
-  </script>
 
+    function trackVisitor() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const yearMonth = `${year}-${month}`;
+        const yearMonthDay = `${year}-${month}-${day}`; // Format YYYY-MM-DD
+
+        // Track total count
+        database.ref('visitors/total').transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+
+        // Track monthly count
+        database.ref('visitors/monthly/' + yearMonth).transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+
+        // Track daily count
+        database.ref('visitors/daily/' + yearMonthDay).transaction((currentCount) => {
+            return (currentCount || 0) + 1;
+        });
+    }
+
+    function handleClick() {
+      const button = document.getElementById('canva-pro-btn');
+      if (adsCompleted) {
+        openCommonLink(CANVA_LINK);
+        return;
+      }
+      showAdWithDelay();
+    }
+
+    function openCommonLink(url) {
+      if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.openLink(url);
+      } else {
+        window.location.href = url;
+      }
+    }
+
+    function showAdWithDelay() {
+      const button = document.getElementById('canva-pro-btn');
+      let countdown = 3;
+      button.disabled = true;
+      button.style.background = 'gray';
+      const interval = setInterval(() => {
+        button.textContent = `Please wait... ${countdown} sec`;
+        countdown--;
+        if (countdown < 1) {
+          clearInterval(interval);
+          handleAdSequence(); // Call the ad sequence handler
+        }
+      }, 1000);
+    }
+
+    async function handleAdSequence() {
+      const button = document.getElementById('canva-pro-btn');
+      try {
+        switch (adCount + 1) { // adCount is 0-indexed, steps are 1-indexed
+          case 1: // Step 1: Monetag
+            showAdNotification("Showing Monetag Ad (Step 1)...");
+            if (typeof show_10130652 === 'function') {
+                await show_10130652();
+            } else {
+                throw new Error("Monetag ad function not available.");
+            }
+            break;
+          case 2: // Step 2: Adexium
+            showAdNotification("Showing Adexium Ad (Step 2)...");
+            if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
+                await adexiumWidget.showAd();
+            } else {
+                throw new Error("Adexium ad widget not available.");
+            }
+            break;
+          case 3: // Step 3: Gigapub
+            showAdNotification("Showing Gigapub Ad (Step 3)...");
+            if (typeof window.showGiga === 'function') {
+                await window.showGiga();
+            } else {
+                throw new Error("Gigapub ad function not available.");
+            }
+            break;
+          case 4: // Step 4: Monetag
+            showAdNotification("Showing Monetag Ad (Step 4)...");
+            if (typeof show_10130652 === 'function') {
+                await show_10130652();
+            } else {
+                throw new Error("Monetag ad function not available.");
+            }
+            break;
+          case 5: // Step 5: Adexium
+            showAdNotification("Showing Adexium Ad (Step 5)...");
+            if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
+                await adexiumWidget.showAd();
+            } else {
+                throw new Error("Adexium ad widget not available.");
+            }
+            break;
+          default:
+            showAdNotification("Unknown ad step.");
+            break;
+        }
+
+        // If ad shown successfully
+        adCount++;
+        updateSteps();
+        if (adCount >= 5) {
+          unlockCanva(button);
+        } else {
+          resetButton();
+        }
+
+      } catch (error) {
+        console.error("Ad showing error:", error);
+        showAdNotification(`⚠️ Ad failed for Step ${adCount + 1}. Attempting to proceed.`);
+        // Even if an ad fails, we proceed to the next step or unlock if it's the last
+        adCount++;
+        updateSteps();
+        if (adCount >= 5) {
+          unlockCanva(button);
+        } else {
+          resetButton();
+        }
+      }
+    }
+
+    function unlockCanva(button) {
+      adsCompleted = true;
+      adCount = 5; // Ensure all steps are marked
+      updateSteps();
+      button.textContent = "🎉 Click to Open Canva Pro";
+      button.style.background = "green";
+      button.disabled = false;
+
+      // ✅ Show copy section + link
+      const copySection = document.getElementById('copy-section');
+      const linkDisplay = document.getElementById('canva-link');
+      linkDisplay.textContent = CANVA_LINK;
+      copySection.classList.add('show');
+    }
+
+    function updateSteps() {
+      if (adCount >= 1) document.getElementById('step1').classList.add('done-1');
+      if (adCount >= 2) document.getElementById('step2').classList.add('done-2');
+      if (adCount >= 3) document.getElementById('step3').classList.add('done-3');
+      if (adCount >= 4) document.getElementById('step4').classList.add('done-4');
+      if (adCount >= 5) document.getElementById('step5').classList.add('done-5');
+    }
+
+    function resetButton() {
+      const button = document.getElementById('canva-pro-btn');
+      setTimeout(() => {
+        button.textContent = `🔒 Watch Ad (${adCount + 1}/5) to Unlock Canva Pro`;
+        button.disabled = false;
+        button.style.background = "var(--primary)";
+      }, 500);
+    }
+
+    function copyCanvaLink() {
+      navigator.clipboard.writeText(CANVA_LINK).then(() => {
+        showAdNotification("✅ Canva Pro link copied! Paste it in your browser.");
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showAdNotification("Failed to copy link.");
+      });
+    }
+
+    function showAdNotification(msg) {
+      const el = document.getElementById('ad-notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 3000);
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const btn = document.getElementById('mode-toggle');
+      body.classList.toggle('light-mode');
+      if (body.classList.contains('light-mode')) {
+        btn.textContent = '☀️';
+        localStorage.setItem("themeMode", "light");
+      } else {
+        btn.textContent = '🌙';
+        localStorage.setItem("themeMode", "dark");
+      }
+    }
+  </script>
 </body>
 </html>
+
+    
