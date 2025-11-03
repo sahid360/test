@@ -8,11 +8,11 @@
   <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10130652' data-sdk='show_10130652' async></script>  
   
-  <!-- Adexium SDK (Removed defer for testing, will add back once stable) -->
-  <script src="https://telegram.org/js/telegram-web-app.js?56"></script> 
-  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+  <!-- Adexium SDK (Added defer for better loading) -->
+  <script src="https://telegram.org/js/telegram-web-app.js?56" defer></script>
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" defer></script>
   
-  <!-- Gigapub SDK -->
+  <!-- Gigapub SDK (Added defer) -->
   <script src="https://ad.gigapub.tech/script?id=3472" defer></script>
   
   <!-- Firebase SDK -->
@@ -20,7 +20,273 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   
   <style>
-    /* ... (your existing CSS) ... */
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+    }
+
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      padding-bottom: 20px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .header {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      color: #fff;
+    }
+
+    .author {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #f5f5f5;
+    }
+
+    .content {
+      padding: 25px;
+    }
+
+    .progress-container {
+      width: 100%;
+      background: #333;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      overflow: hidden;
+      height: 30px;
+      display: flex;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-inner {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .step-box {
+      flex: 1;
+      text-align: center;
+      line-height: 26px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #444;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .step-box.done-1 { background-color: red; }
+    .step-box.done-2 { background-color: orange; }
+    .step-box.done-3 { background-color: limegreen; }
+    .step-box.done-4 { background-color: blueviolet; }
+    .step-box.done-5 { background-color: deepskyblue; }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn-3d {
+      padding: 16px 20px;
+      border: none;
+      border-radius: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--light);
+      background: var(--primary);
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-small {
+      padding: 10px 15px;
+      font-size: 14px;
+    }
+
+    .ad-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--light);
+      padding: 15px 30px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .ads-section {
+      margin-top: 30px;
+      padding: 15px;
+      background: var(--ad-bg);
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      transition: all 0.4s ease;
+    }
+
+    .ad-item {
+      background: var(--ad-item-bg);
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
+
+    .ad-item:hover {
+      background: #3d3d3d;
+    }
+
+    .ad-item a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 13px;
+      display: block;
+    }
+
+    .ad-item a small {
+      color: #888;
+      font-size: 11px;
+      font-weight: 300;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    .footer a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    #mode-toggle {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 4px 5px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      z-index: 1100;
+    }
+
+    /* ✅ Copy section style */
+    #copy-section {
+      display: none;
+      margin-top: 15px;
+      background: var(--ad-item-bg);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 17px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+
+    #copy-section.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #copy-section p {
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    /* ✅ এক লাইনে Canva লিংক দেখাবে */
+    #canva-link {
+      display: block;
+      background: var(--card-bg);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      color: var(--secondary);
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+      user-select: all;
+      white-space: nowrap; /* এক লাইনে দেখাবে */
+      overflow: auto;      /* বড় হলে স্ক্রল হবে */
+    }
+
+    #copy-btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #copy-btn:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
@@ -91,9 +357,7 @@
     let adsCompleted = false;
     let adexiumWidget; // To store Adexium widget instance
 
-    // Ensure all SDKs are loaded before initializing Adexium
-    // Using window.onload to ensure all external scripts are loaded
-    window.addEventListener("load", () => {
+    window.addEventListener("DOMContentLoaded", () => {
       const savedMode = localStorage.getItem("themeMode");
       if (savedMode === "light") {
         document.body.classList.add("light-mode");
@@ -109,12 +373,10 @@
         }
       });
 
-      // Initialize Adexium widget after everything is loaded
+      // Initialize Adexium widget once on DOMContentLoaded
       if (typeof AdexiumWidget !== 'undefined') {
           adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
-          console.log("AdexiumWidget initialized:", adexiumWidget);
-      } else {
-          console.warn("AdexiumWidget class not found after window load. Adexium ads might not work.");
+          // Adexium might auto-mode, but we'll call it manually when needed
       }
 
       // Track visitors
@@ -167,10 +429,9 @@
       let countdown = 3;
       button.disabled = true;
       button.style.background = 'gray';
-      button.textContent = `Please wait... ${countdown} sec`; // Initial text update
       const interval = setInterval(() => {
-        countdown--;
         button.textContent = `Please wait... ${countdown} sec`;
+        countdown--;
         if (countdown < 1) {
           clearInterval(interval);
           handleAdSequence(); // Call the ad sequence handler
@@ -193,14 +454,9 @@
           case 2: // Step 2: Adexium
             showAdNotification("Showing Adexium Ad (Step 2)...");
             if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
-                await adexiumWidget.showAd(); 
-                // Note: Adexium's showAd might not return a Promise
-                // If it doesn't, the await will resolve immediately.
-                // You might need a manual delay here if ads don't finish loading.
-                console.log("Adexium Ad (Step 2) shown successfully (or initiated).");
+                await adexiumWidget.showAd();
             } else {
-                console.error("Adexium widget or showAd function not available for Step 2.");
-                throw new Error("Adexium ad widget not available for Step 2.");
+                throw new Error("Adexium ad widget not available.");
             }
             break;
           case 3: // Step 3: Gigapub
@@ -223,10 +479,8 @@
             showAdNotification("Showing Adexium Ad (Step 5)...");
             if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
                 await adexiumWidget.showAd();
-                console.log("Adexium Ad (Step 5) shown successfully (or initiated).");
             } else {
-                console.error("Adexium widget or showAd function not available for Step 5.");
-                throw new Error("Adexium ad widget not available for Step 5.");
+                throw new Error("Adexium ad widget not available.");
             }
             break;
           default:
@@ -234,7 +488,7 @@
             break;
         }
 
-        // If ad shown successfully or initiated
+        // If ad shown successfully
         adCount++;
         updateSteps();
         if (adCount >= 5) {
@@ -244,8 +498,8 @@
         }
 
       } catch (error) {
-        console.error("Ad showing error caught:", error.message || error); 
-        showAdNotification(`⚠️ Ad failed for Step ${adCount + 1}: ${error.message || 'Unknown error'}. Attempting to proceed.`);
+        console.error("Ad showing error:", error);
+        showAdNotification(`⚠️ Ad failed for Step ${adCount + 1}. Attempting to proceed.`);
         // Even if an ad fails, we proceed to the next step or unlock if it's the last
         adCount++;
         updateSteps();
