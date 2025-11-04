@@ -17,14 +17,14 @@
     document.addEventListener('DOMContentLoaded', () => {
         const adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
         adexiumWidget.autoMode(); // This will show the Adexium ad automatically on page load
-        // This ad does NOT count towards adCount, so no adCount increment here.
+        // Important: This ad does NOT count towards the 'adCount' for the 4 steps.
     });
   </script>
-
+  
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+  
   <style>
     :root {
       --primary: #6200ea;
@@ -128,7 +128,7 @@
       transition: background 0.3s ease-in-out;
     }
 
-    /* Step colors for 4 manual steps */
+    /* Updated step colors for 4 steps */
     .step-box.done-1 { background-color: red; }         /* Monetag */
     .step-box.done-2 { background-color: orange; }       /* Gigapub */
     .step-box.done-3 { background-color: limegreen; }    /* Monetag */
@@ -161,6 +161,20 @@
     .btn-small {
       padding: 10px 15px;
       font-size: 14px;
+    }
+
+    /* Ad notification is removed from ad flow, but kept for copy link feedback */
+    .ad-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--light);
+      padding: 15px 30px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
     }
 
     .ads-section {
@@ -282,9 +296,9 @@
       opacity: 0.9;
     }
   </style>
-
 </head>
 <body>
+  <div class="ad-notification" id="ad-notification"></div>
   <div class="container">
     <button id="mode-toggle" onclick="toggleMode()">🌙</button>
     <div class="header">
@@ -301,52 +315,52 @@
         </div>
       </div>
 
-<div class="buttons">
-    <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
+      <div class="buttons">
+        <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
 
-    <!-- ✅ Copy link section -->
-    <div id="copy-section">
-      <p>🌐 Copy link and paste it in your browser:</p>
-      <span id="canva-link"></span>
-      <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
+        <!-- ✅ Copy link section -->
+        <div id="copy-section">
+          <p>🌐 Copy link and paste it in your browser:</p>
+          <span id="canva-link"></span>
+          <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
+        </div>
+
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
+        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
+      </div>
+
+      <div class="ads-section">
+        <div class="ad-item">
+          <a href="https://t.me/FCanvaOwner" target="_blank">
+            💎 Ad Space Promote Your Channel
+            <small>💰 Low cost — get real traffic!</small>
+          </a>
+        </div>
+      </div>
+      <div class="footer">
+        <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
+      </div>
     </div>
-
-    <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
-    <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
-  </div>
-
-  <div class="ads-section">
-    <div class="ad-item">
-      <a href="https://t.me/FCanvaOwner" target="_blank">
-        💎 Ad Space Promote Your Channel
-        <small>💰 Low cost — get real traffic!</small>
-      </a>
-    </div>
-  </div>
-  <div class="footer">
-    <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
-  </div>
-</div>
   </div>
 
   <script>
     // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCo_MXgG-9Dj7KFscUn8ImyfDsLafVxxv4",
-      authDomain: "test-bot-31901.firebaseapp.com",
-      databaseURL: "https://test-bot-31901-default-rtdb.firebaseio.com",
-      projectId: "test-bot-31901",
-      storageBucket: "test-bot-31901.firebasestorage.app",
-      messagingSenderId: "469559142693",
-      appId: "1:469559142693:web:9ba084f19cc03723fc12cc"
-    };
+   const firebaseConfig = {
+  apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
+  authDomain: "canva-pro-team.firebaseapp.com",
+  databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
+  projectId: "canva-pro-team",
+  storageBucket: "canva-pro-team.firebasestorage.app",
+  messagingSenderId: "462948035203",
+  appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
+};
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
-    let adCount = 0; // adCount now strictly tracks the 4 manual steps
+    let adCount = 0; // adCount now strictly tracks the 4 manual steps (0 to 3)
     let adsCompleted = false;
     const TOTAL_ADS_REQUIRED = 4; // Define total ads for clarity
 
@@ -504,11 +518,20 @@
 
     function copyCanvaLink() {
       navigator.clipboard.writeText(CANVA_LINK).then(() => {
-        alert("✅ Canva Pro link copied! Paste it in your browser.");
+        showAdNotification("✅ Canva Pro link copied! Paste it in your browser.");
       }).catch(err => {
         console.error('Failed to copy text: ', err);
-        alert("Failed to copy link.");
+        showAdNotification("Failed to copy link.");
       });
+    }
+
+    function showAdNotification(msg) {
+      const el = document.getElementById('ad-notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 3000);
     }
 
     function toggleMode() {
@@ -524,6 +547,6 @@
       }
     }
   </script>
-
 </body>
 </html>
+ 
