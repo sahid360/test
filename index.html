@@ -4,21 +4,27 @@
   <meta charset="UTF-8"/>  
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
   <title>Canva Pro Team</title>  
-  
-  <!-- Monetag SDK -->
-  <script src='//libtl.com/sdk.js' data-zone='10130652' data-sdk='show_10130652' async></script>  
-  
-  <!-- Adexium SDK (Added defer for better loading) -->
-  <script src="https://telegram.org/js/telegram-web-app.js?56" defer></script>
-  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" defer></script>
-  
-  <!-- Gigapub SDK (Added defer) -->
+
+  <!-- Monetag SDK - For Step 1 and 3 -->
+  <script src='//libtl.com/sdk.js' data-zone='10130652' data-sdk='show_10130652' defer></script>  
+
+  <!-- Gigapub SDK - For Step 2 and 4 -->
   <script src="https://ad.gigapub.tech/script?id=3472" defer></script>
-  
+
+  <!-- Adexium SDK - For Step 5, Preloaded -->
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" defer></script>
+  <script type="text/javascript">
+    let adexiumWidgetInstance;
+    document.addEventListener('DOMContentLoaded', () => {
+        adexiumWidgetInstance = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
+        // We'll call adexiumWidgetInstance.show() manually, not autoMode()
+    });
+  </script>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
+
   <style>
     :root {
       --primary: #6200ea;
@@ -288,9 +294,10 @@
       opacity: 0.9;
     }
   </style>
+
 </head>
 <body>
-  <div class="ad-notification" id="ad-notification"></div>
+  <!-- Removed ad-notification as per request -->
   <div class="container">
     <button id="mode-toggle" onclick="toggleMode()">🌙</button>
     <div class="header">
@@ -308,32 +315,32 @@
         </div>
       </div>
 
-      <div class="buttons">
-        <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
+<div class="buttons">
+    <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
 
-        <!-- ✅ Copy link section -->
-        <div id="copy-section">
-          <p>🌐 Copy link and paste it in your browser:</p>
-          <span id="canva-link"></span>
-          <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
-        </div>
-
-        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
-        <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
-      </div>
-
-      <div class="ads-section">
-        <div class="ad-item">
-          <a href="https://t.me/FCanvaOwner" target="_blank">
-            💎 Ad Space Promote Your Channel
-            <small>💰 Low cost — get real traffic!</small>
-          </a>
-        </div>
-      </div>
-      <div class="footer">
-        <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
-      </div>
+    <!-- ✅ Copy link section -->
+    <div id="copy-section">
+      <p>🌐 Copy link and paste it in your browser:</p>
+      <span id="canva-link"></span>
+      <button id="copy-btn" onclick="copyCanvaLink()">📋 Copy Canva Pro Link</button>
     </div>
+
+    <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+degfJyrRbIc1YzVl')">Join Channel</button>
+    <button class="btn-3d btn-small" onclick="openCommonLink('https://t.me/+7gb19q80la81ZGVl')">Premium Apps</button>
+  </div>
+
+  <div class="ads-section">
+    <div class="ad-item">
+      <a href="https://t.me/FCanvaOwner" target="_blank">
+        💎 Ad Space Promote Your Channel
+        <small>💰 Low cost — get real traffic!</small>
+      </a>
+    </div>
+  </div>
+  <div class="footer">
+    <p><a href="https://t.me/FCanvaOwner" target="_blank">by Alex</a></p>
+  </div>
+</div>
   </div>
 
   <script>
@@ -343,7 +350,7 @@
       authDomain: "test-bot-31901.firebaseapp.com",
       databaseURL: "https://test-bot-31901-default-rtdb.firebaseio.com",
       projectId: "test-bot-31901",
-      storageBucket: "test-bot-31901.firebaseapp.com",
+      storageBucket: "test-bot-31901.firebasestorage.app",
       messagingSenderId: "469559142693",
       appId: "1:469559142693:web:9ba084f19cc03723fc12cc"
     };
@@ -355,7 +362,6 @@
     let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
     let adCount = 0;
     let adsCompleted = false;
-    let adexiumWidget; // To store Adexium widget instance
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedMode = localStorage.getItem("themeMode");
@@ -372,12 +378,6 @@
           document.getElementById('canva-link').textContent = CANVA_LINK;
         }
       });
-
-      // Initialize Adexium widget once on DOMContentLoaded
-      if (typeof AdexiumWidget !== 'undefined') {
-          adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
-          // Adexium might auto-mode, but we'll call it manually when needed
-      }
 
       // Track visitors
       trackVisitor();
@@ -407,113 +407,85 @@
         });
     }
 
-    function handleClick() {
+    async function handleClick() {
       const button = document.getElementById('canva-pro-btn');
       if (adsCompleted) {
         openCommonLink(CANVA_LINK);
         return;
       }
-      showAdWithDelay();
-    }
 
-    function openCommonLink(url) {
-      if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.openLink(url);
-      } else {
-        window.location.href = url;
-      }
-    }
-
-    function showAdWithDelay() {
-      const button = document.getElementById('canva-pro-btn');
-      let countdown = 3;
       button.disabled = true;
       button.style.background = 'gray';
-      const interval = setInterval(() => {
-        button.textContent = `Please wait... ${countdown} sec`;
-        countdown--;
-        if (countdown < 1) {
-          clearInterval(interval);
-          handleAdSequence(); // Call the ad sequence handler
-        }
-      }, 1000);
+
+      // Instead of a fixed countdown, we'll directly try to show the ad for the current step
+      // The ad display function will handle its own timing or if it fails
+      try {
+          await showNextAd(); // Wait for the ad to complete or fail
+      } catch (error) {
+          console.error("Ad display failed:", error);
+          // If an ad fails, we still want to progress to the next step
+          adCount++;
+          updateSteps();
+          if (adCount >= 5) {
+              unlockCanva(button);
+          } else {
+              resetButton();
+          }
+      }
     }
 
-    async function handleAdSequence() {
-      const button = document.getElementById('canva-pro-btn');
-      try {
-        switch (adCount + 1) { // adCount is 0-indexed, steps are 1-indexed
-          case 1: // Step 1: Monetag
-            showAdNotification("Showing Monetag Ad (Step 1)...");
+    async function showNextAd() {
+        const button = document.getElementById('canva-pro-btn');
+        button.textContent = `Loading ad for Step ${adCount + 1}...`; // Indicate loading
+
+        let adPromise;
+        if (adCount === 0 || adCount === 2) { // Step 1 & 3: Monetag
             if (typeof show_10130652 === 'function') {
-                await show_10130652();
+                adPromise = show_10130652();
             } else {
-                throw new Error("Monetag ad function not available.");
+                adPromise = Promise.reject("Monetag service not available.");
             }
-            break;
-          case 2: // Step 2: Adexium
-            showAdNotification("Showing Adexium Ad (Step 2)...");
-            if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
-                await adexiumWidget.showAd();
-            } else {
-                throw new Error("Adexium ad widget not available.");
-            }
-            break;
-          case 3: // Step 3: Gigapub
-            showAdNotification("Showing Gigapub Ad (Step 3)...");
+        } else if (adCount === 1 || adCount === 3) { // Step 2 & 4: Gigapub
             if (typeof window.showGiga === 'function') {
-                await window.showGiga();
+                adPromise = window.showGiga();
             } else {
-                throw new Error("Gigapub ad function not available.");
+                adPromise = Promise.reject("Gigapub service not available.");
             }
-            break;
-          case 4: // Step 4: Monetag
-            showAdNotification("Showing Monetag Ad (Step 4)...");
-            if (typeof show_10130652 === 'function') {
-                await show_10130652();
+        } else if (adCount === 4) { // Step 5: Adexium
+            if (adexiumWidgetInstance && typeof adexiumWidgetInstance.show === 'function') {
+                adPromise = adexiumWidgetInstance.show();
             } else {
-                throw new Error("Monetag ad function not available.");
+                adPromise = Promise.reject("Adexium service not available.");
             }
-            break;
-          case 5: // Step 5: Adexium
-            showAdNotification("Showing Adexium Ad (Step 5)...");
-            if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
-                await adexiumWidget.showAd();
-            } else {
-                throw new Error("Adexium ad widget not available.");
-            }
-            break;
-          default:
-            showAdNotification("Unknown ad step.");
-            break;
+        } else {
+            adPromise = Promise.resolve(); // Should not happen if adCount is managed correctly
         }
 
-        // If ad shown successfully
-        adCount++;
-        updateSteps();
-        if (adCount >= 5) {
-          unlockCanva(button);
-        } else {
-          resetButton();
+        try {
+            await adPromise;
+            adCount++;
+            updateSteps();
+            if (adCount >= 5) {
+                unlockCanva(button);
+            } else {
+                resetButton();
+            }
+        } catch (error) {
+            console.warn(`Ad for step ${adCount + 1} failed or was skipped:`, error);
+            // On ad failure/skip, still progress to the next step
+            adCount++;
+            updateSteps();
+            if (adCount >= 5) {
+                unlockCanva(button);
+            } else {
+                resetButton();
+            }
         }
-
-      } catch (error) {
-        console.error("Ad showing error:", error);
-        showAdNotification(`⚠️ Ad failed for Step ${adCount + 1}. Attempting to proceed.`);
-        // Even if an ad fails, we proceed to the next step or unlock if it's the last
-        adCount++;
-        updateSteps();
-        if (adCount >= 5) {
-          unlockCanva(button);
-        } else {
-          resetButton();
-        }
-      }
     }
 
     function unlockCanva(button) {
       adsCompleted = true;
-      adCount = 5; // Ensure all steps are marked
+      adCount = 5;
       updateSteps();
       button.textContent = "🎉 Click to Open Canva Pro";
       button.style.background = "green";
@@ -537,29 +509,31 @@
     function resetButton() {
       const button = document.getElementById('canva-pro-btn');
       setTimeout(() => {
-        button.textContent = `🔒 Watch Ad (${adCount + 1}/5) to Unlock Canva Pro`;
+        button.textContent = "🔒 Watch Ads to Unlock Canva Pro";
         button.disabled = false;
         button.style.background = "var(--primary)";
       }, 500);
     }
 
+    function openCommonLink(url) {
+      if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.openLink(url);
+      } else {
+        window.location.href = url;
+      }
+    }
+
     function copyCanvaLink() {
       navigator.clipboard.writeText(CANVA_LINK).then(() => {
-        showAdNotification("✅ Canva Pro link copied! Paste it in your browser.");
+        // No ad-notification here as requested for ad flow, but kept for copy success
+        alert("✅ Canva Pro link copied! Paste it in your browser."); // Using alert for simplicity
       }).catch(err => {
         console.error('Failed to copy text: ', err);
-        showAdNotification("Failed to copy link.");
+        alert("Failed to copy link.");
       });
     }
 
-    function showAdNotification(msg) {
-      const el = document.getElementById('ad-notification');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(() => {
-        el.style.display = 'none';
-      }, 3000);
-    }
+    // Removed showAdNotification function as per request for ad flow
 
     function toggleMode() {
       const body = document.body;
@@ -574,5 +548,6 @@
       }
     }
   </script>
+
 </body>
 </html>
