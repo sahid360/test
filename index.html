@@ -4,10 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
-<!-- Firebase SDK -->
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
   <!-- Chart.js for graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -172,8 +174,8 @@
     .btn-success {
         background: var(--success);
         color: #fff;
-        padding: 8px 15px; /* Smaller button */
-        font-size: 14px; /* Smaller font */
+        padding: 8px 15px; /* Smaller padding for Save Steps button */
+        font-size: 14px; /* Smaller font size */
         margin-left: 10px; /* Space from input */
     }
 
@@ -364,23 +366,23 @@
 
     /* Ad pattern buttons specific styles */
     .ad-pattern-buttons {
-        display: flex;
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        display: flex; /* Make buttons horizontal */
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        justify-content: center; /* Center buttons */
         gap: 10px;
         margin-top: 15px;
-        justify-content: flex-start; /* Align buttons to the start */
     }
     .ad-pattern-buttons button {
-        flex-grow: 1; /* Allow buttons to grow to fill space */
-        min-width: 100px; /* Minimum width for each button */
         background-color: #555;
         color: white;
-        padding: 8px 12px; /* Smaller padding */
+        padding: 10px 15px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 14px; /* Smaller font */
+        font-size: 16px;
         transition: background-color 0.2s ease;
+        flex: 1 1 auto; /* Allow buttons to grow and shrink, minimum width determined by content */
+        max-width: 150px; /* Limit individual button width */
     }
     .ad-pattern-buttons button.active {
         background-color: var(--primary);
@@ -393,18 +395,17 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        justify-content: center; /* Center the input and button */
     }
     .ad-step-control label {
         font-weight: bold;
         white-space: nowrap; /* Prevent label from wrapping */
     }
     .ad-step-control input {
-        width: 80px;
+        width: 60px; /* Smaller input for number */
         text-align: center;
-        padding: 8px 10px; /* Smaller padding */
-        font-size: 14px; /* Smaller font */
-        flex-shrink: 0; /* Prevent input from shrinking too much */
+        padding: 8px; /* Smaller padding for input */
+        font-size: 14px; /* Smaller font size */
     }
 
     /* --- Responsive Adjustments --- */
@@ -515,54 +516,25 @@
         padding: 15px 25px;
         font-size: 16px;
       }
-      /* Specific mobile adjustments for ad patterns and steps */
-      .ad-pattern-buttons {
-        flex-direction: row; /* Keep horizontal even on mobile */
-        justify-content: space-around; /* Distribute space */
-      }
-      .ad-pattern-buttons button {
-        flex-basis: auto; /* Let content determine width, but allow shrinking */
-        width: auto; /* Reset width for flex behavior */
-        padding: 7px 10px; /* Even smaller padding */
-        font-size: 13px; /* Even smaller font */
-      }
-
       .ad-step-control {
-        flex-direction: row; /* Keep horizontal on mobile if space allows */
-        justify-content: flex-start; /* Align items to the start */
-        gap: 8px;
+        flex-direction: row; /* Keep horizontal on mobile too */
+        align-items: center;
+        justify-content: center;
       }
       .ad-step-control label {
-        font-size: 14px;
+        margin-bottom: 0;
       }
       .ad-step-control input {
-        width: 60px; /* Make input smaller */
-        padding: 7px;
-        font-size: 13px;
+        width: 50px; /* Even smaller on mobile */
       }
       .ad-step-control .btn-success {
-        padding: 7px 12px; /* Smaller button */
-        font-size: 13px;
-        margin-left: auto; /* Push save button to the right */
+        margin-top: 0;
+      }
+      .ad-pattern-buttons button {
+        flex: 1 1 30%; /* Adjust for 3 buttons on one line for smaller screens */
+        max-width: unset; /* Remove max-width constraint for better wrapping */
       }
     }
-
-    /* Further refine ad-step-control for very small screens if necessary */
-    @media (max-width: 400px) {
-        .ad-step-control {
-            flex-wrap: wrap; /* Allow wrapping again if really small */
-            justify-content: center;
-        }
-        .ad-step-control label, .ad-step-control input, .ad-step-control .btn-success {
-            flex-basis: auto; /* Reset flex basis */
-            width: auto;
-            margin: 0 5px 5px 0; /* Add some margin for wrapping */
-        }
-        .ad-step-control .btn-success {
-            margin-left: 0; /* Remove auto margin on wrap */
-        }
-    }
-
   </style>
 
 </head>
@@ -598,11 +570,11 @@
       </div>
     </div>
     
-    <h3>Select Ad Pattern:</h3>
     <div class="ad-pattern-buttons">
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1: All Monetag</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Pattern 2: Monetag & Gigapub</button>
-        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3: All Gigapub</button>
+        <h3>Select Ad Pattern:</h3>
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Pattern 2</button>
+        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3</button>
     </div>
 
     <div class="ad-step-control">
@@ -628,6 +600,7 @@
         <canvas id="daily-monthly-visitors-chart"></canvas>
     </div>
   </div>
+
   <div class="card">
     <h2>Visitor Details</h2>
     <div class="monthly-daily-flex">
@@ -651,15 +624,7 @@
 </div>
 
 </div>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <!-- Chart.js for graphs -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <script>
+<script>
     // Firebase configuration (replace with your actual config)
     const firebaseConfig = {
         apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
@@ -841,10 +806,7 @@
             document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
                 button.classList.remove('active');
             });
-            const activePatternButton = document.getElementById(`ad-pattern-${currentPattern}-btn`);
-            if (activePatternButton) {
-                activePatternButton.classList.add('active');
-            }
+            document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
             // Update UI for total ad steps
             const totalAdStepsInput = document.getElementById('total-ad-steps');
@@ -925,6 +887,12 @@
                 console.error("Error setting total ad steps:", error);
                 showAdNotification("Failed to save total ad steps.");
             });
+    }
+
+    // Placeholder for other functions (will be implemented in 2nd phase)
+    function updateCanvaLink() {
+        showAdNotification("Update Canva Link function not yet fully implemented.");
+        // Logic for updating Canva link in Firebase will go here
     }
 
     // --- Utility Functions ---
@@ -1148,6 +1116,3 @@
 </script>
 </body>
 </html>
-     
-  
-
