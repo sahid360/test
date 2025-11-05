@@ -179,6 +179,17 @@
         margin-left: 10px; /* Space from input */
     }
 
+    /* New styles for save button state */
+    .btn-save-inactive {
+        background-color: #333 !important; /* Black/dark gray */
+        color: #fff !important;
+    }
+    .btn-save-active {
+        background-color: var(--success) !important; /* Green */
+        color: #fff !important;
+    }
+
+
     .btn:hover {
       opacity: 0.9;
       transform: translateY(-2px);
@@ -582,8 +593,8 @@
 
     <div class="ad-step-control">
         <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps(); markSaveButtonChanged(true);">
+        <button class="btn btn-success btn-save-inactive" id="save-ad-steps-btn" onclick="saveTotalAdSteps()">Save</button>
     </div>
   </div>
 
@@ -592,9 +603,9 @@
     <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
     <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
     <div class="input-with-button">
-        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="" oninput="markCanvaSaveButtonChanged(true)">
     </div>
-    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+    <button class="btn btn-primary" id="update-canva-link-btn" onclick="updateCanvaLink()">Update Link</button>
   </div>
   <div class="card">
     <h2>Monthly Daily Visitor</h2>
@@ -647,6 +658,7 @@
     let dailyMonthlyVisitorsChart;
     let currentSelectedMonth = '';
     let isInitialAuthCheckComplete = false;
+    let initialTotalAdStepsValue = 0; // To store the initial value for comparison
 
     // Helper function to get today's date in YYYY-MM-DD UTC format
     function getTodayKeyUTC() {
@@ -786,6 +798,7 @@
             const link = snapshot.val();
             document.getElementById('current-canva-link').textContent = link || 'N/A';
             document.getElementById('new-canva-link').value = '';
+            markCanvaSaveButtonChanged(false); // Reset Canva button state on load
         });
 
         // Load Visitor Overview
@@ -813,6 +826,8 @@
             // Update UI for total ad steps
             const totalAdStepsInput = document.getElementById('total-ad-steps');
             totalAdStepsInput.value = currentSteps;
+            initialTotalAdStepsValue = currentSteps; // Store initial value
+            markSaveButtonChanged(false); // Set button to inactive on initial load
         });
 
         // Load Monthly Visitor Data
@@ -876,12 +891,21 @@
             value = 10;
         }
         input.value = value;
+
+        // Compare with initial value to determine if changed
+        if (value !== initialTotalAdStepsValue) {
+            markSaveButtonChanged(true); // Mark as changed if different
+        } else {
+            markSaveButtonChanged(false); // Mark as unchanged if same as initial
+        }
     }
 
     function saveTotalAdSteps() {
         const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
         database.ref('adSettings/totalSteps').set(totalSteps)
             .then(() => {
+                initialTotalAdStepsValue = totalSteps; // Update initial value after saving
+                markSaveButtonChanged(false); // Change button to inactive state
                 // Notification removed
             })
             .catch(error => {
@@ -890,7 +914,19 @@
             });
     }
 
-    // Placeholder for other functions (will be implemented in 2nd phase)
+    // Function to manage the state of the "Save" button for Total Ad Steps
+    function markSaveButtonChanged(isChanged) {
+        const saveButton = document.getElementById('save-ad-steps-btn');
+        if (isChanged) {
+            saveButton.classList.remove('btn-save-inactive');
+            saveButton.classList.add('btn-save-active');
+        } else {
+            saveButton.classList.remove('btn-save-active');
+            saveButton.classList.add('btn-save-inactive');
+        }
+    }
+
+
     function updateCanvaLink() {
         const newLinkInput = document.getElementById('new-canva-link');
         const newLink = newLinkInput.value.trim();
@@ -900,6 +936,7 @@
                 .then(() => {
                     // Notification removed
                     newLinkInput.value = '';
+                    markCanvaSaveButtonChanged(false);
                 })
                 .catch((error) => {
                     console.error("Error updating Canva link:", error);
@@ -909,6 +946,19 @@
             showAdNotification("Please enter a valid link.");
         }
     }
+
+    // Function to manage the state of the "Update Link" button for Canva
+    function markCanvaSaveButtonChanged(isChanged) {
+        const updateButton = document.getElementById('update-canva-link-btn');
+        if (isChanged) {
+            updateButton.classList.add('btn-primary'); // Assuming btn-primary is the default active state
+        } else {
+            // You might want a different class for an 'unchanged' or 'default' state if btn-primary is too vibrant
+            updateButton.classList.remove('btn-primary'); 
+            updateButton.style.backgroundColor = '#555'; // A neutral color, or define a new class
+        }
+    }
+
 
     // --- Utility Functions ---
     function showAdNotification(msg) {
