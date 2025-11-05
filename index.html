@@ -174,7 +174,7 @@
     .btn-success {
         background: var(--success);
         color: #fff;
-        padding: 8px 15px; /* Smaller padding for Save Steps button */
+        padding: 8px 15px; /* Smaller padding for Save button */
         font-size: 14px; /* Smaller font size */
         margin-left: 10px; /* Space from input */
     }
@@ -366,7 +366,7 @@
 
     /* Ad pattern buttons specific styles */
     .ad-pattern-buttons {
-        display: flex; /* Make buttons horizontal */
+        display: flex; 
         flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
         justify-content: center; /* Center buttons */
         gap: 10px;
@@ -375,14 +375,15 @@
     .ad-pattern-buttons button {
         background-color: #555;
         color: white;
-        padding: 10px 15px;
+        padding: 8px 12px; /* Smaller padding */
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 16px;
+        font-weight: bold; /* Make button text bold */
+        font-size: 14px; /* Smaller font size */
         transition: background-color 0.2s ease;
-        flex: 1 1 auto; /* Allow buttons to grow and shrink, minimum width determined by content */
-        max-width: 150px; /* Limit individual button width */
+        flex: 1 1 30%; /* Distribute space for 3 buttons in a row */
+        max-width: 120px; /* Max width for each button */
     }
     .ad-pattern-buttons button.active {
         background-color: var(--primary);
@@ -580,7 +581,7 @@
     <div class="ad-step-control">
         <label for="total-ad-steps">Total Ad Steps:</label>
         <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
     </div>
   </div>
 
@@ -891,8 +892,22 @@
 
     // Placeholder for other functions (will be implemented in 2nd phase)
     function updateCanvaLink() {
-        showAdNotification("Update Canva Link function not yet fully implemented.");
-        // Logic for updating Canva link in Firebase will go here
+        const newLinkInput = document.getElementById('new-canva-link');
+        const newLink = newLinkInput.value.trim();
+
+        if (newLink) {
+            database.ref('canvaLink').set(newLink)
+                .then(() => {
+                    showAdNotification("Canva Pro link updated successfully!");
+                    newLinkInput.value = '';
+                })
+                .catch((error) => {
+                    console.error("Error updating Canva link:", error);
+                    showAdNotification("Failed to update Canva Pro link.");
+                });
+        } else {
+            showAdNotification("Please enter a valid link.");
+        }
     }
 
     // --- Utility Functions ---
@@ -1087,26 +1102,6 @@
         const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
         chart.options.scales.x.grid.color = gridColor;
         chart.options.scales.y.grid.color = gridColor;
-    }
-
-    // --- Canva Link Update ---
-    function updateCanvaLink() {
-        const newLinkInput = document.getElementById('new-canva-link');
-        const newLink = newLinkInput.value.trim();
-
-        if (newLink) {
-            database.ref('canvaLink').set(newLink)
-                .then(() => {
-                    showAdNotification("Canva Pro link updated successfully!");
-                    newLinkInput.value = '';
-                })
-                .catch((error) => {
-                    console.error("Error updating Canva link:", error);
-                    showAdNotification("Failed to update Canva Pro link.");
-                });
-        } else {
-            showAdNotification("Please enter a valid link.");
-        }
     }
 
     // Initialize h3 color based on current mode on load
