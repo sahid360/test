@@ -1,23 +1,22 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>  
   <meta charset="UTF-8"/>  
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
   <title>Canva Pro Team</title>  
 
-  <!-- Monetag SDK - For Step 1 and 3 -->
+  <!-- Monetag SDK - For Step control -->
   <script src='//libtl.com/sdk.js' data-zone='10130652' data-sdk='show_10130652' defer></script>  
 
-  <!-- Gigapub SDK - For Step 2 and 4 -->
+  <!-- Gigapub SDK - For Step control -->
   <script src="https://ad.gigapub.tech/script?id=3472" defer></script>
 
-  <!-- Adexium SDK - Pre-roll ad, auto-displayed on page load, NOT part of the 4 steps -->
+  <!-- Adexium SDK - Pre-roll ad, auto-displayed on page load, NOT part of the steps -->
   <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js" defer></script>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
-        const adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b8078443b', adFormat: 'interstitial'});
+        const adexiumWidget = new AdexiumWidget({wid: '0ce8100c-9e73-48d1-bca1-655b807843b', adFormat: 'interstitial'});
         adexiumWidget.autoMode(); // This will show the Adexium ad automatically on page load
-        // Important: This ad does NOT count towards the 'adCount' for the 4 steps.
     });
   </script>
   
@@ -128,12 +127,10 @@
       transition: background 0.3s ease-in-out;
     }
 
-    /* Updated step colors for 4 steps */
-    .step-box.done-1 { background-color: red; }         /* Monetag */
-    .step-box.done-2 { background-color: orange; }       /* Gigapub */
-    .step-box.done-3 { background-color: limegreen; }    /* Monetag */
-    .step-box.done-4 { background-color: blueviolet; }   /* Gigapub */
-
+    /* Dynamic step colors */
+    .step-box.done { 
+        background-color: var(--secondary); /* A general highlight color for done steps */
+    }
 
     .buttons {
       display: flex;
@@ -163,7 +160,6 @@
       font-size: 14px;
     }
 
-    /* Ad notification is removed from ad flow, but kept for copy link feedback */
     .ad-notification {
       position: fixed;
       top: 20px;
@@ -241,7 +237,6 @@
       z-index: 1100;
     }
 
-    /* ✅ Copy section style */
     #copy-section {
       display: none;
       margin-top: 15px;
@@ -266,7 +261,6 @@
       font-weight: 500;
     }
 
-    /* ✅ এক লাইনে Canva লিংক দেখাবে */
     #canva-link {
       display: block;
       background: var(--card-bg);
@@ -278,8 +272,8 @@
       margin-bottom: 10px;
       text-align: left;
       user-select: all;
-      white-space: nowrap; /* এক লাইনে দেখাবে */
-      overflow: auto;      /* বড় হলে স্ক্রল হবে */
+      white-space: nowrap;
+      overflow: auto;
     }
 
     #copy-btn {
@@ -303,22 +297,18 @@
     <button id="mode-toggle" onclick="toggleMode()">🌙</button>
     <div class="header">
       <h1>Canva Pro Team</h1>
-      <p class="author">📢 After watching 4 ads, the Canva Pro button will be unlocked. Then click again to open Canva Pro.</p>
+      <p class="author">📢 After watching <span id="required-ads-count">X</span> ads, the Canva Pro button will be unlocked. Then click again to open Canva Pro.</p>
     </div>
     <div class="content">
       <div class="progress-container">
-        <div class="step-inner">
-          <div class="step-box" id="step1">Step 1</div>
-          <div class="step-box" id="step2">Step 2</div>
-          <div class="step-box" id="step3">Step 3</div>
-          <div class="step-box" id="step4">Step 4</div>
+        <div class="step-inner" id="step-inner-container">
+          <!-- Step boxes will be dynamically generated here -->
         </div>
       </div>
 
       <div class="buttons">
         <button class="btn-3d" id="canva-pro-btn" onclick="handleClick()">🔒 Watch Ads to Unlock Canva Pro</button>
 
-        <!-- ✅ Copy link section -->
         <div id="copy-section">
           <p>🌐 Copy link and paste it in your browser:</p>
           <span id="canva-link"></span>
@@ -344,7 +334,7 @@
   </div>
 
   <script>
-    // Firebase configuration
+    // Firebase configuration (replace with your actual config)
    const firebaseConfig = {
   apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
   authDomain: "canva-pro-team.firebaseapp.com",
@@ -360,9 +350,10 @@
     const database = firebase.database();
 
     let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
-    let adCount = 0; // adCount now strictly tracks the 4 manual steps (0 to 3)
+    let adCount = 0; // Current completed ads
     let adsCompleted = false;
-    const TOTAL_ADS_REQUIRED = 4; // Define total ads for clarity
+    let TOTAL_ADS_REQUIRED = 5; // Default value, will be fetched from Firebase
+    let AD_PATTERN = 1; // Default value, will be fetched from Firebase
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedMode = localStorage.getItem("themeMode");
@@ -380,29 +371,58 @@
         }
       });
 
+      // Load Ad Settings from Firebase
+      database.ref('adSettings').on('value', (snapshot) => {
+        const settings = snapshot.val();
+        if (settings) {
+          AD_PATTERN = settings.pattern || 1;
+          TOTAL_ADS_REQUIRED = settings.totalSteps || 5;
+          document.getElementById('required-ads-count').textContent = TOTAL_ADS_REQUIRED;
+          generateStepBoxes(); // Regenerate step boxes based on new total steps
+          updateSteps(); // Update progress bar if ads already started
+        } else {
+          // If no settings, use defaults and generate steps
+          document.getElementById('required-ads-count').textContent = TOTAL_ADS_REQUIRED;
+          generateStepBoxes();
+        }
+      });
+
       // Track visitors
       trackVisitor();
     });
 
+    function generateStepBoxes() {
+        const stepInnerContainer = document.getElementById('step-inner-container');
+        stepInnerContainer.innerHTML = ''; // Clear existing steps
+
+        for (let i = 1; i <= TOTAL_ADS_REQUIRED; i++) {
+            const div = document.createElement('div');
+            div.className = 'step-box';
+            div.id = `step${i}`;
+            div.textContent = `Step ${i}`;
+            stepInnerContainer.appendChild(div);
+        }
+    }
+
     function trackVisitor() {
         const today = new Date();
-        const year = today.getFullYear();
-        const month = (today.getMonth() + 1).toString().padStart(2, '0');
-        const day = today.getDate().toString().padStart(2, '0');
+        const year = today.getUTCFullYear();
+        const month = (today.getUTCMonth() + 1).toString().padStart(2, '0');
+        const day = today.getUTCDate().toString().padStart(2, '0');
         const yearMonth = `${year}-${month}`;
-        const yearMonthDay = `${year}-${month}-${day}`; // Format YYYY-MM-DD
+        const yearMonthDay = `${year}-${month}-${day}`; // Format YYYY-MM-DD UTC
 
         // Track total count
         database.ref('visitors/total').transaction((currentCount) => {
             return (currentCount || 0) + 1;
         });
 
-        // Track monthly count
+        // Track monthly count (UTC based)
         database.ref('visitors/monthly/' + yearMonth).transaction((currentCount) => {
             return (currentCount || 0) + 1;
         });
 
-        // Track daily count
+        // Track daily count (UTC based)
         database.ref('visitors/daily/' + yearMonthDay).transaction((currentCount) => {
             return (currentCount || 0) + 1;
         });
@@ -418,12 +438,11 @@
       button.disabled = true;
       button.style.background = 'gray';
 
-      // Start 3-second countdown for each manual step
-      let countdown = 3;
+      let countdown = 2; // 2 seconds countdown
       const interval = setInterval(() => {
         button.textContent = `Please wait... ${countdown} sec`;
         countdown--;
-        if (countdown < 0) {
+        if (countdown < 0) { // Changed to < 0 to show "0 sec"
           clearInterval(interval);
           showNextAd(); // Call ad function after countdown
         }
@@ -432,27 +451,51 @@
 
     async function showNextAd() {
         const button = document.getElementById('canva-pro-btn');
-        // adCount represents the current completed step (0-indexed for ad logic)
-        // So, for Step 1 it's adCount 0, Step 2 is adCount 1, etc.
-
         let adPromise;
-        if (adCount === 0 || adCount === 2) { // Step 1 & 3: Monetag
-            if (typeof show_10130652 === 'function') {
-                adPromise = show_10130652();
-            } else {
-                console.warn("Monetag service not available. Skipping ad.");
-                adPromise = Promise.resolve();
-            }
-        } else if (adCount === 1 || adCount === 3) { // Step 2 & 4: Gigapub
-            if (typeof window.showGiga === 'function') {
-                adPromise = window.showGiga();
-            } else {
-                console.warn("Gigapub service not available. Skipping ad.");
-                adPromise = Promise.resolve();
-            }
-        } else {
-            console.warn(`Unexpected adCount: ${adCount}. Skipping ad.`);
-            adPromise = Promise.resolve();
+
+        // Determine which ad to show based on AD_PATTERN and current adCount
+        switch (AD_PATTERN) {
+            case 1: // Pattern 1: All Monetag
+                if (typeof show_10130652 === 'function') {
+                    adPromise = show_10130652();
+                } else {
+                    console.warn("Monetag service not available for pattern 1.");
+                    adPromise = Promise.resolve();
+                }
+                break;
+            case 2: // Pattern 2: Monetag & Gigapub (Monetag, Gigapub, Monetag, Gigapub...)
+                if (adCount % 2 === 0) { // Even steps (0, 2, 4...) -> Monetag
+                    if (typeof show_10130652 === 'function') {
+                        adPromise = show_10130652();
+                    } else {
+                        console.warn("Monetag service not available for pattern 2.");
+                        adPromise = Promise.resolve();
+                    }
+                } else { // Odd steps (1, 3, 5...) -> Gigapub
+                    if (typeof window.showGiga === 'function') {
+                        adPromise = window.showGiga();
+                    } else {
+                        console.warn("Gigapub service not available for pattern 2.");
+                        adPromise = Promise.resolve();
+                    }
+                }
+                break;
+            case 3: // Pattern 3: All Gigapub
+                if (typeof window.showGiga === 'function') {
+                    adPromise = window.showGiga();
+                } else {
+                    console.warn("Gigapub service not available for pattern 3.");
+                    adPromise = Promise.resolve();
+                }
+                break;
+            default:
+                console.warn(`Unknown ad pattern: ${AD_PATTERN}. Defaulting to Monetag.`);
+                if (typeof show_10130652 === 'function') {
+                    adPromise = show_10130652();
+                } else {
+                    adPromise = Promise.resolve();
+                }
+                break;
         }
 
         try {
@@ -493,8 +536,13 @@
     function updateSteps() {
       // Loop through steps to apply 'done' class
       for (let i = 1; i <= TOTAL_ADS_REQUIRED; i++) {
-        if (adCount >= i) {
-          document.getElementById(`step${i}`).classList.add(`done-${i}`);
+        const stepBox = document.getElementById(`step${i}`);
+        if (stepBox) { // Ensure the step box exists
+            if (adCount >= i) {
+                stepBox.classList.add('done');
+            } else {
+                stepBox.classList.remove('done'); // Remove if not yet done (e.g., if total steps changed)
+            }
         }
       }
     }
@@ -549,4 +597,3 @@
   </script>
 </body>
 </html>
- 
