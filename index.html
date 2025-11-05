@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-  <!-- Chart.js for graphs -->
+  <!-- Chart.js for graphs (will be fully utilized in phase 2) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -28,6 +28,8 @@
       --success: #28a745;
       --info: #17a2b8;
       --h3-color: var(--text-color);
+      --button-active-bg: var(--secondary);
+      --button-active-color: #000;
     }
 
     body.light-mode {
@@ -38,6 +40,8 @@
       --ad-item-bg: #f1f1f1;
       --border-color: #dddddd;
       background: #ffffff !important;
+      --button-active-bg: var(--primary);
+      --button-active-color: #fff;
     }
 
     * {
@@ -134,11 +138,11 @@
         display: flex;
         align-items: center;
         width: 100%;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 5px; /* Reduced margin-top */
+        margin-bottom: 5px; /* Reduced margin-bottom */
     }
 
-    .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
+    .card input[type="text"], .card input[type="number"], .card input[type="password"], .card select {
       flex-grow: 1;
       padding: 12px;
       border-radius: 8px;
@@ -164,24 +168,23 @@
       margin-right: 0px; 
       transition: background 0.2s ease, transform 0.2s ease;
       font-size: 16px;
+      margin-top: 10px;
     }
 
     .btn-primary {
       background: var(--primary);
       color: #fff;
-      margin-top: 10px;
-    }
-    .btn-success {
-        background: var(--success);
-        color: #fff;
-        padding: 8px 15px; /* Smaller padding for Save button */
-        font-size: 14px; /* Smaller font size */
-        margin-left: 10px; /* Space from input */
     }
 
     .btn:hover {
       opacity: 0.9;
       transform: translateY(-2px);
+    }
+    
+    .btn.active {
+        background: var(--button-active-bg);
+        color: var(--button-active-color);
+        box-shadow: 0 0 0 3px var(--secondary);
     }
 
     .btn-danger {
@@ -236,7 +239,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.8);
-        display: flex;
+        display: flex; /* Changed to flex to show initially */
         justify-content: center;
         align-items: center;
         z-index: 1001;
@@ -274,6 +277,7 @@
       font-size: 18px; 
       transition: all 0.3s ease;
       z-index: 1100;
+      /* Initially hidden, will be shown by JS when admin content is visible */
       display: none; 
     }
     #mode-toggle:hover {
@@ -295,57 +299,7 @@
       box-shadow: 0 5px 20px rgba(0,0,0,0.5);
     }
 
-    .monthly-list-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 5px;
-        border-bottom: 1px dashed var(--border-color);
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-    .monthly-list-item:hover {
-        background-color: rgba(3, 218, 197, 0.05);
-    }
-    .monthly-list-item:last-child {
-        border-bottom: none;
-    }
-    .monthly-list-item span {
-        font-weight: 500;
-        font-size: 15px;
-    }
-    .monthly-list-item.selected {
-        background-color: rgba(3, 218, 197, 0.15);
-        border-radius: 5px;
-        padding: 10px;
-    }
-    #daily-stats-list, #monthly-stats-list {
-        max-height: 250px;
-        overflow-y: auto;
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 10px;
-        background-color: var(--card-bg);
-    }
-    #daily-stats-list .daily-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dotted var(--border-color);
-    }
-    #daily-stats-list .daily-item:last-child {
-        border-bottom: none;
-    }
-    #daily-stats-list .daily-item span {
-        font-size: 15px;
-    }
-
-    .monthly-daily-flex {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    /* --- CHART CONTAINER STYLES --- */
+    /* --- CHART CONTAINER STYLES (for phase 2) --- */
     .chart-container {
       position: relative;
       width: 100%;
@@ -356,57 +310,6 @@
       max-width: 100%;
       height: 100% !important;
       width: 100% !important;
-    }
-
-    /* Override Chart.js default font color for dark mode */
-    body:not(.light-mode) .chartjs-render-monitor,
-    body:not(.light-mode) .chartjs-render-monitor canvas {
-        color: var(--text-color) !important; 
-    }
-
-    /* Ad pattern buttons specific styles - UPDATED */
-    .ad-pattern-buttons {
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 10px;
-        margin-top: 15px;
-    }
-    .ad-pattern-buttons button {
-        background-color: #555;
-        color: white;
-        padding: 8px 12px; 
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold; 
-        font-size: 14px; 
-        transition: background-color 0.2s ease;
-        flex: 1 1 auto; /* Allow buttons to grow and shrink, but not have a fixed max-width */
-        max-width: 120px; /* Still apply a max-width to keep them from becoming too wide */
-    }
-    .ad-pattern-buttons button.active {
-        background-color: var(--primary);
-    }
-    .ad-pattern-buttons button:hover:not(.active) {
-        background-color: #777;
-    }
-    .ad-step-control {
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: center; 
-    }
-    .ad-step-control label {
-        font-weight: bold;
-        white-space: nowrap; 
-    }
-    .ad-step-control input {
-        width: 60px; 
-        text-align: center;
-        padding: 8px; 
-        font-size: 14px; 
     }
 
     /* --- Responsive Adjustments --- */
@@ -456,7 +359,7 @@
         font-size: 22px; 
       }
 
-      .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
+      .card input[type="text"], .card input[type="number"], .card input[type="password"], .card select {
         width: 100%;
         padding: 10px;
         font-size: 15px;
@@ -470,13 +373,13 @@
 
       .input-with-button input {
         margin-right: 0;
-        margin-bottom: 0px;
+        margin-bottom: 0px; /* Reduced margin-bottom */
       }
 
       .btn {
         width: 100%;
         margin-right: 0;
-        margin-top: 10px;
+        margin-top: 10px; /* Adjusted for consistency */
         padding: 10px 15px;
         font-size: 15px;
       }
@@ -507,33 +410,10 @@
         height: 200px; 
       }
 
-      .monthly-daily-flex {
-          grid-template-columns: 1fr;
-          gap: 15px;
-      }
-
       .ad-notification {
         width: 90%;
         padding: 15px 25px;
         font-size: 16px;
-      }
-      .ad-step-control {
-        flex-direction: row; 
-        align-items: center;
-        justify-content: center;
-      }
-      .ad-step-control label {
-        margin-bottom: 0;
-      }
-      .ad-step-control input {
-        width: 50px; 
-      }
-      .ad-step-control .btn-success {
-        margin-top: 0;
-      }
-      .ad-pattern-buttons button {
-        flex: 1 1 30%; 
-        max-width: unset; 
       }
     }
   </style>
@@ -548,107 +428,113 @@
   <div class="container">
     <button id="mode-toggle" onclick="toggleMode()">🌙</button>
 
-<div id="login-container">
-  <h1>Admin Login</h1>
-  <input type="text" id="admin-email" placeholder="Admin Email" autocomplete="username">
-  <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
-  <button id="login-button" onclick="loginAdminWithEmailPassword()">Login</button>
-</div>
+    <div id="login-container">
+      <h1>Admin Login</h1>
+      <input type="text" id="admin-email" placeholder="Admin Email" autocomplete="username">
+      <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+      <button id="login-button" onclick="loginAdminWithEmailPassword()">Login</button>
+    </div>
 
-<div id="admin-content">
-  <h1>Admin Panel</h1>
+    <div id="admin-content">
+      <h1>Admin Panel</h1>
 
-  <div class="card">
-    <h2>Visitor Overview</h2>
-    <div class="stat-grid">
-      <div class="stat-item">
-        Total Views
-        <span id="total-visitors">0</span>
+      <div class="card">
+        <h2>Visitor Overview</h2>
+        <div class="stat-grid">
+          <div class="stat-item">
+            Total Views
+            <span id="total-visitors">0</span>
+          </div>
+          <div class="stat-item">
+            Today's Views (UTC)
+            <span id="daily-visitors">0</span>
+          </div>
+        </div>
       </div>
-      <div class="stat-item">
-        Today's Views (UTC)
-        <span id="daily-visitors">0</span>
+
+      <div class="card">
+        <h2>Ad Configuration</h2>
+        <p>Active Ad Pattern: <span id="current-ad-pattern" style="color: var(--secondary); font-weight: bold;">Loading...</span></p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+            <button class="btn btn-primary" id="btn-monetag-only" onclick="updateAdPattern('monetagOnly')">Monetag Only</button>
+            <button class="btn btn-primary" id="btn-mixed-ads" onclick="updateAdPattern('mixed')">Mixed Ads</button>
+            <button class="btn btn-primary" id="btn-gigapub-only" onclick="updateAdPattern('gigapubOnly')">Gigapub Only</button>
+        </div>
+
+        <p style="margin-top: 20px;">Current Unlock Steps: <span id="current-total-steps" style="color: var(--secondary); font-weight: bold;">0</span></p>
+        <label for="new-total-steps" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Set Unlock Steps:</label>
+        <div class="input-with-button">
+            <input type="number" id="new-total-steps" min="1" max="10" placeholder="e.g., 5" value="">
+        </div>
+        <button class="btn btn-primary" onclick="updateTotalSteps()">Update Steps</button>
       </div>
-    </div>
-    
-    <!-- MODIFIED SECTION START -->
-    <div class="ad-pattern-buttons">
-        <!-- Removed "Select Ad Pattern: h3 tag here" -->
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
-      <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Max</button>
-    </div>
-    <!-- MODIFIED SECTION END -->
 
-    <div class="ad-step-control">
-        <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
-    </div>
-  </div>
 
-  <div class="card">
-    <h2>Canva Pro Link</h2>
-    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
-    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
-    <div class="input-with-button">
-        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
-    </div>
-    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
-  </div>
-  <div class="card">
-    <h2>Monthly Daily Visitor</h2>
-    <div class="chart-container">
-        <canvas id="daily-monthly-visitors-chart"></canvas>
-    </div>
-  </div>
+      <div class="card">
+        <h2>Canva Pro Link</h2>
+        <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
+        <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+        <div class="input-with-button">
+            <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+        </div>
+        <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+      </div>
 
-  <div class="card">
-    <h2>Visitor Details</h2>
-    <div class="monthly-daily-flex">
-        <div style="flex: 1;">
-            <h3>Select Month:</h3>
-            <div id="monthly-stats-list">
-                <p>Loading monthly data...</p>
+      <!-- These sections will be populated in Phase 2 -->
+      <div class="card" style="display: none;" id="monthly-daily-card">
+        <h2>Monthly Daily Visitor</h2>
+        <div class="chart-container">
+            <canvas id="daily-monthly-visitors-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="display: none;" id="visitor-details-card">
+        <h2>Visitor Details</h2>
+        <div class="monthly-daily-flex">
+            <div style="flex: 1;">
+                <h3>Select Month:</h3>
+                <div id="monthly-stats-list">
+                    <p>Loading monthly data...</p>
+                </div>
+            </div>
+            <div style="flex: 1;">
+                <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
+                <div id="daily-stats-list">
+                    <p>Select a month to see daily views.</p>
+                </div>
             </div>
         </div>
-        <div style="flex: 1;">
-            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
-            <div id="daily-stats-list">
-                <p>Select a month to see daily views.</p>
-            </div>
-        </div>
+      </div>
+
+
+      <button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
+
     </div>
+
   </div>
-
-  <button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
-
-</div>
-
-</div>
   <script>
-    // Firebase configuration (replace with your actual config)
+    // Your Firebase Configuration (keep this the same)
     const firebaseConfig = {
-        apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
-        authDomain: "canva-pro-team.firebaseapp.com",
-        databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
-        projectId: "canva-pro-team",
-        storageBucket: "canva-pro-team.firebasestorage.app",
-        messagingSenderId: "462948035203",
-        appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
+      apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
+      authDomain: "canva-pro-team.firebaseapp.com",
+      databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
+      projectId: "canva-pro-team",
+      storageBucket: "canva-pro-team.firebasestorage.app",
+      messagingSenderId: "462948035203",
+      appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const auth = firebase.auth();
 
-    const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Replace with your actual admin UID
-    let dailyMonthlyVisitorsChart;
-    let currentSelectedMonth = '';
+    const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Your Admin UID
+    let dailyMonthlyVisitorsChart; // For Chart.js, will be used in Phase 2
+    let currentSelectedMonth = ''; // For Chart.js, will be used in Phase 2
+
     let isInitialAuthCheckComplete = false;
 
-    // Helper function to get today's date in YYYY-MM-DD UTC format
+    // Helper functions for UTC time (keep these the same)
     function getTodayKeyUTC() {
         const now = new Date();
         const year = now.getUTCFullYear();
@@ -657,21 +543,18 @@
         return `${year}-${month}-${day}`;
     }
 
-    // Helper function to format a date in YYYY-MM-DD UTC format
     function getFormattedDateUTC(year, month, day) {
         const date = new Date(Date.UTC(year, month - 1, day));
         const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
         return date.toLocaleDateString('en-US', options);
     }
 
-    // Helper function to format a month in YYYY-MM UTC format
     function getFormattedMonthUTC(year, month) {
         const date = new Date(Date.UTC(year, month - 1, 1));
         const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
         return date.toLocaleDateString('en-US', options);
     }
 
-    // --- Authentication and Loading ---
     window.addEventListener("DOMContentLoaded", () => {
         const savedMode = localStorage.getItem("themeMode");
         if (savedMode === "light") {
@@ -719,15 +602,89 @@
         });
     });
 
-    function showLoadingOverlay(message = "Loading...") {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.querySelector('p').textContent = message;
-        loadingOverlay.style.display = 'flex';
-        document.getElementById('mode-toggle').style.display = 'none';
+    function loadAdminData() {
+        database.ref('canvaLink').on('value', (snapshot) => {
+            const link = snapshot.val();
+            document.getElementById('current-canva-link').textContent = link || 'N/A';
+            document.getElementById('new-canva-link').value = '';
+        });
+
+        database.ref('visitors/total').on('value', (snapshot) => {
+            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+        });
+
+        const fullCurrentDatePath = getTodayKeyUTC();
+        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+        });
+
+        // --- Ad Configuration Loading ---
+        database.ref('adConfig').on('value', (snapshot) => {
+            const config = snapshot.val() || { activeAdPattern: 'monetagOnly', totalSteps: 5 };
+            document.getElementById('current-ad-pattern').textContent = config.activeAdPattern;
+            document.getElementById('current-total-steps').textContent = config.totalSteps;
+            document.getElementById('new-total-steps').value = config.totalSteps;
+
+            // Update button active state
+            document.querySelectorAll('.btn[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (config.activeAdPattern === 'monetagOnly') {
+                document.getElementById('btn-monetag-only').classList.add('active');
+            } else if (config.activeAdPattern === 'mixed') {
+                document.getElementById('btn-mixed-ads').classList.add('active');
+            } else if (config.activeAdPattern === 'gigapubOnly') {
+                document.getElementById('btn-gigapub-only').classList.add('active');
+            }
+        });
+
+        // Visitor details for charts and lists will be loaded in Phase 2
     }
 
-    function hideLoadingOverlay() {
-        document.getElementById('loading-overlay').style.display = 'none';
+    // --- Ad Control Functions ---
+    function updateAdPattern(pattern) {
+        database.ref('adConfig/activeAdPattern').set(pattern)
+            .then(() => {
+                showAdNotification(`Ad pattern updated to: ${pattern}`);
+            })
+            .catch((error) => {
+                console.error("Error updating ad pattern:", error);
+                showAdNotification("Failed to update ad pattern.");
+            });
+    }
+
+    function updateTotalSteps() {
+        const newStepsInput = document.getElementById('new-total-steps');
+        let newSteps = parseInt(newStepsInput.value);
+
+        if (isNaN(newSteps) || newSteps < 1 || newSteps > 10) { // Max 10 steps as a reasonable limit
+            showAdNotification("Please enter a number between 1 and 10 for steps.");
+            newStepsInput.value = document.getElementById('current-total-steps').textContent; // Reset to current
+            return;
+        }
+
+        database.ref('adConfig/totalSteps').set(newSteps)
+            .then(() => {
+                showAdNotification(`Unlock steps updated to: ${newSteps}`);
+            })
+            .catch((error) => {
+                console.error("Error updating total steps:", error);
+                showAdNotification("Failed to update unlock steps.");
+            });
+    }
+
+    function getChartTextColor() {
+        return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+    }
+
+    // `selectMonthForDailyView` and `updateChartColors` will be defined and used in Phase 2
+    // For now, these functions are just placeholders to avoid errors.
+    function selectMonthForDailyView(monthKey, clickedElement) {
+        console.log("selectMonthForDailyView will be implemented in Phase 2");
+    }
+
+    function updateChartColors(chart) {
+        console.log("updateChartColors will be implemented in Phase 2");
     }
 
     function loginAdminWithEmailPassword() {
@@ -779,118 +736,6 @@
         });
     }
 
-    // --- General UI and Data Loading ---
-    function loadAdminData() {
-        // Load Canva Link
-        database.ref('canvaLink').on('value', (snapshot) => {
-            const link = snapshot.val();
-            document.getElementById('current-canva-link').textContent = link || 'N/A';
-            document.getElementById('new-canva-link').value = '';
-        });
-
-        // Load Visitor Overview
-        database.ref('visitors/total').on('value', (snapshot) => {
-            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-        });
-
-        const fullCurrentDatePath = getTodayKeyUTC();
-        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-        });
-
-        // Load Ad Pattern and Total Steps
-        database.ref('adSettings').on('value', (snapshot) => {
-            const settings = snapshot.val();
-            const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-            const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-            
-            // Update UI for ad pattern buttons
-            document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
-
-            // Update UI for total ad steps
-            const totalAdStepsInput = document.getElementById('total-ad-steps');
-            totalAdStepsInput.value = currentSteps;
-        });
-
-        // Load Monthly Visitor Data
-        database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-            const monthlyStatsList = document.getElementById('monthly-stats-list');
-            monthlyStatsList.innerHTML = '';
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const months = Object.keys(data).sort((a, b) => {
-                    const [yearA, monthA] = a.split('-').map(Number);
-                    const [yearB, monthB] = b.split('-').map(Number);
-                    if (yearA !== yearB) return yearB - yearA;
-                    return monthB - monthA;
-                }); 
-
-                months.forEach(monthKey => {
-                    const [year, monthNum] = monthKey.split('-');
-                    const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-                    const div = document.createElement('div');
-                    div.className = 'monthly-list-item';
-                    div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-                    div.onclick = () => selectMonthForDailyView(monthKey, div); 
-                    monthlyStatsList.appendChild(div);
-                });
-
-                if (months.length > 0) {
-                    const latestMonthKey = months[0]; 
-                    const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-                    selectMonthForDailyView(latestMonthKey, latestMonthElement);
-                }
-            } else {
-                monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-                if (dailyMonthlyVisitorsChart) {
-                    dailyMonthlyVisitorsChart.destroy();
-                    dailyMonthlyVisitorsChart = null;
-                }
-            }
-        });
-    }
-
-    // --- Ad Pattern and Steps Control ---
-    function selectAdPattern(patternNumber) {
-        database.ref('adSettings/pattern').set(patternNumber)
-            .then(() => {
-                // Notification removed
-            })
-            .catch(error => {
-                console.error("Error setting ad pattern:", error);
-                showAdNotification("Failed to set ad pattern.");
-            });
-    }
-
-    function updateTotalAdSteps() {
-        const input = document.getElementById('total-ad-steps');
-        let value = parseInt(input.value);
-        if (isNaN(value) || value < 1) {
-            value = 1;
-        } else if (value > 10) { // Max steps to prevent excessive ads
-            value = 10;
-        }
-        input.value = value;
-    }
-
-    function saveTotalAdSteps() {
-        const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
-        database.ref('adSettings/totalSteps').set(totalSteps)
-            .then(() => {
-                // Notification removed
-            })
-            .catch(error => {
-                console.error("Error setting total ad steps:", error);
-                showAdNotification("Failed to save total ad steps.");
-            });
-    }
-
-    // Placeholder for other functions (will be implemented in 2nd phase)
     function updateCanvaLink() {
         const newLinkInput = document.getElementById('new-canva-link');
         const newLink = newLinkInput.value.trim();
@@ -898,7 +743,7 @@
         if (newLink) {
             database.ref('canvaLink').set(newLink)
                 .then(() => {
-                    // Notification removed
+                    showAdNotification("Canva Pro link updated successfully!");
                     newLinkInput.value = '';
                 })
                 .catch((error) => {
@@ -910,7 +755,6 @@
         }
     }
 
-    // --- Utility Functions ---
     function showAdNotification(msg) {
         const el = document.getElementById('ad-notification');
         el.textContent = msg;
@@ -918,6 +762,17 @@
         setTimeout(() => {
             el.style.display = 'none';
         }, 3000);
+    }
+
+    function showLoadingOverlay(message = "Loading...") {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.querySelector('p').textContent = message;
+        loadingOverlay.style.display = 'flex';
+        document.getElementById('mode-toggle').style.display = 'none';
+    }
+
+    function hideLoadingOverlay() {
+        document.getElementById('loading-overlay').style.display = 'none';
     }
 
     function toggleMode() {
@@ -933,183 +788,17 @@
         }
         document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
-        if (dailyMonthlyVisitorsChart) {
-            updateChartColors(dailyMonthlyVisitorsChart);
-            dailyMonthlyVisitorsChart.update();
-        }
+        // Chart update for colors will be active in Phase 2
+        // if (dailyMonthlyVisitorsChart) {
+        //     updateChartColors(dailyMonthlyVisitorsChart);
+        //     dailyMonthlyVisitorsChart.update();
+        // }
     }
 
-    // --- Chart and Visitor Details ---
-    function getChartTextColor() {
-        return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
-    }
-
-    function selectMonthForDailyView(monthKey, clickedElement) {
-        currentSelectedMonth = monthKey;
-        const [year, monthNum] = monthKey.split('-');
-        document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-        if (clickedElement) {
-            clickedElement.classList.add('selected');
-        }
-
-        const dailyStatsList = document.getElementById('daily-stats-list');
-        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-
-        database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-            dailyStatsList.innerHTML = '';
-            const dayLabels = []; 
-            const fullDateLabels = []; 
-            const dayCounts = [];
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const days = Object.keys(data).filter(fullDateKey => 
-                    fullDateKey.startsWith(monthKey)
-                ).sort(); 
-                
-                days.forEach(fullDateKey => {
-                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                    
-                    dayLabels.push(dayDay.toString()); 
-                    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-                    dayCounts.push(data[fullDateKey]);
-
-                    const div = document.createElement('div');
-                    div.className = 'daily-item';
-                    div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-                    dailyStatsList.appendChild(div);
-                });
-
-                if (dailyStatsList.children.length === 0) {
-                    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-                }
-
-            } else {
-                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-            }
-
-            if (dailyMonthlyVisitorsChart) {
-                dailyMonthlyVisitorsChart.data.labels = dayLabels;
-                dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-                dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-                
-                dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-                dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-                dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
-
-                dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-                updateChartColors(dailyMonthlyVisitorsChart);
-                
-                dailyMonthlyVisitorsChart.options.interaction = {
-                    mode: 'index', 
-                    intersect: false 
-                };
-
-                dailyMonthlyVisitorsChart.update();
-            } else {
-                const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-                dailyMonthlyVisitorsChart = new Chart(ctx, {
-                    type: 'line', 
-                    data: {
-                        labels: dayLabels,
-                        datasets: [{
-                            label: 'Daily Views',
-                            data: dayCounts,
-                            backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                            borderColor: 'rgba(3, 218, 197, 1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 6, 
-                            pointHoverRadius: 8, 
-                            pointHitRadius: 10, 
-                            pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                            fullDateLabels: fullDateLabels 
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        
-                        interaction: {
-                            mode: 'index', 
-                            intersect: false 
-                        },
-
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                                color: getChartTextColor(),
-                                font: {
-                                    size: 18
-                                }
-                            },
-                            legend: {
-                                labels: {
-                                    color: getChartTextColor()
-                                }
-                            },
-                            tooltip: { 
-                                callbacks: {
-                                    title: function(tooltipItems) {
-                                        const dataset = tooltipItems[0].dataset;
-                                        const index = tooltipItems[0].dataIndex;
-                                        return dataset.fullDateLabels[index];
-                                    },
-                                    label: function(tooltipItem) {
-                                        return `Views: ${tooltipItem.raw}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: getChartTextColor(),
-                                    precision: 0 
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: getChartTextColor()
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    function updateChartColors(chart) {
-        const textColor = getChartTextColor();
-        chart.options.scales.x.ticks.color = textColor;
-        chart.options.scales.y.ticks.color = textColor;
-        chart.options.plugins.title.color = textColor;
-        if (chart.options.plugins.legend) {
-            chart.options.plugins.legend.labels.color = textColor;
-        }
-        const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-        chart.options.scales.x.grid.color = gridColor;
-        chart.options.scales.y.grid.color = gridColor;
-    }
-
-    // Initialize h3 color based on current mode on load
     window.addEventListener('load', () => {
         document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
     });
-</script>
+  </script>
+
 </body>
 </html>
-    
-
