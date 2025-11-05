@@ -364,26 +364,26 @@
         color: var(--text-color) !important; 
     }
 
-    /* Ad pattern buttons specific styles */
+    /* Ad pattern buttons specific styles - UPDATED */
     .ad-pattern-buttons {
         display: flex; 
-        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-        justify-content: center; /* Center buttons */
+        flex-wrap: wrap; 
+        justify-content: center; 
         gap: 10px;
         margin-top: 15px;
     }
     .ad-pattern-buttons button {
         background-color: #555;
         color: white;
-        padding: 8px 12px; /* Smaller padding */
+        padding: 8px 12px; 
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-weight: bold; /* Make button text bold */
-        font-size: 14px; /* Smaller font size */
+        font-weight: bold; 
+        font-size: 14px; 
         transition: background-color 0.2s ease;
-        flex: 1 1 30%; /* Distribute space for 3 buttons in a row */
-        max-width: 120px; /* Max width for each button */
+        flex: 1 1 auto; /* Allow buttons to grow and shrink, but not have a fixed max-width */
+        max-width: 120px; /* Still apply a max-width to keep them from becoming too wide */
     }
     .ad-pattern-buttons button.active {
         background-color: var(--primary);
@@ -396,17 +396,17 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        justify-content: center; /* Center the input and button */
+        justify-content: center; 
     }
     .ad-step-control label {
         font-weight: bold;
-        white-space: nowrap; /* Prevent label from wrapping */
+        white-space: nowrap; 
     }
     .ad-step-control input {
-        width: 60px; /* Smaller input for number */
+        width: 60px; 
         text-align: center;
-        padding: 8px; /* Smaller padding for input */
-        font-size: 14px; /* Smaller font size */
+        padding: 8px; 
+        font-size: 14px; 
     }
 
     /* --- Responsive Adjustments --- */
@@ -518,7 +518,7 @@
         font-size: 16px;
       }
       .ad-step-control {
-        flex-direction: row; /* Keep horizontal on mobile too */
+        flex-direction: row; 
         align-items: center;
         justify-content: center;
       }
@@ -526,14 +526,14 @@
         margin-bottom: 0;
       }
       .ad-step-control input {
-        width: 50px; /* Even smaller on mobile */
+        width: 50px; 
       }
       .ad-step-control .btn-success {
         margin-top: 0;
       }
       .ad-pattern-buttons button {
-        flex: 1 1 30%; /* Adjust for 3 buttons on one line for smaller screens */
-        max-width: unset; /* Remove max-width constraint for better wrapping */
+        flex: 1 1 30%; 
+        max-width: unset; 
       }
     }
   </style>
@@ -571,12 +571,14 @@
       </div>
     </div>
     
+    <!-- MODIFIED SECTION START -->
     <div class="ad-pattern-buttons">
-        <h3>Select Ad Pattern:</h3>
+        <!-- Removed "Select Ad Pattern: h3 tag here" -->
         <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1</button>
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Pattern 2</button>
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3</button>
     </div>
+    <!-- MODIFIED SECTION END -->
 
     <div class="ad-step-control">
         <label for="total-ad-steps">Total Ad Steps:</label>
@@ -594,7 +596,6 @@
     </div>
     <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
   </div>
-
   <div class="card">
     <h2>Monthly Daily Visitor</h2>
     <div class="chart-container">
