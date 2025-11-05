@@ -384,38 +384,37 @@
     .ad-pattern-buttons button:hover:not(.active) {
         background-color: #777;
     }
-
-    /* Combined ad settings control */
-    .ad-settings-control {
+    .ad-step-control {
         margin-top: 20px;
         display: flex;
         align-items: center;
-        gap: 15px; /* Increased gap for better spacing */
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
-        justify-content: space-between; /* Space between items */
+        gap: 10px;
+        flex-wrap: wrap; /* Added for responsiveness */
     }
-    .ad-settings-control label {
+    .ad-step-control label {
         font-weight: bold;
-        white-space: nowrap; /* Prevent label from breaking */
     }
-    .ad-settings-control input[type="number"] {
+    .ad-step-control input {
         width: 80px;
         text-align: center;
-        margin-right: 10px; /* Space between input and its save button */
     }
+    .ad-step-control .btn {
+        margin-left: auto; /* Pushes the button to the right */
+    }
+    /* Adexium Toggle specific style */
     .adexium-toggle-container {
         display: flex;
         align-items: center;
+        margin-left: 20px; /* Space from steps control */
         gap: 10px;
-        margin-left: auto; /* Push to the right */
     }
-    .toggle-switch {
+    .switch {
       position: relative;
       display: inline-block;
-      width: 60px;
-      height: 34px;
+      width: 45px;
+      height: 25px;
     }
-    .toggle-switch input {
+    .switch input { 
       opacity: 0;
       width: 0;
       height: 0;
@@ -429,13 +428,13 @@
       bottom: 0;
       background-color: #ccc;
       transition: .4s;
-      border-radius: 34px;
+      border-radius: 25px;
     }
     .slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
+      height: 17px;
+      width: 17px;
       left: 4px;
       bottom: 4px;
       background-color: white;
@@ -449,55 +448,8 @@
       box-shadow: 0 0 1px var(--primary);
     }
     input:checked + .slider:before {
-      transform: translateX(26px);
+      transform: translateX(20px);
     }
-
-    /* Dynamic Step Box Coloring and Font Size */
-    .progress-container {
-        display: flex;
-        overflow: hidden;
-        border-radius: 12px;
-        height: 30px;
-        margin-bottom: 25px;
-        border: 1px solid var(--border-color);
-        background: #333;
-    }
-    .step-box {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #fff;
-        background-color: #444;
-        transition: background 0.3s ease-in-out, font-size 0.2s ease;
-        white-space: nowrap; /* Prevent text wrapping within a step */
-        overflow: hidden; /* Hide overflow if text is too long */
-        text-overflow: ellipsis; /* Add ellipsis if text overflows */
-        padding: 0 5px; /* Add some padding to prevent text sticking to edges */
-    }
-
-    /* Dynamic font sizing for steps */
-    body:not(.light-mode) .step-box, body.light-mode .step-box {
-        font-size: 14px;
-    }
-    [data-total-steps="7"] .step-box { font-size: 12px; }
-    [data-total-steps="8"] .step-box { font-size: 11px; }
-    [data-total-steps="9"] .step-box { font-size: 10px; }
-    [data-total-steps="10"] .step-box { font-size: 9px; }
-
-
-    /* 10 unique colors for done steps */
-    .step-box.done-1 { background-color: #28a745; } /* success green */
-    .step-box.done-2 { background-color: #17a2b8; } /* info blue */
-    .step-box.done-3 { background-color: #ffc107; } /* warning yellow */
-    .step-box.done-4 { background-color: #6f42c1; } /* indigo */
-    .step-box.done-5 { background-color: #e83e8c; } /* pink */
-    .step-box.done-6 { background-color: #fd7e14; } /* orange */
-    .step-box.done-7 { background-color: #20c997; } /* teal */
-    .step-box.done-8 { background-color: #6610f2; } /* purple */
-    .step-box.done-9 { background-color: #007bff; } /* primary blue */
-    .step-box.done-10 { background-color: #dc3545; } /* danger red */
 
 
     /* --- Responsive Adjustments --- */
@@ -608,18 +560,22 @@
         padding: 15px 25px;
         font-size: 16px;
       }
-      .ad-settings-control {
+      .ad-step-control {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
       }
-      .ad-settings-control input {
+      .ad-step-control input {
         width: 100%;
       }
+      .ad-step-control .btn {
+          margin-left: 0; /* Remove auto margin on small screens */
+          width: auto; /* Allow button to size naturally */
+          align-self: flex-start; /* Align button to start */
+      }
       .adexium-toggle-container {
-        margin-left: 0; /* Reset margin on small screens */
-        width: 100%; /* Take full width */
-        justify-content: flex-start; /* Align left */
+          margin-left: 0;
+          margin-top: 10px; /* Add some space if stacked */
+          justify-content: flex-start;
       }
     }
   </style>
@@ -629,615 +585,599 @@
   <div class="ad-notification" id="ad-notification"></div>
   <div id="loading-overlay">
     <div class="spinner"></div>
-    <p>Loading Admin Panel...</p>
+    <p>অ্যাডমিন প্যানেল লোড হচ্ছে...</p>
   </div>
   <div class="container">
     <button id="mode-toggle" onclick="toggleMode()">🌙</button>
 
 <div id="login-container">
-  <h1>Admin Login</h1>
-  <input type="text" id="admin-email" placeholder="Admin Email" autocomplete="username">
-  <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
-  <button id="login-button" onclick="loginAdminWithEmailPassword()">Login</button>
+  <h1>অ্যাডমিন লগইন</h1>
+  <input type="text" id="admin-email" placeholder="অ্যাডমিন ইমেইল" autocomplete="username">
+  <input type="password" id="admin-password" placeholder="পাসওয়ার্ড" autocomplete="current-password">
+  <button id="login-button" onclick="loginAdminWithEmailPassword()">লগইন</button>
 </div>
 
 <div id="admin-content">
-  <h1>Admin Panel</h1>
+  <h1>অ্যাডমিন প্যানেল</h1>
 
   <div class="card">
-    <h2>Visitor Overview</h2>
+    <h2>ভিজিটর ওভারভিউ</h2>
     <div class="stat-grid">
       <div class="stat-item">
-        Total Views
+        মোট ভিজিটর
         <span id="total-visitors">0</span>
       </div>
       <div class="stat-item">
-        Today's Views (UTC)
+        আজকের ভিজিটর (UTC)
         <span id="daily-visitors">0</span>
       </div>
     </div>
+  </div>
 
+  <div class="card">
+    <h2>বিজ্ঞাপন সেটিংস</h2>
     <div class="ad-pattern-buttons">
-        <h3>Select Ad Pattern:</h3>
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1: All Monetag</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Pattern 2: Monetag & Gigapub</button>
-        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3: All Gigapub</button>
+        <h3>বিজ্ঞাপনের ধরণ নির্বাচন করুন:</h3>
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">প্যাটার্ন ১: শুধুমাত্র Monetag</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">প্যাটার্ন ২: Monetag ও Gigapub</button>
+        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">প্যাটার্ন ৩: শুধুমাত্র Gigapub</button>
     </div>
 
-    <div class="ad-settings-control">
-        <label for="total-ad-steps">Total Ad Steps:</label>
+    <div class="ad-step-control">
+        <label for="total-ad-steps">মোট বিজ্ঞাপনের ধাপ:</label>
         <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
-        
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">ধাপ সংরক্ষণ করুন</button>
         <div class="adexium-toggle-container">
-            <label for="adexium-toggle">Adexium Ads On/Off:</label>
-            <label class="toggle-switch">
-                <input type="checkbox" id="adexium-toggle" onchange="toggleAdexium()">
-                <span class="slider"></span>
+            <label>Adexium চালু/বন্ধ:</label>
+            <label class="switch">
+              <input type="checkbox" id="adexium-toggle" onchange="toggleAdexium()">
+              <span class="slider"></span>
             </label>
         </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Canva Pro Link</h2>
-    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
-    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+    <h2>ক্যানভা প্রো লিঙ্ক</h2>
+    <p>বর্তমান ক্যানভা প্রো লিঙ্ক: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">লোড হচ্ছে...</span></p>
+    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">নতুন লিঙ্ক লিখুন:</label>
     <div class="input-with-button">
         <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
     </div>
-    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+    <button class="btn btn-primary" onclick="updateCanvaLink()">লিঙ্ক আপডেট করুন</button>
   </div>
 
   <div class="card">
-    <h2>Monthly Daily Visitor</h2>
+    <h2>মাসিক ও দৈনিক ভিজিটর</h2>
     <div class="chart-container">
         <canvas id="daily-monthly-visitors-chart"></canvas>
     </div>
   </div>
 
   <div class="card">
-    <h2>Visitor Details</h2>
+    <h2>ভিজিটর বিস্তারিত</h2>
     <div class="monthly-daily-flex">
         <div style="flex: 1;">
-            <h3>Select Month:</h3>
+            <h3>মাস নির্বাচন করুন:</h3>
             <div id="monthly-stats-list">
-                <p>Loading monthly data...</p>
+                <p>মাসিক ডেটা লোড হচ্ছে...</p>
             </div>
         </div>
         <div style="flex: 1;">
-            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
+            <h3><span id="selected-month-display"></span> এর দৈনিক ভিজিটর:</h3>
             <div id="daily-stats-list">
-                <p>Select a month to see daily views.</p>
+                <p>দৈনিক ভিজিটর দেখতে একটি মাস নির্বাচন করুন।</p>
             </div>
         </div>
     </div>
   </div>
 
 
-<button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
+<button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">লগআউট</button>
 
 </div>
 
 </div>
   <script>
-    // Firebase configuration (replace with your actual config)
     const firebaseConfig = {
-        apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
-        authDomain: "canva-pro-team.firebaseapp.com",
-        databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
-        projectId: "canva-pro-team",
-        storageBucket: "canva-pro-team.firebasestorage.app",
-        messagingSenderId: "462948035203",
-        appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
+        apiKey: "আপনার_API_KEY", // আপনার Firebase API Key দিন
+        authDomain: "আপনার_AUTH_DOMAIN", // আপনার Firebase Auth Domain দিন
+        databaseURL: "আপনার_DATABASE_URL", // আপনার Firebase Database URL দিন
+        projectId: "আপনার_PROJECT_ID", // আপনার Firebase Project ID দিন
+        storageBucket: "আপনার_STORAGE_BUCKET", // আপনার Firebase Storage Bucket দিন
+        messagingSenderId: "আপনার_MESSAGING_SENDER_ID", // আপনার Firebase Messaging Sender ID দিন
+        appId: "আপনার_APP_ID" // আপনার Firebase App ID দিন
     };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const auth = firebase.auth();
 
-const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Replace with your actual admin UID
-let dailyMonthlyVisitorsChart;
-let currentSelectedMonth = '';
-let isInitialAuthCheckComplete = false;
-let totalAdStepsValue = 5; // Store the current total ad steps for dynamic styling
+    const ADMIN_UID = "আপনার_অ্যাডমিন_UID"; // আপনার Firebase অ্যাডমিন UID দিন
+    let dailyMonthlyVisitorsChart;
+    let currentSelectedMonth = '';
+    let isInitialAuthCheckComplete = false;
 
-// Helper function to get today's date in YYYY-MM-DD UTC format
-function getTodayKeyUTC() {
-    const now = new Date();
-    const year = now.getUTCFullYear();
-    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = now.getUTCDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Helper function to format a date in YYYY-MM-DD UTC format
-function getFormattedDateUTC(year, month, day) {
-    const date = new Date(Date.UTC(year, month - 1, day));
-    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-    return date.toLocaleDateString('en-US', options);
-}
-
-// Helper function to format a month in YYYY-MM UTC format
-function getFormattedMonthUTC(year, month) {
-    const date = new Date(Date.UTC(year, month - 1, 1));
-    const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
-    return date.toLocaleDateString('en-US', options);
-}
-
-// --- Authentication and Loading ---
-window.addEventListener("DOMContentLoaded", () => {
-    const savedMode = localStorage.getItem("themeMode");
-    if (savedMode === "light") {
-        document.body.classList.add("light-mode");
-        document.getElementById("mode-toggle").textContent = "☀️";
+    function getTodayKeyUTC() {
+        const now = new Date();
+        const year = now.getUTCFullYear();
+        const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+        const day = now.getUTCDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
-    showLoadingOverlay();
+    function getFormattedDateUTC(year, month, day) {
+        const date = new Date(Date.UTC(year, month - 1, day));
+        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+        return date.toLocaleDateString('en-US', options);
+    }
 
-    auth.onAuthStateChanged((user) => {
-        if (!isInitialAuthCheckComplete) {
-            if (user && user.uid === ADMIN_UID) {
-                setTimeout(() => {
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block';
-                    hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500);
+    function getFormattedMonthUTC(year, month) {
+        const date = new Date(Date.UTC(year, month - 1, 1));
+        const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const savedMode = localStorage.getItem("themeMode");
+        if (savedMode === "light") {
+            document.body.classList.add("light-mode");
+            document.getElementById("mode-toggle").textContent = "☀️";
+        }
+
+        showLoadingOverlay();
+
+        auth.onAuthStateChanged((user) => {
+            if (!isInitialAuthCheckComplete) {
+                if (user && user.uid === ADMIN_UID) {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('admin-content').style.display = 'block';
+                        document.getElementById('mode-toggle').style.display = 'block';
+                        hideLoadingOverlay();
+                        loadAdminData();
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'block';
+                        document.getElementById('admin-content').style.display = 'none';
+                        document.getElementById('mode-toggle').style.display = 'none';
+                        hideLoadingOverlay();
+                    }, 1000);
+                }
+                isInitialAuthCheckComplete = true;
             } else {
-                setTimeout(() => {
-                    document.getElementById('login-container').style.display = 'block';
+                if (user && user.uid === ADMIN_UID) {
+                    setTimeout(() => {
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('admin-content').style.display = 'block';
+                        document.getElementById('mode-toggle').style.display = 'block';
+                        hideLoadingOverlay();
+                        loadAdminData();
+                    }, 1500);
+                } else {
                     document.getElementById('admin-content').style.display = 'none';
+                    document.getElementById('login-container').style.display = 'block';
                     document.getElementById('mode-toggle').style.display = 'none';
                     hideLoadingOverlay();
-                }, 1000);
+                }
             }
-            isInitialAuthCheckComplete = true;
-        } else {
-            if (user && user.uid === ADMIN_UID) {
-                setTimeout(() => {
+        });
+    });
+
+    function showLoadingOverlay(message = "লোড হচ্ছে...") {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.querySelector('p').textContent = message;
+        loadingOverlay.style.display = 'flex';
+        document.getElementById('mode-toggle').style.display = 'none';
+    }
+
+    function hideLoadingOverlay() {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    function loginAdminWithEmailPassword() {
+        const email = document.getElementById('admin-email').value;
+        const password = document.getElementById('admin-password').value;
+
+        if (!email || !password) {
+            showAdNotification("অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড উভয়ই প্রবেশ করুন।");
+            return;
+        }
+
+        showLoadingOverlay("লগইন হচ্ছে...");
+        document.getElementById('mode-toggle').style.display = 'none';
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                if (user.uid === ADMIN_UID) {
                     document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block';
+                } else {
+                    auth.signOut();
+                    showAdNotification("আপনি এই প্যানেলে অ্যাক্সেস করার জন্য অনুমোদিত নন।");
                     hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500);
-            } else {
-                document.getElementById('admin-content').style.display = 'none';
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'none';
+                }
+            })
+            .catch((error) => {
+                console.error("অ্যাডমিন লগইন ব্যর্থ:", error);
+                showAdNotification("লগইন ব্যর্থ: " + error.message);
+                hideLoadingOverlay();
                 document.getElementById('login-container').style.display = 'block';
                 document.getElementById('mode-toggle').style.display = 'none';
-                hideLoadingOverlay();
-            }
-        }
-    });
-});
-
-function showLoadingOverlay(message = "Loading...") {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.querySelector('p').textContent = message;
-    loadingOverlay.style.display = 'flex';
-    document.getElementById('mode-toggle').style.display = 'none';
-}
-
-function hideLoadingOverlay() {
-    document.getElementById('loading-overlay').style.display = 'none';
-}
-
-function loginAdminWithEmailPassword() {
-    const email = document.getElementById('admin-email').value;
-    const password = document.getElementById('admin-password').value;
-
-    if (!email || !password) {
-        showAdNotification("Please enter both email and password.");
-        return;
+            });
     }
 
-    showLoadingOverlay("Logging in...");
-    document.getElementById('mode-toggle').style.display = 'none';
-
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            if (user.uid === ADMIN_UID) {
-                document.getElementById('login-container').style.display = 'none';
-            } else {
-                auth.signOut();
-                showAdNotification("You are not authorized to access this panel.");
+    function logoutAdmin() {
+        showLoadingOverlay("লগআউট হচ্ছে...");
+        document.getElementById('mode-toggle').style.display = 'none';
+        auth.signOut().then(() => {
+            showAdNotification("অ্যাডমিন লগআউট হয়েছে।");
+            setTimeout(() => {
                 hideLoadingOverlay();
-                document.getElementById('login-container').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'none';
+            }, 500);
+        }).catch((error) => {
+            console.error("লগআউট ত্রুটি:", error);
+            showAdNotification("লগআউট ত্রুটি: " + error.message);
+            hideLoadingOverlay();
+        });
+    }
+
+    function loadAdminData() {
+        // ক্যানভা লিঙ্ক লোড করুন
+        database.ref('canvaLink').on('value', (snapshot) => {
+            const link = snapshot.val();
+            document.getElementById('current-canva-link').textContent = link || 'N/A';
+            document.getElementById('new-canva-link').value = '';
+        });
+
+        // ভিজিটর ওভারভিউ লোড করুন
+        database.ref('visitors/total').on('value', (snapshot) => {
+            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+        });
+
+        const fullCurrentDatePath = getTodayKeyUTC();
+        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+        });
+
+        // বিজ্ঞাপনের ধরণ এবং মোট ধাপ লোড করুন
+        database.ref('adSettings').on('value', (snapshot) => {
+            const settings = snapshot.val();
+            const currentPattern = settings ? settings.pattern : 1; // ডিফল্ট প্যাটার্ন 1
+            const currentSteps = settings ? settings.totalSteps : 5; // ডিফল্ট 5 ধাপ
+            const adexiumStatus = settings ? settings.adexiumEnabled : false; // ডিফল্ট Adexium বন্ধ
+
+            // বিজ্ঞাপনের ধরণ বাটনের UI আপডেট করুন
+            document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
+
+            // মোট বিজ্ঞাপনের ধাপের UI আপডেট করুন
+            const totalAdStepsInput = document.getElementById('total-ad-steps');
+            totalAdStepsInput.value = currentSteps;
+
+            // Adexium টগলের UI আপডেট করুন
+            document.getElementById('adexium-toggle').checked = adexiumStatus;
+        });
+
+        // মাসিক ভিজিটর ডেটা লোড করুন
+        database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+            const monthlyStatsList = document.getElementById('monthly-stats-list');
+            monthlyStatsList.innerHTML = '';
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const months = Object.keys(data).sort((a, b) => {
+                    const [yearA, monthA] = a.split('-').map(Number);
+                    const [yearB, monthB] = b.split('-').map(Number);
+                    if (yearA !== yearB) return yearB - yearA;
+                    return monthB - monthA;
+                }); 
+
+                months.forEach(monthKey => {
+                    const [year, monthNum] = monthKey.split('-');
+                    const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+                    const div = document.createElement('div');
+                    div.className = 'monthly-list-item';
+                    div.innerHTML = `<span>${formattedMonthName}</span><span>${data
+                                                                               [monthKey]} views</span>`;
+                    div.onclick = () => selectMonthForDailyView(monthKey, div); 
+                    monthlyStatsList.appendChild(div);
+                });
+
+                if (months.length > 0) {
+                    const latestMonthKey = months[0]; 
+                    const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+                    // Ensure the element exists before trying to select it
+                    if(latestMonthElement) {
+                        selectMonthForDailyView(latestMonthKey, latestMonthElement);
+                    }
+                }
+            } else {
+                monthlyStatsList.innerHTML = '<p>কোন মাসিক ডেটা এখনো উপলব্ধ নয়।</p>';
+                if (dailyMonthlyVisitorsChart) {
+                    dailyMonthlyVisitorsChart.destroy();
+                    dailyMonthlyVisitorsChart = null;
+                }
             }
-        })
-        .catch((error) => {
-            console.error("Admin login failed  .catch((error) => {
-            console.error("Admin login failed:", error);
-            showAdNotification("Login failed: " + error.message);
-            hideLoadingOverlay();
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('mode-toggle').style.display = 'none';
         });
-}
+    }
 
-function logoutAdmin() {
-    showLoadingOverlay("Logging out...");
-    document.getElementById('mode-toggle').style.display = 'none';
-    auth.signOut().then(() => {
-        showAdNotification("Admin logged out.");
-        setTimeout(() => {
-            hideLoadingOverlay();
-        }, 500);
-    }).catch((error) => {
-        console.error("Logout error:", error);
-        showAdNotification("Logout error: " + error.message);
-        hideLoadingOverlay();
-    });
-}
+    // --- Ad Pattern and Steps Control ---
+    function selectAdPattern(patternNumber) {
+        database.ref('adSettings/pattern').set(patternNumber)
+            .then(() => {
+                showAdNotification(`বিজ্ঞাপনের ধরণ সেট করা হয়েছে: প্যাটার্ন ${patternNumber}।`);
+                // UI 'on' লিসেনার দ্বারা স্বয়ংক্রিয়ভাবে আপডেট হবে
+            })
+            .catch(error => {
+                console.error("বিজ্ঞাপনের ধরণ সেট করতে ব্যর্থ:", error);
+                showAdNotification("বিজ্ঞাপনের ধরণ সেট করতে ব্যর্থ হয়েছে।");
+            });
+    }
 
-// --- General UI and Data Loading ---
-function loadAdminData() {
-    // Load Canva Link
-    database.ref('canvaLink').on('value', (snapshot) => {
-        const link = snapshot.val();
-        document.getElementById('current-canva-link').textContent = link || 'N/A';
-        document.getElementById('new-canva-link').value = '';
-    });
-
-    // Load Visitor Overview
-    database.ref('visitors/total').on('value', (snapshot) => {
-        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-    });
-
-    const fullCurrentDatePath = getTodayKeyUTC();
-    database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-        document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-    });
-
-    // Load Ad Pattern, Total Steps, and Adexium Enabled status
-    database.ref('adSettings').on('value', (snapshot) => {
-        const settings = snapshot.val();
-        const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-        const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-        const adexiumStatus = settings ? settings.adexiumEnabled : false; // Default to disabled
-
-        // Update UI for ad pattern buttons
-        document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-            button.classList.remove('active');
-        });
-        const activePatternButton = document.getElementById(`ad-pattern-${currentPattern}-btn`);
-        if (activePatternButton) {
-            activePatternButton.classList.add('active');
+    function updateTotalAdSteps() {
+        const input = document.getElementById('total-ad-steps');
+        let value = parseInt(input.value);
+        if (isNaN(value) || value < 1) {
+            value = 1;
+        } else if (value > 10) { // অত্যধিক বিজ্ঞাপন এড়াতে সর্বোচ্চ 10 ধাপ
+            value = 10;
         }
+        input.value = value;
+    }
 
-        // Update UI for total ad steps
-        const totalAdStepsInput = document.getElementById('total-ad-steps');
-        totalAdStepsInput.value = currentSteps;
-        totalAdStepsValue = currentSteps; // Update the global variable for styling
-        document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
+    function saveTotalAdSteps() {
+        const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
+        database.ref('adSettings/totalSteps').set(totalSteps)
+            .then(() => {
+                showAdNotification(`মোট বিজ্ঞাপনের ধাপ ${totalSteps} এ সেট করা হয়েছে।`);
+            })
+            .catch(error => {
+                console.error("মোট বিজ্ঞাপনের ধাপ সেট করতে ব্যর্থ:", error);
+                showAdNotification("মোট বিজ্ঞাপনের ধাপ সংরক্ষণ করতে ব্যর্থ হয়েছে।");
+            });
+    }
 
-
-        // Update UI for Adexium toggle
+    function toggleAdexium() {
         const adexiumToggle = document.getElementById('adexium-toggle');
-        adexiumToggle.checked = adexiumStatus;
-    });
+        const isEnabled = adexiumToggle.checked;
 
-    // Load Monthly Visitor Data
-    database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-        const monthlyStatsList = document.getElementById('monthly-stats-list');
-        monthlyStatsList.innerHTML = '';
-
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const months = Object.keys(data).sort((a, b) => {
-                const [yearA, monthA] = a.split('-').map(Number);
-                const [yearB, monthB] = b.split('-').map(Number);
-                if (yearA !== yearB) return yearB - yearA;
-                return monthB - monthA;
-            }); 
-
-            months.forEach(monthKey => {
-                const [year, monthNum] = monthKey.split('-');
-                const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-                const div = document.createElement('div');
-                div.className = 'monthly-list-item';
-                div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-                div.onclick = () => selectMonthForDailyView(monthKey, div); 
-                monthlyStatsList.appendChild(div);
+        database.ref('adSettings/adexiumEnabled').set(isEnabled)
+            .then(() => {
+                showAdNotification(`Adexium বিজ্ঞাপন ${isEnabled ? 'চালু' : 'বন্ধ'} করা হয়েছে।`);
+            })
+            .catch(error => {
+                console.error("Adexium স্ট্যাটাস আপডেট করতে ব্যর্থ:", error);
+                showAdNotification("Adexium স্ট্যাটাস আপডেট করতে ব্যর্থ হয়েছে।");
+                adexiumToggle.checked = !isEnabled; // If failed, revert UI
             });
+    }
 
-            if (months.length > 0) {
-                const latestMonthKey = months[0]; 
-                const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-                selectMonthForDailyView(latestMonthKey, latestMonthElement);
-            }
+    // --- Canva Link Update ---
+    function updateCanvaLink() {
+        const newLinkInput = document.getElementById('new-canva-link');
+        const newLink = newLinkInput.value.trim();
+
+        if (newLink) {
+            database.ref('canvaLink').set(newLink)
+                .then(() => {
+                    showAdNotification("ক্যানভা প্রো লিঙ্ক সফলভাবে আপডেট হয়েছে!");
+                    newLinkInput.value = '';
+                })
+                .catch((error) => {
+                    console.error("ক্যানভা লিঙ্ক আপডেট করতে ব্যর্থ:", error);
+                    showAdNotification("ক্যানভা প্রো লিঙ্ক আপডেট করতে ব্যর্থ হয়েছে।");
+                });
         } else {
-            monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-            if (dailyMonthlyVisitorsChart) {
-                dailyMonthlyVisitorsChart.destroy();
-                dailyMonthlyVisitorsChart = null;
-            }
+            showAdNotification("অনুগ্রহ করে একটি বৈধ লিঙ্ক প্রবেশ করুন।");
         }
-    });
-}
-
-// --- Ad Pattern and Steps Control ---
-function selectAdPattern(patternNumber) {
-    database.ref('adSettings/pattern').set(patternNumber)
-        .then(() => {
-            showAdNotification(`Ad Pattern set to Pattern ${patternNumber}.`);
-            // UI will be updated by the 'on' listener in loadAdminData
-        })
-        .catch(error => {
-            console.error("Error setting ad pattern:", error);
-            showAdNotification("Failed to set ad pattern.");
-        });
-}
-
-function updateTotalAdSteps() {
-    const input = document.getElementById('total-ad-steps');
-    let value = parseInt(input.value);
-    if (isNaN(value) || value < 1) {
-        value = 1;
-    } else if (value > 10) { // Max steps to prevent excessive ads
-        value = 10;
-    }
-    input.value = value;
-    totalAdStepsValue = value; // Update global variable
-    document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
-
-}
-
-function saveTotalAdSteps() {
-    const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
-    database.ref('adSettings/totalSteps').set(totalSteps)
-        .then(() => {
-            showAdNotification(`Total ad steps set to ${totalSteps}.`);
-        })
-        .catch(error => {
-            console.error("Error setting total ad steps:", error);
-            showAdNotification("Failed to save total ad steps.");
-        });
-}
-
-// --- Adexium Control ---
-function toggleAdexium() {
-    const adexiumToggle = document.getElementById('adexium-toggle');
-    const isEnabled = adexiumToggle.checked;
-
-    database.ref('adSettings/adexiumEnabled').set(isEnabled)
-        .then(() => {
-            showAdNotification(`Adexium ads ${isEnabled ? 'enabled' : 'disabled'}.`);
-        })
-        .catch(error => {
-            console.error("Error toggling Adexium ads:", error);
-            showAdNotification("Failed to toggle Adexium ads.");
-            adexiumToggle.checked = !isEnabled; // Revert UI on error
-        });
-}
-
-
-// --- Utility Functions ---
-function showAdNotification(msg) {
-    const el = document.getElementById('ad-notification');
-    el.textContent = msg;
-    el.style.display = 'block';
-    setTimeout(() => {
-        el.style.display = 'none';
-    }, 3000);
-}
-
-function toggleMode() {
-    const body = document.body;
-    const btn = document.getElementById('mode-toggle');
-    body.classList.toggle('light-mode');
-    if (body.classList.contains('light-mode')) {
-        btn.textContent = '☀️';
-        localStorage.setItem("themeMode", "light");
-    } else {
-        btn.textContent = '🌙';
-        localStorage.setItem("themeMode", "dark");
-    }
-    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
-
-    if (dailyMonthlyVisitorsChart) {
-        updateChartColors(dailyMonthlyVisitorsChart);
-        dailyMonthlyVisitorsChart.update();
-    }
-}
-
-// --- Chart and Visitor Details ---
-function getChartTextColor() {
-    return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
-}
-
-function selectMonthForDailyView(monthKey, clickedElement) {
-    currentSelectedMonth = monthKey;
-    const [year, monthNum] = monthKey.split('-');
-    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-    if (clickedElement) {
-        clickedElement.classList.add('selected');
     }
 
-    const dailyStatsList = document.getElementById('daily-stats-list');
-    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+    // --- Utility Functions ---
+    function showAdNotification(msg) {
+        const el = document.getElementById('ad-notification');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 3000);
+    }
 
-    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-        dailyStatsList.innerHTML = '';
-        const dayLabels = []; 
-        const fullDateLabels = []; 
-        const dayCounts = [];
-
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const days = Object.keys(data).filter(fullDateKey => 
-                fullDateKey.startsWith(monthKey)
-            ).sort(); 
-            
-            days.forEach(fullDateKey => {
-                const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                
-                dayLabels.push(dayDay.toString()); 
-                fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-                dayCounts.push(data[fullDateKey]);
-
-                const div = document.createElement('div');
-                div.className = 'daily-item';
-                div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-                dailyStatsList.appendChild(div);
-            });
-
-            if (dailyStatsList.children.length === 0) {
-                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-            }
-
+    function toggleMode() {
+        const body = document.body;
+        const btn = document.getElementById('mode-toggle');
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) {
+            btn.textContent = '☀️';
+            localStorage.setItem("themeMode", "light");
         } else {
-            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            btn.textContent = '🌙';
+            localStorage.setItem("themeMode", "dark");
         }
+        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
         if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.data.labels = dayLabels;
-            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-            
-            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
-
-            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
             updateChartColors(dailyMonthlyVisitorsChart);
-            
-            dailyMonthlyVisitorsChart.options.interaction = {
-                mode: 'index', 
-                intersect: false 
-            };
-
             dailyMonthlyVisitorsChart.update();
-        } else {
-            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-            dailyMonthlyVisitorsChart = new Chart(ctx, {
-                type: 'line', 
-                data: {
-                    labels: dayLabels,
-                    datasets: [{
-                        label: 'Daily Views',
-                        data: dayCounts,
-                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                        borderColor: 'rgba(3, 218, 197, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 6, 
-                        pointHoverRadius: 8, 
-                        pointHitRadius: 10, 
-                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                        fullDateLabels: fullDateLabels 
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    
-                    interaction: {
-                        mode: 'index', 
-                        intersect: false 
-                    },
+        }
+    }
 
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                            color: getChartTextColor(),
-                            font: {
-                                size: 18
+    // --- Chart and Visitor Details ---
+    function getChartTextColor() {
+        return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+    }
+
+    function selectMonthForDailyView(monthKey, clickedElement) {
+        currentSelectedMonth = monthKey;
+        const [year, monthNum] = monthKey.split('-');
+        document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+        if (clickedElement) {
+            clickedElement.classList.add('selected');
+        }
+
+        const dailyStatsList = document.getElementById('daily-stats-list');
+        dailyStatsList.innerHTML = '<p>দৈনিক ডেটা লোড হচ্ছে...</p>';
+
+        database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+            dailyStatsList.innerHTML = '';
+            const dayLabels = []; 
+            const fullDateLabels = []; 
+            const dayCounts = [];
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const days = Object.keys(data).filter(fullDateKey => 
+                    fullDateKey.startsWith(monthKey)
+                ).sort(); 
+                
+                days.forEach(fullDateKey => {
+                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                    
+                    dayLabels.push(dayDay.toString()); 
+                    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+                    dayCounts.push(data[fullDateKey]);
+
+                    const div = document.createElement('div');
+                    div.className = 'daily-item';
+                    div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+                    dailyStatsList.appendChild(div);
+                });
+
+                if (dailyStatsList.children.length === 0) {
+                    dailyStatsList.innerHTML = '<p>এই মাসের জন্য কোন দৈনিক ডেটা উপলব্ধ নয়।</p>';
+                }
+
+            } else {
+                dailyStatsList.innerHTML = '<p>এই মাসের জন্য কোন দৈনিক ডেটা উপলব্ধ নয়।</p>';
+            }
+
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.data.labels = dayLabels;
+                dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+                dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+                
+                dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+                dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+                dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+
+                dailyMonthlyVisitorsChart.options.plugins.title.text = `${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))} এর দৈনিক ভিজিটর`;
+                updateChartColors(dailyMonthlyVisitorsChart);
+                
+                dailyMonthlyVisitorsChart.options.interaction = {
+                    mode: 'index', 
+                    intersect: false 
+                };
+
+                dailyMonthlyVisitorsChart.update();
+            } else {
+                const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+                dailyMonthlyVisitorsChart = new Chart(ctx, {
+                    type: 'line', 
+                    data: {
+                        labels: dayLabels,
+                        datasets: [{
+                            label: 'দৈনিক ভিজিটর',
+                            data: dayCounts,
+                            backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                            borderColor: 'rgba(3, 218, 197, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 6, 
+                            pointHoverRadius: 8, 
+                            pointHitRadius: 10, 
+                            pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                            fullDateLabels: fullDateLabels 
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        
+                        interaction: {
+                            mode: 'index', 
+                            intersect: false 
+                        },
+
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))} এর দৈনিক ভিজিটর`,
+                                color: getChartTextColor(),
+                                font: {
+                                    size: 18
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    color: getChartTextColor()
+                                }
+                            },
+                            tooltip: { 
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const dataset = tooltipItems[0].dataset;
+                                        const index = tooltipItems[0].dataIndex;
+                                        return dataset.fullDateLabels[index];
+                                    },
+                                    label: function(tooltipItem) {
+                                        return `ভিজিটর: ${tooltipItem.raw}`;
+                                    }
+                                }
                             }
                         },
-                        legend: {
-                            labels: {
-                                color: getChartTextColor()
-                            }
-                        },
-                        tooltip: { 
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const dataset = tooltipItems[0].dataset;
-                                    const index = tooltipItems[0].dataIndex;
-                                    return dataset.fullDateLabels[index];
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: getChartTextColor(),
+                                    precision: 0 
                                 },
-                                label: function(tooltipItem) {
-                                    return `Views: ${tooltipItem.raw}`;
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: getChartTextColor()
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
                                 }
                             }
                         }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: getChartTextColor(),
-                                precision: 0 
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: getChartTextColor()
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
                     }
-                }
-            });
+                });
+            }
+        });
+    }
+
+    function updateChartColors(chart) {
+        const textColor = getChartTextColor();
+        chart.options.scales.x.ticks.color = textColor;
+        chart.options.scales.y.ticks.color = textColor;
+        chart.options.plugins.title.color = textColor;
+        if (chart.options.plugins.legend) {
+            chart.options.plugins.legend.labels.color = textColor;
         }
+        const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+        chart.options.scales.x.grid.color = gridColor;
+        chart.options.scales.y.grid.color = gridColor;
+    }
+
+    // Initialize h3 color based on current mode on load
+    window.addEventListener('load', () => {
+        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
     });
-}
-
-function updateChartColors(chart) {
-    const textColor = getChartTextColor();
-    chart.options.scales.x.ticks.color = textColor;
-    chart.options.scales.y.ticks.color = textColor;
-    chart.options.plugins.title.color = textColor;
-    if (chart.options.plugins.legend) {
-        chart.options.plugins.legend.labels.color = textColor;
-    }
-    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-    chart.options.scales.x.grid.color = gridColor;
-    chart.options.scales.y.grid.color = gridColor;
-}
-
-// --- Canva Link Update ---
-function updateCanvaLink() {
-    const newLinkInput = document.getElementById('new-canva-link');
-    const newLink = newLinkInput.value.trim();
-
-    if (newLink) {
-        database.ref('canvaLink').set(newLink)
-            .then(() => {
-                showAdNotification("Canva Pro link updated successfully!");
-                newLinkInput.value = '';
-            })
-            .catch((error) => {
-                console.error("Error updating Canva link:", error);
-                showAdNotification("Failed to update Canva Pro link.");
-            });
-    } else {
-        showAdNotification("Please enter a valid link.");
-    }
-}
-
-// Initialize h3 color based on current mode on load
-window.addEventListener('load', () => {
-    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
-    // Set initial data-total-steps attribute on load
-    document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
-});
 </script>
 </body>
 </html>
+   
