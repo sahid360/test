@@ -1,27 +1,180 @@
-ition: background-color 0.3s ease;
-        position: relative;
-        margin-left: 10px; /* Space from input */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+      --danger: #dc3545;
+      --success: #28a745;
+      --info: #17a2b8;
+      --h3-color: var(--text-color);
     }
 
-    .btn-toggle.active {
-        background-color: var(--success);
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
     }
 
-    .btn-toggle .toggle-handle {
-        width: 30px;
-        height: 30px;
-        background-color: var(--light);
-        border-radius: 50%;
-        position: absolute;
-        left: 4px; /* Initial position */
-        transition: transform 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
     }
 
-    .btn-toggle.active .toggle-handle {
-        transform: translateX(32px); /* Move to right */
+    body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      padding: 20px;
+      text-align: center;
     }
 
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 30px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--ad-item-bg);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+      font-size: 26px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+    
+    .card h3 {
+        color: var(--h3-color);
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+      gap: 10px; 
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: var(--card-bg);
+      padding: 10px; 
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px; 
+      min-height: 70px; 
+      text-align: center; 
+      word-break: break-word; 
+    }
+
+    .stat-item span {
+      font-size: 26px; 
+      font-weight: bold;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+
+    .input-with-button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
+      flex-grow: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 16px;
+      margin-right: 0px; 
+    }
+
+    .card input[type="text"]:last-child {
+        margin-right: 0; 
+    }
+
+    .btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 0px; 
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      margin-top: 10px;
+    }
+    .btn-success {
+        background: var(--success);
+        color: #fff;
+    }
 
     .btn:hover {
       opacity: 0.9;
@@ -231,33 +384,121 @@ ition: background-color 0.3s ease;
     .ad-pattern-buttons button:hover:not(.active) {
         background-color: #777;
     }
-    .ad-control-group {
+
+    /* Combined ad settings control */
+    .ad-settings-control {
         margin-top: 20px;
         display: flex;
         align-items: center;
-        justify-content: space-between; /* Distribute items horizontally */
-        gap: 10px;
+        gap: 15px; /* Increased gap for better spacing */
         flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        justify-content: space-between; /* Space between items */
     }
-    .ad-step-control {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .adexium-toggle-control {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .ad-step-control label, .adexium-toggle-control label {
+    .ad-settings-control label {
         font-weight: bold;
-        white-space: nowrap; /* Prevent label from wrapping */
+        white-space: nowrap; /* Prevent label from breaking */
     }
-    .ad-step-control input {
+    .ad-settings-control input[type="number"] {
         width: 80px;
         text-align: center;
+        margin-right: 10px; /* Space between input and its save button */
     }
+    .adexium-toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto; /* Push to the right */
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Dynamic Step Box Coloring and Font Size */
+    .progress-container {
+        display: flex;
+        overflow: hidden;
+        border-radius: 12px;
+        height: 30px;
+        margin-bottom: 25px;
+        border: 1px solid var(--border-color);
+        background: #333;
+    }
+    .step-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+        background-color: #444;
+        transition: background 0.3s ease-in-out, font-size 0.2s ease;
+        white-space: nowrap; /* Prevent text wrapping within a step */
+        overflow: hidden; /* Hide overflow if text is too long */
+        text-overflow: ellipsis; /* Add ellipsis if text overflows */
+        padding: 0 5px; /* Add some padding to prevent text sticking to edges */
+    }
+
+    /* Dynamic font sizing for steps */
+    body:not(.light-mode) .step-box, body.light-mode .step-box {
+        font-size: 14px;
+    }
+    [data-total-steps="7"] .step-box { font-size: 12px; }
+    [data-total-steps="8"] .step-box { font-size: 11px; }
+    [data-total-steps="9"] .step-box { font-size: 10px; }
+    [data-total-steps="10"] .step-box { font-size: 9px; }
+
+
+    /* 10 unique colors for done steps */
+    .step-box.done-1 { background-color: #28a745; } /* success green */
+    .step-box.done-2 { background-color: #17a2b8; } /* info blue */
+    .step-box.done-3 { background-color: #ffc107; } /* warning yellow */
+    .step-box.done-4 { background-color: #6f42c1; } /* indigo */
+    .step-box.done-5 { background-color: #e83e8c; } /* pink */
+    .step-box.done-6 { background-color: #fd7e14; } /* orange */
+    .step-box.done-7 { background-color: #20c997; } /* teal */
+    .step-box.done-8 { background-color: #6610f2; } /* purple */
+    .step-box.done-9 { background-color: #007bff; } /* primary blue */
+    .step-box.done-10 { background-color: #dc3545; } /* danger red */
+
 
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
@@ -367,19 +608,18 @@ ition: background-color 0.3s ease;
         padding: 15px 25px;
         font-size: 16px;
       }
-      .ad-control-group {
+      .ad-settings-control {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 10px;
       }
-      .ad-step-control, .adexium-toggle-control {
+      .ad-settings-control input {
         width: 100%;
-        justify-content: space-between; /* Distribute items within their own group */
       }
-      .ad-step-control input {
-        flex-grow: 1; /* Allow input to take available space */
-      }
-      .adexium-toggle-control .btn-toggle {
-        margin-left: auto; /* Push toggle to the right */
+      .adexium-toggle-container {
+        margin-left: 0; /* Reset margin on small screens */
+        width: 100%; /* Take full width */
+        justify-content: flex-start; /* Align left */
       }
     }
   </style>
@@ -416,7 +656,7 @@ ition: background-color 0.3s ease;
         <span id="daily-visitors">0</span>
       </div>
     </div>
-    
+
     <div class="ad-pattern-buttons">
         <h3>Select Ad Pattern:</h3>
         <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1: All Monetag</button>
@@ -424,18 +664,17 @@ ition: background-color 0.3s ease;
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3: All Gigapub</button>
     </div>
 
-    <div class="ad-control-group">
-        <div class="ad-step-control">
-            <label for="total-ad-steps">Total Ad Steps:</label>
-            <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
-            <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
-        </div>
-        <div class="adexium-toggle-control">
-            <label for="adexium-status-toggle">Adexium Ad:</label>
-            <div id="adexium-status-toggle" class="btn-toggle" onclick="toggleAdexiumStatus()">
-                <div class="toggle-handle"></div>
-            </div>
-            <button class="btn btn-success" onclick="saveAdexiumStatus()">Save Adexium</button>
+    <div class="ad-settings-control">
+        <label for="total-ad-steps">Total Ad Steps:</label>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
+        
+        <div class="adexium-toggle-container">
+            <label for="adexium-toggle">Adexium Ads On/Off:</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="adexium-toggle" onchange="toggleAdexium()">
+                <span class="slider"></span>
+            </label>
         </div>
     </div>
   </div>
@@ -475,7 +714,8 @@ ition: background-color 0.3s ease;
     </div>
   </div>
 
-  <button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
+
+<button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
 
 </div>
 
@@ -492,752 +732,515 @@ ition: background-color 0.3s ease;
         appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
     };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const auth = firebase.auth();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
 
-    const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Replace with your actual admin UID
-    let dailyMonthlyVisitorsChart;
-    let currentSelectedMonth = '';
-    let isInitialAuthCheckComplete = false;
-    let adexiumEnabled = false; // State for Adexium toggle
+const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Replace with your actual admin UID
+let dailyMonthlyVisitorsChart;
+let currentSelectedMonth = '';
+let isInitialAuthCheckComplete = false;
+let totalAdStepsValue = 5; // Store the current total ad steps for dynamic styling
 
-    // Helper function to get today's date in YYYY-MM-DD UTC format
-    function getTodayKeyUTC() {
-        const now = new Date();
-        const year = now.getUTCFullYear();
-        const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-        const day = now.getUTCDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
+// Helper function to get today's date in YYYY-MM-DD UTC format
+function getTodayKeyUTC() {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = now.getUTCDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Helper function to format a date in YYYY-MM-DD UTC format
+function getFormattedDateUTC(year, month, day) {
+    const date = new Date(Date.UTC(year, month - 1, day));
+    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// Helper function to format a month in YYYY-MM UTC format
+function getFormattedMonthUTC(year, month) {
+    const date = new Date(Date.UTC(year, month - 1, 1));
+    const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// --- Authentication and Loading ---
+window.addEventListener("DOMContentLoaded", () => {
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
     }
 
-    // Helper function to format a date in YYYY-MM-DD UTC format
-    function getFormattedDateUTC(year, month, day) {
-        const date = new Date(Date.UTC(year, month - 1, day));
-        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-        return date.toLocaleDateString('en-US', options);
-    }
+    showLoadingOverlay();
 
-    // Helper function to format a month in YYYY-MM UTC format
-    function getFormattedMonthUTC(year, month) {
-        const date = new Date(Date.UTC(year, month - 1, 1));
-        const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    // --- Authentication and Loading ---
-    window.addEventListener("DOMContentLoaded", () => {
-        const savedMode = localStorage.getItem("themeMode");
-        if (savedMode === "light") {
-            document.body.classList.add("light-mode");
-            document.getElementById("mode-toggle").textContent = "☀️";
-        }
-
-        showLoadingOverlay();
-
-        auth.onAuthStateChanged((user) => {
-            if (!isInitialAuthCheckComplete) {
-                if (user && user.uid === ADMIN_UID) {
-                    setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'none';
-                        document.getElementById('admin-content').style.display = 'block';
-                        document.getElementById('mode-toggle').style.display = 'block';
-                        hideLoadingOverlay();
-                        loadAdminData();
-                    }, 1500);
-                } else {
-                    setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'block';
-                        document.getElementById('admin-content').style.display = 'none';
-                        document.getElementById('mode-toggle').style.display = 'none';
-                        hideLoadingOverlay();
-                    }, 1000);
-                }
-                isInitialAuthCheckComplete = true;
-            } else {
-                if (user && user.uid === ADMIN_UID) {
-                    setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'none';
-                        document.getElementById('admin-content').style.display = 'block';
-                        document.getElementById('mode-toggle').style.display = 'block';
-                        hideLoadingOverlay();
-                        loadAdminData();
-                    }, 1500);
-                } else {
-                    document.getElementById('admin-content').style.display = 'none';
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'none';
-                    hideLoadingOverlay();
-                }
-            }
-        });
-    });
-
-    function showLoadingOverlay(message = "Loading...") {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.querySelector('p').textContent = message;
-        loadingOverlay.style.display = 'flex';
-        document.getElementById('mode-toggle').style.display = 'none';
-    }
-
-    function hideLoadingOverlay() {
-        document.getElementById('loading-overlay').style.display = 'none';
-    }
-
-    function loginAdminWithEmailPassword() {
-        const email = document.getElementById('admin-email').value;
-        const password = document.getElementById('admin-password').value;
-
-        if (!email || !password) {
-            showAdNotification("Please enter both email and password.");
-            return;
-        }
-
-        showLoadingOverlay("Logging in...");
-        document.getElementById('mode-toggle').style.display = 'none';
-
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                if (user.uid === ADMIN_UID) {
-                    document.getElementById('login-container').style.display = 'none';
-                } else {
-                    auth.signOut();
-                    showAdNotification("You are not authorized to access this panel.");
-                    hideLoadingOverlay();
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'none';
-                }
-            })
-            .catch((error) => {
-                console.error("Admin login failed:", error);
-                showAdNotification("Login failed: " + error.message);
-                hideLoadingOverlay();
-                document.getElementById('login-container').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'none';
-            });
-    }
-
-    function logoutAdmin() {
-        showLoadingOverlay("Logging out...");
-        document.getElementById('mode-toggle').style.display = 'none';
-        auth.signOut().then(() => {
-            showAdNotification("Admin logged out.");
-            setTimeout(() => {
-                hideLoadingOverlay();
-            }, 500);
-        }).catch((error) => {
-            console.error("Logout error:", error);
-            showAdNotification("Logout error: " + error.message);
-            hideLoadingOverlay();
-        });
-    }
-
-    // --- General UI and Data Loading ---
-    function loadAdminData() {
-        // Load Canva Link
-        database.ref('canvaLink').on('value', (snapshot) => {
-            const link = snapshot.val();
-            document.getElementById('current-canva-link').textContent = link || 'N/A';
-            document.getElementById('new-canva-link').value = '';
-        });
-
-        // Load Visitor Overview
-        database.ref('visitors/total').on('value', (snapshot) => {
-            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-        });
-
-        const fullCurrentDatePath = getTodayKeyUTC();
-        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-        });
-
-        // Load Ad Settings (Pattern, Total Steps, Adexium Status)
-        database.ref('adSettings').on('value', (snapshot) => {
-            const settings = snapshot.val();
-            const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-            const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-            adexiumEnabled = settings ? (settings.adexiumEnabled || false) : false; // Default to false
-
-            // Update UI for ad pattern buttons
-            document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
-
-            // Update UI for total ad steps
-            const totalAdStepsInput = document.getElementById('total-ad-steps');
-            totalAdStepsInput.value = currentSteps;
-
-            // Update UI for Adexium toggle
-            const adexiumToggle = document.getElementById('adexium-status-toggle');
-            if (adexiumEnabled) {
-                adexiumToggle.classList.add('active');
-            } else {
-                adexiumToggle.classList.remove('active');
-            }
-        });
-
-        // Load Monthly Visitor Data
-        database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-            const monthlyStatsList = document.getElementById('monthly-stats-list');
-            monthlyStatsList.innerHTML = '';
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const months = Object.keys(data).sort((a, b) => {
-                    const [yearA, monthA] = a.split('-').map(Number);
-                    const [yearB, monthB] = b.split('-').map(Number);
-                    if (yearA !== yearB) return yearB - yearA;
-                    return month
-                   <script>
-    // Firebase configuration (replace with your actual config)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
-        authDomain: "canva-pro-team.firebaseapp.com",
-        databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
-        projectId: "canva-pro-team",
-        storageBucket: "canva-pro-team.firebasestorage.app",
-        messagingSenderId: "462948035203",
-        appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const auth = firebase.auth();
-
-    const ADMIN_UID = "NvDwBNvnCgg5QWyNMFQ8BevtusL2"; // Replace with your actual admin UID
-    let dailyMonthlyVisitorsChart;
-    let currentSelectedMonth = '';
-    let isInitialAuthCheckComplete = false;
-    let adexiumEnabled = false; // State for Adexium toggle, fetched from Firebase
-
-    // Helper function to get today's date in YYYY-MM-DD UTC format
-    function getTodayKeyUTC() {
-        const now = new Date();
-        const year = now.getUTCFullYear();
-        const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-        const day = now.getUTCDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    // Helper function to format a date in YYYY-MM-DD UTC format
-    function getFormattedDateUTC(year, month, day) {
-        const date = new Date(Date.UTC(year, month - 1, day));
-        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    // Helper function to format a month in YYYY-MM UTC format
-    function getFormattedMonthUTC(year, month) {
-        const date = new Date(Date.UTC(year, month - 1, 1));
-        const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    // --- Authentication and Loading ---
-    window.addEventListener("DOMContentLoaded", () => {
-        const savedMode = localStorage.getItem("themeMode");
-        if (savedMode === "light") {
-            document.body.classList.add("light-mode");
-            document.getElementById("mode-toggle").textContent = "☀️";
-        }
-
-        showLoadingOverlay();
-
-        auth.onAuthStateChanged((user) => {
-            if (!isInitialAuthCheckComplete) {
-                if (user && user.uid === ADMIN_UID) {
-                    setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'none';
-                        document.getElementById('admin-content').style.display = 'block';
-                        document.getElementById('mode-toggle').style.display = 'block';
-                        hideLoadingOverlay();
-                        loadAdminData();
-                    }, 1500);
-                } else {
-                    setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'block';
-                        document.getElementById('admin-content').style.display = 'none';
-                        document.getElementById('mode-toggle').style.display = 'none';
-                        hideLoadingOverlay();
-                    }, 1000);
-                }
-                isInitialAuthCheckComplete = true;
-            } else {
-                // If auth state changes after initial load (e.g., logout/login)
-                if (user && user.uid === ADMIN_UID) {
-                    // Re-authenticated as admin, ensure content is shown
+    auth.onAuthStateChanged((user) => {
+        if (!isInitialAuthCheckComplete) {
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('admin-content').style.display = 'block';
                     document.getElementById('mode-toggle').style.display = 'block';
                     hideLoadingOverlay();
-                    loadAdminData(); // Reload data just in case
-                } else {
-                    // Logged out or unauthorized, show login
+                    loadAdminData();
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'block';
                     document.getElementById('admin-content').style.display = 'none';
-                    document.getElementById('login-container').style.display = 'block';
                     document.getElementById('mode-toggle').style.display = 'none';
                     hideLoadingOverlay();
-                }
+                }, 1000);
             }
-        });
-    });
-
-    function showLoadingOverlay(message = "Loading...") {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.querySelector('p').textContent = message;
-        loadingOverlay.style.display = 'flex';
-        document.getElementById('mode-toggle').style.display = 'none'; // Hide toggle during loading
-    }
-
-    function hideLoadingOverlay() {
-        document.getElementById('loading-overlay').style.display = 'none';
-    }
-
-    function loginAdminWithEmailPassword() {
-        const email = document.getElementById('admin-email').value;
-        const password = document.getElementById('admin-password').value;
-
-        if (!email || !password) {
-            showAdNotification("Please enter both email and password.");
-            return;
-        }
-
-        showLoadingOverlay("Logging in...");
-        document.getElementById('mode-toggle').style.display = 'none';
-
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                if (user.uid === ADMIN_UID) {
+            isInitialAuthCheckComplete = true;
+        } else {
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
                     document.getElementById('login-container').style.display = 'none';
-                    // The onAuthStateChanged listener will handle showing admin-content
-                } else {
-                    auth.signOut(); // Sign out non-admin user
-                    showAdNotification("You are not authorized to access this panel.");
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block';
                     hideLoadingOverlay();
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'none';
-                }
-            })
-            .catch((error) => {
-                console.error("Admin login failed:", error);
-                showAdNotification("Login failed: " + error.message);
+                    loadAdminData();
+                }, 1500);
+            } else {
+                document.getElementById('admin-content').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none';
+                hideLoadingOverlay();
+            }
+        }
+    });
+});
+
+function showLoadingOverlay(message = "Loading...") {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.querySelector('p').textContent = message;
+    loadingOverlay.style.display = 'flex';
+    document.getElementById('mode-toggle').style.display = 'none';
+}
+
+function hideLoadingOverlay() {
+    document.getElementById('loading-overlay').style.display = 'none';
+}
+
+function loginAdminWithEmailPassword() {
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
+
+    if (!email || !password) {
+        showAdNotification("Please enter both email and password.");
+        return;
+    }
+
+    showLoadingOverlay("Logging in...");
+    document.getElementById('mode-toggle').style.display = 'none';
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            if (user.uid === ADMIN_UID) {
+                document.getElementById('login-container').style.display = 'none';
+            } else {
+                auth.signOut();
+                showAdNotification("You are not authorized to access this panel.");
                 hideLoadingOverlay();
                 document.getElementById('login-container').style.display = 'block';
                 document.getElementById('mode-toggle').style.display = 'none';
-            });
-    }
+            }
+        })
+        .catch((error) => {
+            console.error("Admin login failed // ... (Previous JavaScript code from Phase 1, up to "Admin login failed")
 
-    function logoutAdmin() {
-        showLoadingOverlay("Logging out...");
-        document.getElementById('mode-toggle').style.display = 'none';
-        auth.signOut().then(() => {
-            showAdNotification("Admin logged out.");
-            setTimeout(() => {
-                hideLoadingOverlay();
-                // The onAuthStateChanged listener will handle showing login-container
-            }, 500);
-        }).catch((error) => {
-            console.error("Logout error:", error);
-            showAdNotification("Logout error: " + error.message);
+        .catch((error) => {
+            console.error("Admin login failed:", error);
+            showAdNotification("Login failed: " + error.message);
             hideLoadingOverlay();
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('mode-toggle').style.display = 'none';
         });
-    }
+}
 
-    // --- General UI and Data Loading ---
-    function loadAdminData() {
-        // Load Canva Link
-        database.ref('canvaLink').on('value', (snapshot) => {
-            const link = snapshot.val();
-            document.getElementById('current-canva-link').textContent = link || 'N/A';
-            document.getElementById('new-canva-link').value = ''; // Clear input after load
-        });
-
-        // Load Visitor Overview
-        database.ref('visitors/total').on('value', (snapshot) => {
-            document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-        });
-
-        const fullCurrentDatePath = getTodayKeyUTC();
-        database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-            document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-        });
-
-        // Load Ad Settings (Pattern, Total Steps, Adexium Status)
-        database.ref('adSettings').on('value', (snapshot) => {
-            const settings = snapshot.val();
-            const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-            const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-            adexiumEnabled = settings ? (settings.adexiumEnabled || false) : false; // Default to false
-
-            // Update UI for ad pattern buttons
-            document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-                button.classList.remove('active');
-            });
-            const activePatternButton = document.getElementById(`ad-pattern-${currentPattern}-btn`);
-            if (activePatternButton) {
-                activePatternButton.classList.add('active');
-            } else {
-                console.warn(`Ad pattern button for ${currentPattern} not found.`);
-                // Default to Pattern 1 button if the stored pattern is invalid
-                document.getElementById(`ad-pattern-1-btn`).classList.add('active');
-            }
-
-            // Update UI for total ad steps
-            const totalAdStepsInput = document.getElementById('total-ad-steps');
-            totalAdStepsInput.value = currentSteps;
-
-            // Update UI for Adexium toggle
-            const adexiumToggle = document.getElementById('adexium-status-toggle');
-            if (adexiumEnabled) {
-                adexiumToggle.classList.add('active');
-            } else {
-                adexiumToggle.classList.remove('active');
-            }
-        });
-
-        // Load Monthly Visitor Data
-        database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-            const monthlyStatsList = document.getElementById('monthly-stats-list');
-            monthlyStatsList.innerHTML = ''; // Clear previous data
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                // Sort months from newest to oldest
-                const months = Object.keys(data).sort((a, b) => {
-                    const [yearA, monthA] = a.split('-').map(Number);
-                    const [yearB, monthB] = b.split('-').map(Number);
-                    if (yearA !== yearB) return yearB - yearA; // Sort by year descending
-                    return monthB - monthA; // Sort by month descending
-                }); 
-
-                months.forEach(monthKey => {
-                    const [year, monthNum] = monthKey.split('-');
-                    const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-                    const div = document.createElement('div');
-                    div.className = 'monthly-list-item';
-                    div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-                    // Pass the div element to selectMonthForDailyView to apply 'selected' class
-                    div.onclick = () => selectMonthForDailyView(monthKey, div); 
-                    monthlyStatsList.appendChild(div);
-                });
-
-                // Automatically select the latest month on load/update
-                if (months.length > 0) {
-                    const latestMonthKey = months[0]; 
-                    const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-                    selectMonthForDailyView(latestMonthKey, latestMonthElement);
-                }
-            } else {
-                monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-                // Destroy chart if no data, or reset it
-                if (dailyMonthlyVisitorsChart) {
-                    dailyMonthlyVisitorsChart.destroy();
-                    dailyMonthlyVisitorsChart = null;
-                }
-                document.getElementById('selected-month-display').textContent = '';
-                document.getElementById('daily-stats-list').innerHTML = '<p>Select a month to see daily views.</p>';
-            }
-        });
-    }
-
-    // --- Ad Pattern and Steps Control ---
-    function selectAdPattern(patternNumber) {
-        database.ref('adSettings/pattern').set(patternNumber)
-            .then(() => {
-                showAdNotification(`Ad Pattern set to Pattern ${patternNumber}.`);
-                // UI will be updated by the 'on' listener in loadAdminData
-            })
-            .catch(error => {
-                console.error("Error setting ad pattern:", error);
-                showAdNotification("Failed to set ad pattern.");
-            });
-    }
-
-    function updateTotalAdSteps() {
-        const input = document.getElementById('total-ad-steps');
-        let value = parseInt(input.value);
-        if (isNaN(value) || value < 1) {
-            value = 1;
-        } else if (value > 10) { // Max steps to prevent excessive ads
-            value = 10;
-        }
-        input.value = value;
-    }
-
-    function saveTotalAdSteps() {
-        const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
-        database.ref('adSettings/totalSteps').set(totalSteps)
-            .then(() => {
-                showAdNotification(`Total ad steps set to ${totalSteps}.`);
-            })
-            .catch(error => {
-                console.error("Error setting total ad steps:", error);
-                showAdNotification("Failed to save total ad steps.");
-            });
-    }
-
-    // --- Adexium Toggle Functions ---
-    function toggleAdexiumStatus() {
-        adexiumEnabled = !adexiumEnabled; // Toggle the local state
-        const adexiumToggle = document.getElementById('adexium-status-toggle');
-        if (adexiumEnabled) {
-            adexiumToggle.classList.add('active');
-        } else {
-            adexiumToggle.classList.remove('active');
-        }
-        // Notification is shown only when saving to Firebase, not on UI toggle
-    }
-
-    function saveAdexiumStatus() {
-        database.ref('adSettings/adexiumEnabled').set(adexiumEnabled)
-            .then(() => {
-                showAdNotification(`Adexium Ad is now ${adexiumEnabled ? 'ON' : 'OFF'}.`);
-            })
-            .catch(error => {
-                console.error("Error setting Adexium status:", error);
-                showAdNotification("Failed to save Adexium status.");
-            });
-    }
-
-    // --- Utility Functions ---
-    function showAdNotification(msg) {
-        const el = document.getElementById('ad-notification');
-        el.textContent = msg;
-        el.style.display = 'block';
+function logoutAdmin() {
+    showLoadingOverlay("Logging out...");
+    document.getElementById('mode-toggle').style.display = 'none';
+    auth.signOut().then(() => {
+        showAdNotification("Admin logged out.");
         setTimeout(() => {
-            el.style.display = 'none';
-        }, 3000);
-    }
+            hideLoadingOverlay();
+        }, 500);
+    }).catch((error) => {
+        console.error("Logout error:", error);
+        showAdNotification("Logout error: " + error.message);
+        hideLoadingOverlay();
+    });
+}
 
-    function toggleMode() {
-        const body = document.body;
-        const btn = document.getElementById('mode-toggle');
-        body.classList.toggle('light-mode');
-        if (body.classList.contains('light-mode')) {
-            btn.textContent = '☀️';
-            localStorage.setItem("themeMode", "light");
+// --- General UI and Data Loading ---
+function loadAdminData() {
+    // Load Canva Link
+    database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        document.getElementById('current-canva-link').textContent = link || 'N/A';
+        document.getElementById('new-canva-link').value = '';
+    });
+
+    // Load Visitor Overview
+    database.ref('visitors/total').on('value', (snapshot) => {
+        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+    });
+
+    const fullCurrentDatePath = getTodayKeyUTC();
+    database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+        document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+    });
+
+    // Load Ad Pattern, Total Steps, and Adexium Enabled status
+    database.ref('adSettings').on('value', (snapshot) => {
+        const settings = snapshot.val();
+        const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
+        const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
+        const adexiumStatus = settings ? settings.adexiumEnabled : false; // Default to disabled
+
+        // Update UI for ad pattern buttons
+        document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+            button.classList.remove('active');
+        });
+        const activePatternButton = document.getElementById(`ad-pattern-${currentPattern}-btn`);
+        if (activePatternButton) {
+            activePatternButton.classList.add('active');
+        }
+
+        // Update UI for total ad steps
+        const totalAdStepsInput = document.getElementById('total-ad-steps');
+        totalAdStepsInput.value = currentSteps;
+        totalAdStepsValue = currentSteps; // Update the global variable for styling
+        document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
+
+
+        // Update UI for Adexium toggle
+        const adexiumToggle = document.getElementById('adexium-toggle');
+        adexiumToggle.checked = adexiumStatus;
+    });
+
+    // Load Monthly Visitor Data
+    database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+        const monthlyStatsList = document.getElementById('monthly-stats-list');
+        monthlyStatsList.innerHTML = '';
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const months = Object.keys(data).sort((a, b) => {
+                const [yearA, monthA] = a.split('-').map(Number);
+                const [yearB, monthB] = b.split('-').map(Number);
+                if (yearA !== yearB) return yearB - yearA;
+                return monthB - monthA;
+            }); 
+
+            months.forEach(monthKey => {
+                const [year, monthNum] = monthKey.split('-');
+                const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+                const div = document.createElement('div');
+                div.className = 'monthly-list-item';
+                div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+                div.onclick = () => selectMonthForDailyView(monthKey, div); 
+                monthlyStatsList.appendChild(div);
+            });
+
+            if (months.length > 0) {
+                const latestMonthKey = months[0]; 
+                const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+                selectMonthForDailyView(latestMonthKey, latestMonthElement);
+            }
         } else {
-            btn.textContent = '🌙';
-            localStorage.setItem("themeMode", "dark");
+            monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.destroy();
+                dailyMonthlyVisitorsChart = null;
+            }
         }
-        // Dynamically update --h3-color variable based on mode
-        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+    });
+}
 
-        if (dailyMonthlyVisitorsChart) {
-            updateChartColors(dailyMonthlyVisitorsChart);
-            dailyMonthlyVisitorsChart.update(); // Redraw chart with new colors
-        }
+// --- Ad Pattern and Steps Control ---
+function selectAdPattern(patternNumber) {
+    database.ref('adSettings/pattern').set(patternNumber)
+        .then(() => {
+            showAdNotification(`Ad Pattern set to Pattern ${patternNumber}.`);
+            // UI will be updated by the 'on' listener in loadAdminData
+        })
+        .catch(error => {
+            console.error("Error setting ad pattern:", error);
+            showAdNotification("Failed to set ad pattern.");
+        });
+}
+
+function updateTotalAdSteps() {
+    const input = document.getElementById('total-ad-steps');
+    let value = parseInt(input.value);
+    if (isNaN(value) || value < 1) {
+        value = 1;
+    } else if (value > 10) { // Max steps to prevent excessive ads
+        value = 10;
+    }
+    input.value = value;
+    totalAdStepsValue = value; // Update global variable
+    document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
+
+}
+
+function saveTotalAdSteps() {
+    const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
+    database.ref('adSettings/totalSteps').set(totalSteps)
+        .then(() => {
+            showAdNotification(`Total ad steps set to ${totalSteps}.`);
+        })
+        .catch(error => {
+            console.error("Error setting total ad steps:", error);
+            showAdNotification("Failed to save total ad steps.");
+        });
+}
+
+// --- Adexium Control ---
+function toggleAdexium() {
+    const adexiumToggle = document.getElementById('adexium-toggle');
+    const isEnabled = adexiumToggle.checked;
+
+    database.ref('adSettings/adexiumEnabled').set(isEnabled)
+        .then(() => {
+            showAdNotification(`Adexium ads ${isEnabled ? 'enabled' : 'disabled'}.`);
+        })
+        .catch(error => {
+            console.error("Error toggling Adexium ads:", error);
+            showAdNotification("Failed to toggle Adexium ads.");
+            adexiumToggle.checked = !isEnabled; // Revert UI on error
+        });
+}
+
+
+// --- Utility Functions ---
+function showAdNotification(msg) {
+    const el = document.getElementById('ad-notification');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 3000);
+}
+
+function toggleMode() {
+    const body = document.body;
+    const btn = document.getElementById('mode-toggle');
+    body.classList.toggle('light-mode');
+    if (body.classList.contains('light-mode')) {
+        btn.textContent = '☀️';
+        localStorage.setItem("themeMode", "light");
+    } else {
+        btn.textContent = '🌙';
+        localStorage.setItem("themeMode", "dark");
+    }
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+
+    if (dailyMonthlyVisitorsChart) {
+        updateChartColors(dailyMonthlyVisitorsChart);
+        dailyMonthlyVisitorsChart.update();
+    }
+}
+
+// --- Chart and Visitor Details ---
+function getChartTextColor() {
+    return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+}
+
+function selectMonthForDailyView(monthKey, clickedElement) {
+    currentSelectedMonth = monthKey;
+    const [year, monthNum] = monthKey.split('-');
+    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+    if (clickedElement) {
+        clickedElement.classList.add('selected');
     }
 
-    // --- Chart and Visitor Details ---
-    function getChartTextColor() {
-        return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
-    }
+    const dailyStatsList = document.getElementById('daily-stats-list');
+    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-    function selectMonthForDailyView(monthKey, clickedElement) {
-        currentSelectedMonth = monthKey;
-        const [year, monthNum] = monthKey.split('-');
-        document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+        dailyStatsList.innerHTML = '';
+        const dayLabels = []; 
+        const fullDateLabels = []; 
+        const dayCounts = [];
 
-        // Remove 'selected' class from all monthly items and add to the clicked one
-        document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-        if (clickedElement) {
-            clickedElement.classList.add('selected');
-        }
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const days = Object.keys(data).filter(fullDateKey => 
+                fullDateKey.startsWith(monthKey)
+            ).sort(); 
+            
+            days.forEach(fullDateKey => {
+                const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                
+                dayLabels.push(dayDay.toString()); 
+                fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+                dayCounts.push(data[fullDateKey]);
 
-        const dailyStatsList = document.getElementById('daily-stats-list');
-        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+                const div = document.createElement('div');
+                div.className = 'daily-item';
+                div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+                dailyStatsList.appendChild(div);
+            });
 
-        // Fetch daily data for the selected month
-        database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-            dailyStatsList.innerHTML = ''; // Clear previous daily data
-            const dayLabels = [];       // For chart X-axis (day numbers)
-            const fullDateLabels = [];  // For chart tooltip (full date)
-            const dayCounts = [];       // For chart Y-axis (visitor counts)
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                // Filter and sort days only for the selected month
-                const days = Object.keys(data).filter(fullDateKey => 
-                    fullDateKey.startsWith(monthKey)
-                ).sort(); // Sort chronologically
-
-                days.forEach(fullDateKey => {
-                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                    
-                    dayLabels.push(dayDay.toString()); // E.g., "1", "2", "3"
-                    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay)); // E.g., "January 1, 2023"
-                    dayCounts.push(data[fullDateKey]);
-
-                    const div = document.createElement('div');
-                    div.className = 'daily-item';
-                    div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-                    dailyStatsList.appendChild(div);
-                });
-
-                if (dailyStatsList.children.length === 0) {
-                    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-                }
-
-            } else {
+            if (dailyStatsList.children.length === 0) {
                 dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
             }
 
-            // Update or create the chart
-            if (dailyMonthlyVisitorsChart) {
-                dailyMonthlyVisitorsChart.data.labels = dayLabels;
-                dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-                dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; // Store for tooltip
-                
-                // Ensure point styling is consistent
-                dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-                dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-                dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+        } else {
+            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+        }
 
-                dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-                updateChartColors(dailyMonthlyVisitorsChart); // Apply current theme colors
-                
-                // Set interaction mode for tooltips (important for line charts)
-                dailyMonthlyVisitorsChart.options.interaction = {
-                    mode: 'index', 
-                    intersect: false 
-                };
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.data.labels = dayLabels;
+            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+            
+            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
 
-                dailyMonthlyVisitorsChart.update(); // Redraw chart
-            } else {
-                const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-                dailyMonthlyVisitorsChart = new Chart(ctx, {
-                    type: 'line', // Use a line chart
-                    data: {
-                        labels: dayLabels,
-                        datasets: [{
-                            label: 'Daily Views',
-                            data: dayCounts,
-                            backgroundColor: 'rgba(3, 218, 197, 0.4)', // Secondary color with transparency
-                            borderColor: 'rgba(3, 218, 197, 1)',      // Solid secondary color
-                            borderWidth: 2,
-                            tension: 0.3, // Smooth curves
-                            fill: true,   // Fill area under the line
-                            pointRadius: 6,         // Size of points
-                            pointHoverRadius: 8,    // Size of points on hover
-                            pointHitRadius: 10,     // Larger area for easier hovering
-                            pointBackgroundColor: 'rgba(3, 218, 197, 1)', // Point color
-                            fullDateLabels: fullDateLabels // Custom property for tooltips
-                        }]
+            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+            updateChartColors(dailyMonthlyVisitorsChart);
+            
+            dailyMonthlyVisitorsChart.options.interaction = {
+                mode: 'index', 
+                intersect: false 
+            };
+
+            dailyMonthlyVisitorsChart.update();
+        } else {
+            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+            dailyMonthlyVisitorsChart = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Daily Views',
+                        data: dayCounts,
+                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                        borderColor: 'rgba(3, 218, 197, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                        fullDateLabels: fullDateLabels 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    
+                    interaction: {
+                        mode: 'index', 
+                        intersect: false 
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false, // Allow chart to fill container height
-                        
-                        interaction: {
-                            mode: 'index', // Show tooltip for all datasets at the hovered x-position
-                            intersect: false // Don't require precise intersection with a data point
-                        },
 
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                                color: getChartTextColor(), // Dynamic color
-                                font: {
-                                    size: 18
-                                }
-                            },
-                            legend: {
-                                labels: {
-                                    color: getChartTextColor() // Dynamic color
-                                }
-                            },
-                            tooltip: { 
-                                callbacks: {
-                                    // Customize title to show full date
-                                    title: function(tooltipItems) {
-                                        const dataset = tooltipItems[0].dataset;
-                                        const index = tooltipItems[0].dataIndex;
-                                        return dataset.fullDateLabels[index];
-                                    },
-                                    // Customize label to show "Views: X"
-                                    label: function(tooltipItem) {
-                                        return `Views: ${tooltipItem.raw}`;
-                                    }
-                                }
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                            color: getChartTextColor(),
+                            font: {
+                                size: 18
                             }
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: getChartTextColor(), // Dynamic color
-                                    precision: 0 // No decimal points for visitor count
+                        legend: {
+                            labels: {
+                                color: getChartTextColor()
+                            }
+                        },
+                        tooltip: { 
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const dataset = tooltipItems[0].dataset;
+                                    const index = tooltipItems[0].dataIndex;
+                                    return dataset.fullDateLabels[index];
                                 },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)' // Light grid for dark mode
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: getChartTextColor() // Dynamic color
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)' // Light grid for dark mode
+                                label: function(tooltipItem) {
+                                    return `Views: ${tooltipItem.raw}`;
                                 }
                             }
                         }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: getChartTextColor(),
+                                precision: 0 
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: getChartTextColor()
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
                     }
-                });
-                // Initial color update after chart creation
-                updateChartColors(dailyMonthlyVisitorsChart);
-            }
-        });
-    }
-
-    // Function to update chart colors based on current theme
-    function updateChartColors(chart) {
-        const textColor = getChartTextColor();
-        chart.options.scales.x.ticks.color = textColor;
-        chart.options.scales.y.ticks.color = textColor;
-        chart.options.plugins.title.color = textColor;
-        if (chart.options.plugins.legend) {
-            chart.options.plugins.legend.labels.color = textColor;
+                }
+            });
         }
-        const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-        chart.options.scales.x.grid.color = gridColor;
-        chart.options.scales.y.grid.color = gridColor;
-    }
-
-    // --- Canva Link Update ---
-    function updateCanvaLink() {
-        const newLinkInput = document.getElementById('new-canva-link');
-        const newLink = newLinkInput.value.trim();
-
-        if (newLink) {
-            database.ref('canvaLink').set(newLink)
-                .then(() => {
-                    showAdNotification("Canva Pro link updated successfully!");
-                    newLinkInput.value = ''; // Clear input field
-                })
-                .catch((error) => {
-                    console.error("Error updating Canva link:", error);
-                    showAdNotification("Failed to update Canva Pro link.");
-                });
-        } else {
-            showAdNotification("Please enter a valid link.");
-        }
-    }
-
-    // Initialize h3 color based on current mode on load (if DOMContentLoaded already fired)
-    // This handles cases where the script might execute after the DOM content is fully loaded
-    window.addEventListener('load', () => {
-        document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
     });
+}
 
+function updateChartColors(chart) {
+    const textColor = getChartTextColor();
+    chart.options.scales.x.ticks.color = textColor;
+    chart.options.scales.y.ticks.color = textColor;
+    chart.options.plugins.title.color = textColor;
+    if (chart.options.plugins.legend) {
+        chart.options.plugins.legend.labels.color = textColor;
+    }
+    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    chart.options.scales.x.grid.color = gridColor;
+    chart.options.scales.y.grid.color = gridColor;
+}
+
+// --- Canva Link Update ---
+function updateCanvaLink() {
+    const newLinkInput = document.getElementById('new-canva-link');
+    const newLink = newLinkInput.value.trim();
+
+    if (newLink) {
+        database.ref('canvaLink').set(newLink)
+            .then(() => {
+                showAdNotification("Canva Pro link updated successfully!");
+                newLinkInput.value = '';
+            })
+            .catch((error) => {
+                console.error("Error updating Canva link:", error);
+                showAdNotification("Failed to update Canva Pro link.");
+            });
+    } else {
+        showAdNotification("Please enter a valid link.");
+    }
+}
+
+// Initialize h3 color based on current mode on load
+window.addEventListener('load', () => {
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+    // Set initial data-total-steps attribute on load
+    document.querySelector('.container').setAttribute('data-total-steps', totalAdStepsValue);
+});
 </script>
 </body>
 </html>
-
+   
