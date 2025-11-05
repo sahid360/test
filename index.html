@@ -28,6 +28,8 @@
       --success: #28a745;
       --info: #17a2b8;
       --h3-color: var(--text-color);
+      --adexium-on: #28a745;
+      --adexium-off: #dc3545;
     }
 
     body.light-mode {
@@ -398,6 +400,65 @@
         text-align: center;
     }
 
+    /* New styles for Adexium toggle and combined controls */
+    .ad-combined-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    }
+
+    .ad-step-control-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .adexium-toggle-button {
+        background: var(--adexium-off);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s ease;
+        font-size: 14px;
+        white-space: nowrap; /* Prevents text from wrapping */
+    }
+
+    .adexium-toggle-button.active {
+        background: var(--adexium-on);
+    }
+
+    .adexium-toggle-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    /* Ad step coloring based on value */
+    .ad-step-control-group .step-label {
+        font-weight: bold;
+        transition: font-size 0.2s ease;
+    }
+
+    /* Responsive adjustments for step text size */
+    @media (max-width: 768px) {
+        .ad-combined-controls {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .ad-step-control-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .adexium-toggle-button {
+            margin-left: auto; /* Push button to the right */
+        }
+    }
+
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
       body {
@@ -556,10 +617,13 @@
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3: All Gigapub</button>
     </div>
 
-    <div class="ad-step-control">
-        <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
+    <div class="ad-combined-controls">
+        <div class="ad-step-control-group">
+            <label for="total-ad-steps"><span class="step-label">Total Ad Steps:</span></label>
+            <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
+            <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
+        </div>
+        <button id="adexium-toggle" class="adexium-toggle-button" onclick="toggleAdexiumAds()">Adexium Ads: OFF</button>
     </div>
   </div>
 
@@ -775,12 +839,13 @@
             document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
         });
 
-        // Load Ad Pattern and Total Steps
+        // Load Ad Pattern, Total Steps, and Adexium Status
         database.ref('adSettings').on('value', (snapshot) => {
             const settings = snapshot.val();
             const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
             const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-            
+            const adexiumStatus = settings ? settings.adexiumEnabled : false; // Default to off
+
             // Update UI for ad pattern buttons
             document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
                 button.classList.remove('active');
@@ -790,6 +855,17 @@
             // Update UI for total ad steps
             const totalAdStepsInput = document.getElementById('total-ad-steps');
             totalAdStepsInput.value = currentSteps;
+            updateStepLabelSize(currentSteps);
+
+            // Update UI for Adexium toggle button
+            const adexiumToggleButton = document.getElementById('adexium-toggle');
+            if (adexiumStatus) {
+                adexiumToggleButton.classList.add('active');
+                adexiumToggleButton.textContent = 'Adexium Ads: ON';
+            } else {
+                adexiumToggleButton.classList.remove('active');
+                adexiumToggleButton.textContent = 'Adexium Ads: OFF';
+            }
         });
 
         // Load Monthly Visitor Data
@@ -822,7 +898,7 @@
                     const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
                     selectMonthForDailyView(latestMonthKey, latestMonthElement);
                 }
-            } else {
+              } else {
                 monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
                 if (dailyMonthlyVisitorsChart) {
                     dailyMonthlyVisitorsChart.destroy();
@@ -854,6 +930,7 @@
             value = 10;
         }
         input.value = value;
+        updateStepLabelSize(value);
     }
 
     function saveTotalAdSteps() {
@@ -868,10 +945,32 @@
             });
     }
 
-    // Placeholder for other functions (will be implemented in 2nd phase)
-    function updateCanvaLink() {
-        showAdNotification("Update Canva Link function not yet fully implemented.");
-        // Logic for updating Canva link in Firebase will go here
+    function updateStepLabelSize(steps) {
+        const stepLabel = document.querySelector('.ad-step-control-group .step-label');
+        if (steps <= 5) {
+            stepLabel.style.fontSize = '16px';
+        } else if (steps <= 7) {
+            stepLabel.style.fontSize = '14px';
+        } else {
+            stepLabel.style.fontSize = '12px';
+        }
+    }
+
+    function toggleAdexiumAds() {
+        database.ref('adSettings/adexiumEnabled').once('value')
+            .then(snapshot => {
+                const currentStatus = snapshot.val();
+                const newStatus = !currentStatus;
+                return database.ref('adSettings/adexiumEnabled').set(newStatus);
+            })
+            .then(() => {
+                showAdNotification(`Adexium Ads ${newStatus ? 'Enabled' : 'Disabled'}.`);
+                // UI will be updated by the 'on' listener in loadAdminData
+            })
+            .catch(error => {
+                console.error("Error toggling Adexium ads:", error);
+                showAdNotification("Failed to toggle Adexium ads.");
+            });
     }
 
     // --- Utility Functions ---
@@ -1095,4 +1194,4 @@
 </script>
 </body>
 </html>
-  
+     
