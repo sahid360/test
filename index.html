@@ -859,8 +859,7 @@
     function selectAdPattern(patternNumber) {
         database.ref('adSettings/pattern').set(patternNumber)
             .then(() => {
-                showAdNotification(`Ad Pattern set to Pattern ${patternNumber}.`);
-                // UI will be updated by the 'on' listener in loadAdminData
+                // Notification removed
             })
             .catch(error => {
                 console.error("Error setting ad pattern:", error);
@@ -883,7 +882,7 @@
         const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
         database.ref('adSettings/totalSteps').set(totalSteps)
             .then(() => {
-                showAdNotification(`Total ad steps set to ${totalSteps}.`);
+                // Notification removed
             })
             .catch(error => {
                 console.error("Error setting total ad steps:", error);
@@ -899,7 +898,7 @@
         if (newLink) {
             database.ref('canvaLink').set(newLink)
                 .then(() => {
-                    showAdNotification("Canva Pro link updated successfully!");
+                    // Notification removed
                     newLinkInput.value = '';
                 })
                 .catch((error) => {
@@ -1112,8 +1111,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
