@@ -174,6 +174,9 @@
     .btn-success {
         background: var(--success);
         color: #fff;
+        padding: 8px 15px; /* Smaller padding for Save button */
+        font-size: 14px; /* Smaller font size */
+        margin-left: 10px; /* Space from input */
     }
 
     .btn:hover {
@@ -361,22 +364,26 @@
         color: var(--text-color) !important; 
     }
 
-    /* Ad pattern buttons specific styles */
+    /* Ad pattern buttons specific styles - UPDATED */
     .ad-pattern-buttons {
-        display: flex;
-        flex-direction: column;
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
         gap: 10px;
         margin-top: 15px;
     }
     .ad-pattern-buttons button {
         background-color: #555;
         color: white;
-        padding: 10px 15px;
+        padding: 8px 12px; 
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 16px;
+        font-weight: bold; 
+        font-size: 14px; 
         transition: background-color 0.2s ease;
+        flex: 1 1 auto; /* Allow buttons to grow and shrink, but not have a fixed max-width */
+        max-width: 120px; /* Still apply a max-width to keep them from becoming too wide */
     }
     .ad-pattern-buttons button.active {
         background-color: var(--primary);
@@ -389,13 +396,17 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        justify-content: center; 
     }
     .ad-step-control label {
         font-weight: bold;
+        white-space: nowrap; 
     }
     .ad-step-control input {
-        width: 80px;
+        width: 60px; 
         text-align: center;
+        padding: 8px; 
+        font-size: 14px; 
     }
 
     /* --- Responsive Adjustments --- */
@@ -507,11 +518,22 @@
         font-size: 16px;
       }
       .ad-step-control {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row; 
+        align-items: center;
+        justify-content: center;
+      }
+      .ad-step-control label {
+        margin-bottom: 0;
       }
       .ad-step-control input {
-        width: 100%;
+        width: 50px; 
+      }
+      .ad-step-control .btn-success {
+        margin-top: 0;
+      }
+      .ad-pattern-buttons button {
+        flex: 1 1 30%; 
+        max-width: unset; 
       }
     }
   </style>
@@ -549,17 +571,19 @@
       </div>
     </div>
     
+    <!-- MODIFIED SECTION START -->
     <div class="ad-pattern-buttons">
-        <h3>Select Ad Pattern:</h3>
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Pattern 1: All Monetag</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Pattern 2: Monetag & Gigapub</button>
-        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Pattern 3: All Gigapub</button>
+        <!-- Removed "Select Ad Pattern: h3 tag here" -->
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
+      <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Max</button>
     </div>
+    <!-- MODIFIED SECTION END -->
 
     <div class="ad-step-control">
         <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="5" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save Steps</button>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
     </div>
   </div>
 
@@ -572,7 +596,6 @@
     </div>
     <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
   </div>
-
   <div class="card">
     <h2>Monthly Daily Visitor</h2>
     <div class="chart-container">
@@ -605,21 +628,22 @@
 </div>
   <script>
     // Firebase configuration (replace with your actual config)
-  const firebaseConfig = {
-  apiKey: "AIzaSyBEQQYxWsJ4sxhSy81jjXyMAJQWVjX731E",
-  authDomain: "team-bot-p.firebaseapp.com",
-  databaseURL: "https://team-bot-p-default-rtdb.firebaseio.com",
-  projectId: "team-bot-p",
-  storageBucket: "team-bot-p.firebasestorage.app",
-  messagingSenderId: "325700192937",
-  appId: "1:325700192937:web:5c8c966396f667f46c37b8"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyAGxSne9zxCPJNpVmfD6iQF7ajPJVq9dSE",
+        authDomain: "canva-pro-team.firebaseapp.com",
+        databaseURL: "https://canva-pro-team-default-rtdb.firebaseio.com",
+        projectId: "canva-pro-team",
+        storageBucket: "canva-pro-team.firebasestorage.app",
+        messagingSenderId: "462948035203",
+        appId: "1:462948035203:web:db7838356c4b1a23bc09b6"
+    };
+
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const auth = firebase.auth();
 
-    const ADMIN_UID = "xB6yRQPzpLOk9lcOCxPxgL0b2uj2"; // Replace with your actual admin UID
+    const ADMIN_UID = "EpRb9BpzBpckBU5rEfGsNeaR0jA2"; // Replace with your actual admin UID
     let dailyMonthlyVisitorsChart;
     let currentSelectedMonth = '';
     let isInitialAuthCheckComplete = false;
@@ -835,8 +859,7 @@
     function selectAdPattern(patternNumber) {
         database.ref('adSettings/pattern').set(patternNumber)
             .then(() => {
-                showAdNotification(`Ad Pattern set to Pattern ${patternNumber}.`);
-                // UI will be updated by the 'on' listener in loadAdminData
+                // Notification removed
             })
             .catch(error => {
                 console.error("Error setting ad pattern:", error);
@@ -859,7 +882,7 @@
         const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
         database.ref('adSettings/totalSteps').set(totalSteps)
             .then(() => {
-                showAdNotification(`Total ad steps set to ${totalSteps}.`);
+                // Notification removed
             })
             .catch(error => {
                 console.error("Error setting total ad steps:", error);
@@ -869,8 +892,22 @@
 
     // Placeholder for other functions (will be implemented in 2nd phase)
     function updateCanvaLink() {
-        showAdNotification("Update Canva Link function not yet fully implemented.");
-        // Logic for updating Canva link in Firebase will go here
+        const newLinkInput = document.getElementById('new-canva-link');
+        const newLink = newLinkInput.value.trim();
+
+        if (newLink) {
+            database.ref('canvaLink').set(newLink)
+                .then(() => {
+                    // Notification removed
+                    newLinkInput.value = '';
+                })
+                .catch((error) => {
+                    console.error("Error updating Canva link:", error);
+                    showAdNotification("Failed to update Canva Pro link.");
+                });
+        } else {
+            showAdNotification("Please enter a valid link.");
+        }
     }
 
     // --- Utility Functions ---
@@ -886,8 +923,7 @@
     function toggleMode() {
         const body = document.body;
         const btn = document.getElementById('mode-toggle');
-        body.
-          classList.toggle('light-mode');
+        body.classList.toggle('light-mode');
         if (body.classList.contains('light-mode')) {
             btn.textContent = '☀️';
             localStorage.setItem("themeMode", "light");
@@ -1068,26 +1104,6 @@
         chart.options.scales.y.grid.color = gridColor;
     }
 
-    // --- Canva Link Update ---
-    function updateCanvaLink() {
-        const newLinkInput = document.getElementById('new-canva-link');
-        const newLink = newLinkInput.value.trim();
-
-        if (newLink) {
-            database.ref('canvaLink').set(newLink)
-                .then(() => {
-                    showAdNotification("Canva Pro link updated successfully!");
-                    newLinkInput.value = '';
-                })
-                .catch((error) => {
-                    console.error("Error updating Canva link:", error);
-                    showAdNotification("Failed to update Canva Pro link.");
-                });
-        } else {
-            showAdNotification("Please enter a valid link.");
-        }
-    }
-
     // Initialize h3 color based on current mode on load
     window.addEventListener('load', () => {
         document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
@@ -1095,5 +1111,3 @@
 </script>
 </body>
 </html>
-
-     
