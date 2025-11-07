@@ -26,6 +26,18 @@
       --ad-bg: #222;
       --ad-item-bg: #333;
       --border-color: #444;
+
+      /* Custom colors for steps */
+      --step-color-1: #FF5733; /* Red-Orange */
+      --step-color-2: #33FF57; /* Bright Green */
+      --step-color-3: #3357FF; /* Blue */
+      --step-color-4: #FF33F5; /* Pink-Purple */
+      --step-color-5: #FFBD33; /* Orange-Yellow */
+      --step-color-6: #33FFF5; /* Aqua */
+      --step-color-7: #B833FF; /* Lavender */
+      --step-color-8: #FF33A8; /* Hot Pink */
+      --step-color-9: #57FF33; /* Lime Green */
+      --step-color-10: #33A8FF; /* Sky Blue */
     }
 
     body.light-mode {
@@ -111,34 +123,17 @@
       flex: 1;
       text-align: center;
       line-height: 26px;
+      font-size: 14px;
       font-weight: bold;
       color: #fff;
-      background-color: #444;
-      transition: background 0.3s ease-in-out, font-size 0.3s ease; /* Added font-size transition */
+      background-color: #444; /* Default background for undone steps */
+      transition: background 0.3s ease-in-out;
     }
 
-    /* Dynamic step colors for 'done' steps */
-    .step-box.done.step1 { background-color: #ff5733; } /* Red */
-    .step-box.done.step2 { background-color: #33ff57; } /* Green */
-    .step-box.done.step3 { background-color: #3357ff; } /* Blue */
-    .step-box.done.step4 { background-color: #ff33ff; } /* Magenta */
-    .step-box.done.step5 { background-color: #ffff33; } /* Yellow */
-    .step-box.done.step6 { background-color: #33ffff; } /* Cyan */
-    .step-box.done.step7 { background-color: #ff9933; } /* Orange */
-    .step-box.done.step8 { background-color: #9933ff; } /* Purple */
-    .step-box.done.step9 { background-color: #33ff99; } /* Spring Green */
-    .step-box.done.step10 { background-color: #ff3399; } /* Rose */
-    /* Fallback for more than 10 steps or default if no specific step class */
-    .step-box.done { background-color: var(--secondary); } 
-
-
-    /* Step font size adjustments based on total steps */
-    .step-box { font-size: 14px; } /* Default */
-    .step-inner[data-total-steps="7"] .step-box { font-size: 13px; }
-    .step-inner[data-total-steps="8"] .step-box { font-size: 12px; }
-    .step-inner[data-total-steps="9"] .step-box { font-size: 11px; }
-    .step-inner[data-total-steps="10"] .step-box { font-size: 10px; }
-
+    /* Dynamic step colors will be applied via JS as inline styles */
+    .step-box.done { 
+        /* The background will be set directly by JS for done steps */
+    }
 
     .buttons {
       display: flex;
@@ -356,10 +351,10 @@ const firebaseConfig = {
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQdTRA&brandingVariant=edu&referrer=team-invite";
+    let CANVA_LINK = "https://www.canva.com/brand/join?token=Hv3XHgHZSTS69O03PQD37A&brandingVariant=edu&referrer=team-invite";
     let adCount = 0; // Current completed ads
     let adsCompleted = false;
-    let TOTAL_ADS_REQUIRED = 5; // Default value, will be fetched from Firebase
+    let TOTAL_ADS_REQUIRED = 10; // Default value, will be fetched from Firebase
     let AD_PATTERN = 1; // Default value, will be fetched from Firebase
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -383,7 +378,7 @@ const firebaseConfig = {
         const settings = snapshot.val();
         if (settings) {
           AD_PATTERN = settings.pattern || 1;
-          TOTAL_ADS_REQUIRED = settings.totalSteps || 5;
+          TOTAL_ADS_REQUIRED = settings.totalSteps || 10; // Ensure max 10 steps for custom colors
           document.getElementById('required-ads-count').textContent = TOTAL_ADS_REQUIRED;
           generateStepBoxes(); // Regenerate step boxes based on new total steps
           updateSteps(); // Update progress bar if ads already started
@@ -401,13 +396,12 @@ const firebaseConfig = {
     function generateStepBoxes() {
         const stepInnerContainer = document.getElementById('step-inner-container');
         stepInnerContainer.innerHTML = ''; // Clear existing steps
-        stepInnerContainer.setAttribute('data-total-steps', TOTAL_ADS_REQUIRED); // Set attribute for CSS
 
         for (let i = 1; i <= TOTAL_ADS_REQUIRED; i++) {
             const div = document.createElement('div');
             div.className = 'step-box';
             div.id = `step${i}`;
-            div.textContent = `Step ${i}`;
+            div.textContent = `Ads ${i}`; /* Changed from Step to Ads */
             stepInnerContainer.appendChild(div);
         }
     }
@@ -450,7 +444,7 @@ const firebaseConfig = {
       const interval = setInterval(() => {
         button.textContent = `Please wait... ${countdown} sec`;
         countdown--;
-        if (countdown < 0) { // Changed to < 0 to show "0 sec"
+        if (countdown < 0) {
           clearInterval(interval);
           showNextAd(); // Call ad function after countdown
         }
@@ -542,16 +536,21 @@ const firebaseConfig = {
     }
 
     function updateSteps() {
-      // Loop through steps to apply 'done' class and specific step color class
+      // Loop through steps to apply 'done' class and custom colors
       for (let i = 1; i <= TOTAL_ADS_REQUIRED; i++) {
         const stepBox = document.getElementById(`step${i}`);
-        if (stepBox) { // Ensure the step box exists
+        if (stepBox) {
             if (adCount >= i) {
                 stepBox.classList.add('done');
-                stepBox.classList.add(`step${i}`); // Add specific class for unique color
+                // Apply custom color for done steps
+                if (i <= 10) { // Only apply custom colors if within the defined range
+                    stepBox.style.backgroundColor = `var(--step-color-${i})`;
+                } else {
+                    stepBox.style.backgroundColor = 'var(--secondary)'; // Fallback for more than 10 steps
+                }
             } else {
-                stepBox.classList.remove('done'); // Remove if not yet done (e.g., if total steps changed)
-                stepBox.classList.remove(`step${i}`); // Also remove specific color class
+                stepBox.classList.remove('done');
+                stepBox.style.backgroundColor = ''; // Reset to default CSS background
             }
         }
       }
@@ -607,4 +606,3 @@ const firebaseConfig = {
   </script>
 </body>
 </html>
-     
