@@ -117,10 +117,20 @@
       transition: background 0.3s ease-in-out, font-size 0.3s ease; /* Added font-size transition */
     }
 
-    /* Dynamic step colors */
-    .step-box.done { 
-        background-color: var(--secondary); /* A general highlight color for done steps */
-    }
+    /* Dynamic step colors for 'done' steps */
+    .step-box.done.step1 { background-color: #ff5733; } /* Red */
+    .step-box.done.step2 { background-color: #33ff57; } /* Green */
+    .step-box.done.step3 { background-color: #3357ff; } /* Blue */
+    .step-box.done.step4 { background-color: #ff33ff; } /* Magenta */
+    .step-box.done.step5 { background-color: #ffff33; } /* Yellow */
+    .step-box.done.step6 { background-color: #33ffff; } /* Cyan */
+    .step-box.done.step7 { background-color: #ff9933; } /* Orange */
+    .step-box.done.step8 { background-color: #9933ff; } /* Purple */
+    .step-box.done.step9 { background-color: #33ff99; } /* Spring Green */
+    .step-box.done.step10 { background-color: #ff3399; } /* Rose */
+    /* Fallback for more than 10 steps or default if no specific step class */
+    .step-box.done { background-color: var(--secondary); } 
+
 
     /* Step font size adjustments based on total steps */
     .step-box { font-size: 14px; } /* Default */
@@ -128,10 +138,6 @@
     .step-inner[data-total-steps="8"] .step-box { font-size: 12px; }
     .step-inner[data-total-steps="9"] .step-box { font-size: 11px; }
     .step-inner[data-total-steps="10"] .step-box { font-size: 10px; }
-    /* You can add more specific colors here if needed, e.g.: */
-    /* .step-box.done.step1 { background-color: #f44336; } */
-    /* .step-box.done.step2 { background-color: #e91e63; } */
-    /* ... up to step10 */
 
 
     .buttons {
@@ -536,14 +542,16 @@ const firebaseConfig = {
     }
 
     function updateSteps() {
-      // Loop through steps to apply 'done' class
+      // Loop through steps to apply 'done' class and specific step color class
       for (let i = 1; i <= TOTAL_ADS_REQUIRED; i++) {
         const stepBox = document.getElementById(`step${i}`);
         if (stepBox) { // Ensure the step box exists
             if (adCount >= i) {
                 stepBox.classList.add('done');
+                stepBox.classList.add(`step${i}`); // Add specific class for unique color
             } else {
                 stepBox.classList.remove('done'); // Remove if not yet done (e.g., if total steps changed)
+                stepBox.classList.remove(`step${i}`); // Also remove specific color class
             }
         }
       }
@@ -599,3 +607,4 @@ const firebaseConfig = {
   </script>
 </body>
 </html>
+     
