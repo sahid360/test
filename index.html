@@ -1,397 +1,80 @@
-<!doctype html>
-<html lang="en-US">
-
+<!DOCTYPE html>
+<html lang="bn">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ad Viewer App</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      color: white;
+      text-align: center;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-    <title>Adextra Italia | Scouty</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="HandheldFriendly" content="true">
-    <meta name="author" content="bslthemes" />
-    <meta name="description"
-        content="Adextra Italia lancia Scouty, un progetto innovativo che rivoluziona il modo di concepire le comunicazioni commerciali digitali, mettendo l’utente al centro dell’esperienza.">
+    h1 {
+      margin-bottom: 20px;
+    }
 
+    button {
+      background: white;
+      color: #333;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 10px;
+      margin: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Epilogue%3Aital%2Cwght%400%2C100%3B0%2C200%3B0%2C300%3B0%2C400%3B0%2C500%3B0%2C600%3B0%2C700%3B0%2C800%3B0%2C900%3B1%2C100%3B1%2C200%3B1%2C300%3B1%2C400%3B1%2C500%3B1%2C600%3B1%2C700%3B1%2C800%3B1%2C900&#038;display=swap"
-        type="text/css" media="all" />
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    button:hover {
+      background: #ddd;
+    }
 
-    <!-- CSS STYLES -->
-    <link rel="stylesheet" href="assets/css/vendors/bootstrap.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/vendors/magnific-popup.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/vendors/splitting.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/vendors/swiper.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/vendors/animate.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/vendors/jquery.pagepiling.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="assets/css/style.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="/assets/images/logo/favicon.webp" type="image/x-icon">
-    <link rel="icon" href="/assets/images/logo/favicon.webp" type="image/x-icon">
-
+    #adContainer {
+      margin-top: 20px;
+      width: 320px;
+      height: 250px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- Page -->
-    <div class="onovo-page footer--fixed">
+  <h1>🎬 বিজ্ঞাপন দেখুন</h1>
 
-        <!-- Preloader -->
-        <div class="preloader">
-            <div class="preloader__spinner">
-                <span class="preloader__double-bounce"></span>
-                <span class="preloader__double-bounce preloader__double-bounce--delay"></span>
-            </div>
-        </div>
+  <button onclick="showAd('ad1')">Ad 1 দেখুন</button>
+  <button onclick="showAd('ad2')">Ad 2 দেখুন</button>
 
-        <!-- Header -->
-        <header class="onovo-header header--white">
-            <div class="header--builder">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-3 align-self-center">
+  <div id="adContainer">
+    <div id="baa8f557c334370eebb83a8dcb6121ba641c493e"></div>
+  </div>
 
-                            <!-- Logo -->
-                            <div class="onovo-logo-image">
-                                <a href="index.html">
-                                    <img src="assets/images/logo/logo-white.webp" alt="Adextra" />
-                                    <img class="logo--white" src="assets/images/logo/logo-white.webp" alt=" Adextra">
+  <script async src="https://partner.adextra.io/jt/baa8f557c334370eebb83a8dcb6121ba641c493e.js"></script>
 
-                                </a>
-                            </div>
-
-                        </div>
-                        <div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-6 align-self-center align-center">
-
-                            <!-- Menu Hamburger -->
-                            <a href="#" class="onovo-menu-btn"><span></span></a>
-                            <div class="onovo-menu-popup align-left">
-                                <div class="onovo-menu-overlay"></div>
-                                <div class="onovo-menu-overlay-after"></div>
-                                <div class="onovo-menu-container onovo--noscroll">
-                                    <div class="container">
-                                        <div class="onovo-menu">
-                                            <ul class="onovo-menu-nav">
-                                                <li class="onovo-lnk lnk--active">
-                                                    <a class=" onovo-lnk lnk--active " href=" index.html">Home</a>
-
-                                                </li>
-                                                <li class="onovo-lnk lnk--active">
-                                                    <a class=" onovo-lnk lnk--active " href="index.html#section-servizi"
-                                                        id="servizi">Servizi</a>
-
-                                                </li>
-
-                                                <li>
-                                                    <a class="onovo-lnk lnk--active" href="blog.html" id="news">Notizie
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="onovo-lnk lnk--active" href="contact-us.html"
-                                                        id="contact">Contattaci
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-3 align-self-center align-right">
-                            <div id="flags">
-                                <!-- Button -->
-                                <a class="onovo-head-btn onovo-hover-btn" href="">
-
-                                    <img class="flag" src="/assets/images/flags/italy.png" alt="italy-flag"
-                                        style="height:43px" width="43px" data-lang="it">
-                                </a>
-                                <a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;">
-
-                                    <img class="flag" src="/assets/images/flags/uk.png" alt="uk-flag"
-                                        style="height:35px" width="35px" data-lang="en">
-                                </a>
-                                <a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;">
-
-                                    <img class="flag" src="/assets/images/flags/spain.png" alt="spain-flag"
-                                        style="height:35px" width="35px" data-lang="es">
-                                </a>
-                                <a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;"
-                                    alt="france-flag"><img class="flag " src="/assets/images/flags/france.png"
-                                        style="height:35px" width="35px" data-lang="fr">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Wrapper -->
-        <div class="wrapper">
-
-            <!-- Onovo Intro -->
-            <section class="onovo-section onovo-intro intro--black">
-                <div class="container">
-                    <h1 class="onovo-title-1  onovo-text-white">
-                        <span id="scouty-article-title">Scouty: La Community che Umanizza l’Esperienza Digitale
-                            dell’Utente</span>
-                        <span class="onovo-sep word">
-                            <i class="sep-img" style="background-image: url(assets/images/title_icon.svg);"></i>
-                        </span>
-                    </h1>
-                    <div class="onovo-breadcrums">
-                        <ul>
-                            <li>
-                                <a href="index.html">Home </a>
-                            </li>
-                            <li>
-                                <a href="blog.html" id="news"> Notizie </a>
-                            </li>
-                            <li class="current">
-                                <span>Scouty</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Onovo Blog Detail -->
-            <section class="onovo-section onovo-post gap-top-140">
-                <div class="container">
-
-                    <!-- Image -->
-                    <div class="onovo-post-pic" data-onovo-overlay data-onovo-scroll>
-                        <img src="assets/images/blog/articolo-scouty/hero-scouty.png" alt="Hero Scouty" />
-                    </div>
-
-                    <!-- Post-->
-                    <div class="onovo-post-wrapper">
-                        <div class="onovo-post-content">
-
-
-
-                            <!-- Content -->
-                            <div class="onovo-post-text">
-                                <div class="post-content">
-                                    <h2 id="scouty-article-title">Scouty: La Community che Umanizza l’Esperienza
-                                        Digitale dell’Utente
-                                    </h2>
-                                    <p><span id="adextra-lancia">Adextra Italia lancia </span><b><a
-                                                href="https://your-scouty.com/"
-                                                class="onovo-lnk lnk--black">Scouty</a></b>, <span
-                                            id="scouty-article-p1">un progetto
-                                            innovativo che rivoluziona il modo di
-                                            concepire le comunicazioni commerciali digitali, mettendo l’utente al centro
-                                            dell’esperienza.</span></p>
-                                    <p id="scouty-article-p2">Scouty nasce con l’obiettivo di creare una relazione più
-                                        umana tra gli utenti e i
-                                        canali di comunicazione di Adextra Italia. Attraverso questa piattaforma, gli
-                                        iscritti hanno la possibilità di esprimere le proprie preferenze in modo
-                                        volontario, scegliendo quali promozioni desiderano ricevere tramite social
-                                        media, display advertising, e-mail marketing e gli altri strumenti digitali
-                                        usati da Adextra Italia.</p>
-                                    <p id="scouty-article-p3">La piattaforma introduce anche una componente ludica, che
-                                        rende l’esperienza
-                                        ancora più piacevole: gli utenti possono divertirsi partecipando ad attività
-                                        interattive e ricevere premi, valorizzando il tempo dedicato alla community.</p>
-                                    <blockquote>
-                                        <p id="scouty-blackquote-1">“Con Scouty vogliamo dare agli utenti una voce
-                                            chiara e diretta, andando
-                                            oltre i classici algoritmi di analisi del dato per costruire un’esperienza
-                                            digitale realmente umanizzata.” </p>
-                                        <p>
-                                            <cite>Romina Sborzacchi, Managing Director di Adextra Italia</cite>
-                                        </p>
-                                    </blockquote>
-                                    <figure class="alignright">
-                                        <img src="assets/images/blog/articolo-scouty/content-scouty.png"
-                                            alt="Content Scouty" />
-                                    </figure>
-                                    <p id="scouty-article-p4">Le caratteristiche principali della piattaforma includono:
-                                    </p>
-                                    <ul>
-                                        <li><b id="scouty-article-list-title1">Personalizzazione volontaria: </b> <span
-                                                id="scouty-article-list-p1">Gli utenti possono indicare
-                                                esplicitamente le categorie di promozioni che trovano interessanti,
-                                                evitando
-                                                contenuti non pertinenti.</span></li>
-                                        <li><b id="scouty-article-list-title2">Interattività ludica: </b><span
-                                                id="scouty-article-list-p2">Attraverso attività divertenti e stimolanti,
-                                                gli utenti non solo interagiscono con la piattaforma, ma ricevono anche
-                                                premi che incentivano il loro coinvolgimento.</span></li>
-                                        <li><b id="scouty-article-list-title3">Comunicazione trasparente:</b><span
-                                                id="scouty-article-list-p3"> Scouty rende semplice e chiaro per gli
-                                                utenti indicare le proprie preferenze, garantendo un’interazione
-                                                rispettosa
-                                                e autentica.</span></li>
-                                        <li><b id="scouty-article-list-title4">Integrazione con altri canali Adextra
-                                                italia: </b> <span id="scouty-article-list-p4">Le preferenze espresse su
-                                                Scouty vengono utilizzate per migliorare l’efficacia delle comunicazioni
-                                                commerciali sugli altri canali, creando un ecosistema armonizzato e
-                                                coerente.</span></li>
-
-                                    </ul>
-                                    <h4 id="scouty-article-title2">Vantaggi per gli Utenti e per le Aziende</h4>
-                                    <p id="scouty-article-p5">Per gli utenti, Scouty rappresenta un ambiente sicuro,
-                                        coinvolgente e
-                                        gratificante dove è possibile personalizzare le proprie esperienze
-                                        pubblicitarie. La possibilità di divertirsi e ricevere premi rafforza
-                                        l’interesse e il legame con la piattaforma, mentre la comunicazione delle
-                                        proprie preferenze garantisce contenuti più pertinenti e utili.</p>
-                                    <p id="scouty-article-p6">Per le aziende, Scouty è una risorsa preziosa per
-                                        migliorare l’efficacia delle
-                                        proprie campagne pubblicitarie. Grazie ai feedback diretti degli utenti, i brand
-                                        possono ottimizzare le loro strategie di marketing, raggiungendo un pubblico
-                                        qualificato e riducendo il rischio di messaggi invasivi o irrilevanti.</p>
-                                    <h4 id="scouty-article-title3">Sicurezza e Trasparenza con Scouty</h4>
-
-                                    <p id="scouty-article-p7">Scouty non solo valorizza la voce dell’utente, ma
-                                        garantisce anche un alto
-                                        livello di sicurezza per i dati personali. La piattaforma si avvale di
-                                        tecnologie avanzate di brand safety, che assicurano che i contenuti siano
-                                        erogati in ambienti protetti e rispettosi. Inoltre, la gestione dei dati avviene
-                                        in conformità con i più elevati standard di privacy, rendendo Scouty una
-                                        soluzione affidabile sia per gli utenti che per le aziende.
-                                    </p>
-
-                                    <h4 id="scouty-article-title4">Adextra Italia: Un Impegno per l’Umanizzazione
-                                        Digitale</h4>
-                                    <p id="scouty-article-p8">Con Scouty, Adextra Italia si conferma come un’azienda
-                                        all’avanguardia nella
-                                        creazione di esperienze digitali che mettono l’individuo al centro. La
-                                        piattaforma è il primo passo di un percorso che mira a costruire un ecosistema
-                                        pubblicitario più etico, trasparente e personalizzato.</p>
-                                    <blockquote>
-                                        <p id="scouty-blackquote-2">“Scouty rappresenta la nostra visione di un futuro
-                                            in cui la tecnologia è al
-                                            servizio delle persone, non viceversa,” conclude Romina Sborzacchi “è la
-                                            dimostrazione che il digitale può essere trasparente, personale e
-                                            rispettoso.”. </p>
-                                        <p>
-                                            <cite>Romina Sborzacchi, Managing Director di Adextra Italia</cite>
-                                        </p>
-                                    </blockquote>
-                                    <h4 id="scouty-article-title5">Scouty: Il Futuro della Pubblicità Personalizzata
-                                    </h4>
-                                    <p id="scouty-article-p9">Con il lancio di Scouty, Adextra Italia ridefinisce il
-                                        concetto di pubblicità
-                                        digitale, creando una community che unisce interattività, personalizzazione e
-                                        sicurezza. Questa piattaforma rappresenta non solo un’innovazione tecnologica,
-                                        ma un nuovo paradigma che mette al centro le persone, migliorando la loro
-                                        esperienza online e costruendo un rapporto più autentico con i brand.</p>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-        </div>
-
-        <!-- Footer -->
-        <footer class="onovo-footer footer--dark">
-            <div class="footer--default">
-                <div class="container">
-
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-
-                            <!-- Description -->
-                            <div class="onovo-text onovo-text-white">
-                                <h5 id="footer-why-choose-us-title">Perchè Scegliere Noi</h5>
-                                <p style="opacity: 0.6;" id="footer-why-choose-us-paragraph">Affidabilità, Trasparenza e
-                                    Presenza. Dalla
-                                    visione alla
-                                    realtà, guidiamo il tuo brand attraverso il mondo digital, per darti i migliori
-                                    risultati. Studiamo, miglioriamo e cresciamo insieme a te! </p>
-                            </div>
-
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 offset-lg-1">
-
-                            <!-- Description -->
-                            <div class="onovo-text onovo-text-white">
-                                <h5 id="contact">Contattaci</h5>
-                                <p style="opacity: 0.6;">Via Rovereto 7, 00198, Roma (RM) </p>
-                                <p style="opacity: 0.6;">
-                                    <a href="tel:+393701352826" class="onovo-lnk lnk--white" target="_blank">+39 370 135
-                                        2826</a><br>
-                                    <a href="mailto:info@adextraitalia.it" class="onovo-lnk lnk--white"
-                                        target="_blank">info@adextraitalia.it
-
-                                    </a>
-                                </p>
-                            </div>
-
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-
-                            <div class="onovo-text onovo-text-white">
-                                <h5>Policy</h5>
-                                <a href="privacy-adextra.pdf" class="onovo-lnk lnk--white">Privacy Policy
-                                </a>
-                                <br>
-
-                                <a href="cookie-policy.pdf" class="onovo-lnk lnk--white">
-                                    Cookie Policy</a><br>
-                                <a href="informativa-candidati2.pdf" class="onovo-lnk lnk--white" target="_blank"
-                                    id="informativa-privacy-candidati">
-                                    Informativa Privacy Candidati</a><br>
-
-
-                            </div>
-
-
-                        </div>
-                    </div>
-
-                    <div class="separator"></div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-12 align-self-center">
-
-                            <!-- Copyright -->
-                            <div class="copyright onovo-text-white">
-                                © 2025 Adextra Italia ®, All Rights Reserved - Designed By Adextra Italia Rome, Italy |
-                                c.f
-                                e p.i 03862950544 | Registro Imprese di Roma
-
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.js"></script>
-    <script src="assets/js/swiper.js"></script>
-    <script src="assets/js/splitting.js"></script>
-    <script src="assets/js/scroll-out.js"></script>
-    <script src="assets/js/jquery.pagepiling.js"></script>
-    <script src="assets/js/jquery.easy_number_animate.js"></script>
-    <script src="assets/js/magnific-popup.js"></script>
-    <script src="assets/js/imagesloaded.pkgd.js"></script>
-    <script src="assets/js/isotope.pkgd.js"></script>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/language.js"></script>
-  
+  <script>
+    function showAd(type) {
+      const adBox = document.getElementById('baa8f557c334370eebb83a8dcb6121ba641c493e');
+      adBox.innerHTML = ''; // পুরোনো বিজ্ঞাপন ক্লিয়ার
+      
+      // বিজ্ঞাপন স্ক্রিপ্ট আবার লোড করা
+      const script = document.createElement('script');
+      script.src = "https://partner.adextra.io/jt/baa8f557c334370eebb83a8dcb6121ba641c493e.js";
+      script.async = true;
+      adBox.appendChild(script);
+    }
+  </script>
 </body>
-
 </html>
