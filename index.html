@@ -415,17 +415,19 @@
     }
 
     /* New styles for Ad Network toggles */
-    .ad-network-toggles-container {
-        margin-top: 25px;
-        border-top: 1px solid var(--border-color);
-        padding-top: 15px;
-        display: none; /* Hidden by default, shown when Pattern 2 is active */
-    }
-
     .ad-network-toggles {
+        margin-top: 25px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 2 columns on larger, 1 on smaller */
         gap: 10px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+        /* Initially hidden, shown only when pattern 2 is selected */
+        display: none; 
+    }
+
+    .ad-network-toggles.active {
+        display: grid; /* Show when active */
     }
 
     .ad-network-toggles .toggle-item {
@@ -623,9 +625,17 @@
         max-width: unset; 
       }
       .ad-network-toggles {
-          grid-template-columns: 1fr; /* Single column on small screens */
+          grid-template-columns: repeat(2, 1fr); /* 2 columns on small screens for better use of space */
+      }
+      .ad-network-toggles.active {
+          display: grid;
       }
     }
+     @media (max-width: 480px) {
+        .ad-network-toggles {
+            grid-template-columns: 1fr; /* Single column on very small screens */
+        }
+     }
   </style>
 
 </head>
@@ -671,15 +681,14 @@
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
     </div>
 
-<div class="ad-step-control">
-    <label for="total-ad-steps">Total Ad Steps:</label>
-    <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-    <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
-</div>
+    <div class="ad-step-control">
+        <label for="total-ad-steps">Total Ad Steps:</label>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+    </div>
 
-<div class="ad-network-toggles-container" style="display: none;"> <!-- Hidden by default -->
-    <h3>Individual Ad Network Control (for Sequential Pattern):</h3>
-    <div class="ad-network-toggles">
+    <!-- Ad Network Toggles - Initially hidden -->
+    <div class="ad-network-toggles" id="ad-network-toggles">
         <div class="toggle-item">
             <label>Monetag</label>
             <label class="switch">
@@ -716,7 +725,6 @@
             </label>
         </div>
     </div>
-</div>
   </div>
 
   <div class="card">
@@ -947,9 +955,14 @@ database.ref('adSettings').on('value', (snapshot) => {
     document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
         button.classList.remove('active');
     });
-    const activePatternButton = document.getElementById(`ad-pattern-${currentPattern}-btn`);
-    if (activePatternButton) {
-        activePatternButton.classList.add('active');
+    document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
+
+    // Show/hide ad network toggles based on selected pattern
+    const adNetworkToggles = document.getElementById('ad-network-toggles');
+    if (currentPattern === 2) {
+        adNetworkToggles.classList.add('active');
+    } else {
+        adNetworkToggles.classList.remove('active');
     }
 
     // Update UI for total ad steps
@@ -962,9 +975,6 @@ database.ref('adSettings').on('value', (snapshot) => {
     document.getElementById('toggle-adexora').checked = enabledNetworks.adexora;
     document.getElementById('toggle-adexium').checked = enabledNetworks.adexium;
     document.getElementById('toggle-adextra').checked = enabledNetworks.adextra;
-
-    // Show/hide ad network toggles based on selected pattern
-    displayAdNetworksSection(currentPattern);
 });
 
 // Load Monthly Visitor Data
@@ -1008,15 +1018,6 @@ database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
 
 }
 
-function displayAdNetworksSection(currentPattern) {
-    const adNetworkTogglesContainer = document.getElementById('ad-network-toggles-container');
-    if (currentPattern === 2) { // Assuming '2' is the sequential pattern
-        adNetworkTogglesContainer.style.display = 'block';
-    } else {
-        adNetworkTogglesContainer.style.display = 'none';
-    }
-}
-
 // --- Ad Pattern and Steps Control ---
 function selectAdPattern(patternNumber) {
 database.ref('adSettings/pattern').set(patternNumber)
@@ -1027,7 +1028,14 @@ document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
 button.classList.remove('active');
 });
 document.getElementById(`ad-pattern-${patternNumber}-btn`).classList.add('active');
-displayAdNetworksSection(patternNumber); // Call to show/hide the toggles
+
+// Show/hide ad network toggles based on selected pattern
+const adNetworkToggles = document.getElementById('ad-network-toggles');
+if (patternNumber === 2) {
+    adNetworkToggles.classList.add('active');
+} else {
+    adNetworkToggles.classList.remove('active');
+}
 })
 .catch(error => {
 console.error("Error setting ad pattern:", error);
