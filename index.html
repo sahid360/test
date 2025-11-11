@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -7,15 +6,11 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -331,18 +326,31 @@
         padding: 10px;
         background-color: var(--card-bg);
     }
-    .daily-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dotted var(--border-color);
-    }
-    .daily-item:last-child {
-        border-bottom: none;
-    }
-    .daily-item span {
+    
+    /* MODIFIED: New styles for the daily details table */
+    .daily-details-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
         font-size: 15px;
     }
+    .daily-details-table th, .daily-details-table td {
+        border: 1px solid var(--border-color);
+        padding: 8px 12px;
+        text-align: center;
+    }
+    .daily-details-table th {
+        background-color: var(--primary);
+        color: var(--light);
+        font-weight: bold;
+    }
+    .daily-details-table tr:nth-child(even) {
+        background-color: var(--ad-item-bg);
+    }
+    .daily-details-table tr:hover {
+        background-color: rgba(3, 218, 197, 0.05);
+    }
+
 
     .monthly-daily-flex {
         display: grid;
@@ -442,7 +450,7 @@
         height: 45px; /* Fixed height for consistency */
     }
     .ad-network-toggles label:hover {
-        background-color: rgba(3, 218, 197, 0.1);
+        background-color: rgba(3, 218, 197, 0.05);
     }
     .ad-network-toggles label span {
         font-weight: bold;
@@ -800,7 +808,7 @@ return `${year}-${month}-${day}`;
 // Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
 const date = new Date(Date.UTC(year, month - 1, day));
-const options = { month: 'long', day: 'numeric', timeZone: 'UTC' }; // Removed 'year'
+const options = { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }; // Changed to include year
 return date.toLocaleDateString('en-US', options);
 }
 
@@ -1156,7 +1164,6 @@ Promise.all([
 database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value'),
 database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
 ]).then(([visitorsSnapshot, adsSnapshot]) => {
-dailyStatsList.innerHTML = '';
 const dayLabels = [];
 const fullDateLabels = [];
 const dayViews = [];
@@ -1173,32 +1180,48 @@ const allDatesInMonth = Array.from(new Set([
 .filter(fullDateKey => fullDateKey.startsWith(monthKey))
 .sort();
 
+dailyStatsList.innerHTML = ''; // Clear previous content
+
 if (allDatesInMonth.length > 0) {
-allDatesInMonth.forEach(fullDateKey => {
-const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+    const table = document.createElement('table');
+    table.className = 'daily-details-table';
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Views</th>
+                <th>Ads View</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    `;
+    const tbody = table.querySelector('tbody');
 
-dayLabels.push(dayDay.toString()); 
-    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-    
-    const views = visitorsData[fullDateKey] || 0;
-    const adsShown = adsData[fullDateKey] || 0;
-    
-    dayViews.push(views);
-    dayAdsShown.push(adsShown);
+    allDatesInMonth.forEach(fullDateKey => {
+        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
 
-    const div = document.createElement('div');
-    div.className = 'daily-item';
-    // Updated line to remove year from daily stats list
-    div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${views} Views - ${adsShown} Ads Views</span>`;
-    dailyStatsList.appendChild(div);
-});
+        dayLabels.push(dayDay.toString()); 
+        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+        
+        const views = visitorsData[fullDateKey] || 0;
+        const adsShown = adsData[fullDateKey] || 0;
+        
+        dayViews.push(views);
+        dayAdsShown.push(adsShown);
 
-if (dailyStatsList.children.length === 0) {
-    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-}
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</td>
+            <td>${views}</td>
+            <td>${adsShown}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    dailyStatsList.appendChild(table);
 
 } else {
-dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
 }
 
 if (dailyMonthlyVisitorsChart) {
@@ -1209,7 +1232,7 @@ dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
 dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Update ads data
 
 // Update chart title and legend for "Monthly Daily Statistics"
-dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
 dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views'; // Changed label
 
 updateChartColors(dailyMonthlyVisitorsChart);
@@ -1265,7 +1288,7 @@ interaction: {
         plugins: {
             title: {
                 display: true,
-                text: `Daily Views & Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
+                text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
                 color: getChartTextColor(),
                 font: {
                     size: 18
