@@ -797,6 +797,7 @@ let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
 let dailyAdsRef = null; // To store the reference for the daily ads listener
+let dailyVisitorsRef = null; // NEW: To store the reference for the daily visitors listener
 
 // Helper function to get today's date in YYYY-MM-DD UTC format
 function getTodayKeyUTC() {
@@ -1166,22 +1167,23 @@ function selectMonthForDailyView(monthKey, clickedElement) {
     if (dailyAdsRef) {
         dailyAdsRef.off('value');
     }
+    // NEW: Detach previous daily visitors listener if it exists
+    if (dailyVisitorsRef) {
+        dailyVisitorsRef.off('value');
+    }
 
-    // Attach new listeners for visitors and ads for the selected month
-    const visitorsPromise = database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value');
-
-    // THIS IS THE KEY CHANGE: Use on('value') for real-time updates for daily ads
-    dailyAdsRef = database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31');
-    dailyAdsRef.on('value', adsSnapshot => {
-        // We will now handle both visitors and ads data inside this listener
-        // to ensure they update together based on ads changes.
-        visitorsPromise.then(visitorsSnapshot => {
+    // NEW: Attach new listener for visitors for the selected month
+    dailyVisitorsRef = database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31');
+    dailyVisitorsRef.on('value', visitorsSnapshot => {
+        // Attach new listener for ads for the selected month
+        dailyAdsRef = database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31');
+        dailyAdsRef.on('value', adsSnapshot => {
             const dayLabels = [];
             const fullDateLabels = [];
             const dayViews = [];
             const dayAdsShown = [];
 
-            const visitorsData = visitorsSnapshot.val() || {};
+            const visitorsData = visitorsSnapshot.val() || {}; // Use the data from the visitors listener
             const adsData = adsSnapshot.val() || {};
 
             const allDatesInMonth = Array.from(new Set([
@@ -1332,12 +1334,12 @@ function selectMonthForDailyView(monthKey, clickedElement) {
                 });
             }
         }).catch(error => {
-            console.error("Error fetching daily visitor data:", error);
-            dailyStatsList.innerHTML = `<p>Error loading daily visitor data: ${error.message || 'Unknown error'}</p>`;
+            console.error("Error setting up daily ad data listener:", error);
+            dailyStatsList.innerHTML = `<p>Error loading daily ad data: ${error.message || 'Unknown error'}</p>`;
         });
     }).catch(error => {
-        console.error("Error setting up daily ad data listener:", error);
-        dailyStatsList.innerHTML = `<p>Error loading daily ad data: ${error.message || 'Unknown error'}</p>`;
+        console.error("Error setting up daily visitor data listener:", error);
+        dailyStatsList.innerHTML = `<p>Error loading daily visitor data: ${error.message || 'Unknown error'}</p>`;
     });
 }
 
