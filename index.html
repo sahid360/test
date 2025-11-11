@@ -674,54 +674,59 @@
       </div>
     </div>
 
-    <h2>Ad Settings</h2>
-    <div class="ad-pattern-buttons">
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
-        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
+    <!-- Canva Pro Link Section (moved up) -->
+    <div class="card">
+      <h2>Canva Pro Link</h2>
+      <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
+      <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+      <div class="input-with-button">
+          <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+      </div>
+      <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
     </div>
 
-    <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
-    <div id="ad-network-toggle-controls" class="ad-network-toggles">
-        <label>
-            <span>Monetag</span>
-            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-        </label>
-        <label>
-            <span>Gigapub</span>
-            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-        </label>
-        <label>
-            <span>Adexora</span>
-            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-        </label>
-        <label>
-            <span>Adexium</span>
-            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-        </label>
-        <label>
-            <span>Adextra</span>
-            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-        </label>
-    </div>
+    <!-- Ad Settings Section (moved down) -->
+    <div class="card">
+      <h2>Ad Settings</h2>
+      <div class="ad-pattern-buttons">
+          <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
+          <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
+          <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
+      </div>
 
-    <div class="ad-step-control">
-        <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+      <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
+      <div id="ad-network-toggle-controls" class="ad-network-toggles">
+          <label>
+              <span>Monetag</span>
+              <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+          </label>
+          <label>
+              <span>Gigapub</span>
+              <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+          </label>
+          <label>
+              <span>Adexora</span>
+              <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+          </label>
+          <label>
+              <span>Adexium</span>
+              <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+          </label>
+          <label>
+              <span>Adextra</span>
+              <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+          </label>
+      </div>
+
+      <div class="ad-step-control">
+          <label for="total-ad-steps">Total Ad Steps:</label>
+          <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+          <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+      </div>
     </div>
 
   </div>
 
-  <div class="card">
-    <h2>Canva Pro Link</h2>
-    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
-    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
-    <div class="input-with-button">
-        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
-    </div>
-    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
-  </div>
   <div class="card">
     <h2>Monthly Daily Visitor</h2>
     <div class="chart-container">
@@ -1275,4 +1280,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-
