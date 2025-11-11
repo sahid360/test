@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -6,11 +7,15 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -704,6 +709,7 @@
     </div>
 
 <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
+
 <div id="ad-network-toggle-controls" class="ad-network-toggles">
     <label>
         <span>Monetag</span>
@@ -792,13 +798,9 @@ return `${year}-${month}-${day}`;
 }
 
 // Helper function to format a date in YYYY-MM-DD UTC format
-// MODIFIED: Added an option to exclude year for daily list display
-function getFormattedDateUTC(year, month, day, excludeYear = false) {
+function getFormattedDateUTC(year, month, day) {
 const date = new Date(Date.UTC(year, month - 1, day));
-const options = { month: 'long', day: 'numeric', timeZone: 'UTC' };
-if (!excludeYear) {
-  options.year = 'numeric';
-}
+const options = { month: 'long', day: 'numeric', timeZone: 'UTC' }; // Removed 'year'
 return date.toLocaleDateString('en-US', options);
 }
 
@@ -963,24 +965,24 @@ adextra: true,
 
 // Update UI for ad pattern buttons
 document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-    button.classList.remove('active');
+button.classList.remove('active');
 });
 document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
 // Show/hide ad network toggles based on selected pattern
 const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
 if (currentPattern === 2) {
-    adNetworkToggleControls.style.display = 'flex';
+adNetworkToggleControls.style.display = 'flex';
 } else {
-    adNetworkToggleControls.style.display = 'none';
+adNetworkToggleControls.style.display = 'none';
 }
 
 // Update UI for ad network toggle checkboxes
 for (const network in adNetworkStates) {
-    const checkbox = document.getElementById(`toggle-${network}`);
-    if (checkbox) {
-        checkbox.checked = adNetworkStates[network];
-    }
+const checkbox = document.getElementById(`toggle-${network}`);
+if (checkbox) {
+checkbox.checked = adNetworkStates[network];
+}
 }
 
 // Update UI for total ad steps
@@ -995,36 +997,38 @@ const monthlyStatsList = document.getElementById('monthly-stats-list');
 monthlyStatsList.innerHTML = '';
 
 if (snapshot.exists()) {
-    const data = snapshot.val();
-    const months = Object.keys(data).sort((a, b) => {
-        const [yearA, monthA] = a.split('-').map(Number);
-        const [yearB, monthB] = b.split('-').map(Number);
-        if (yearA !== yearB) return yearB - yearA;
-        return monthB - monthA;
-    }); 
+const data = snapshot.val();
+const months = Object.keys(data).sort((a, b) => {
+const [yearA, monthA] = a.split('-').map(Number);
+const [yearB, monthB] = b.split('-').map(Number);
+if (yearA !== yearB) return yearB - yearA;
+return monthB - monthA;
+});
 
-    months.forEach(monthKey => {
-        const [year, monthNum] = monthKey.split('-');
-        const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+months.forEach(monthKey => {
+const [year, monthNum] = monthKey.split('-');
+const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-        const div = document.createElement('div');
-        div.className = 'monthly-list-item';
-        div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-        div.onclick = () => selectMonthForDailyView(monthKey, div); 
-        monthlyStatsList.appendChild(div);
-    });
+const div = document.createElement('div');
+div.className = 'monthly-list-item';
+div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+div.onclick = () => selectMonthForDailyView(monthKey, div); 
+monthlyStatsList.appendChild(div);
 
-    if (months.length > 0) {
-        const latestMonthKey = months[0]; 
-        const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-        selectMonthForDailyView(latestMonthKey, latestMonthElement);
-    }
+});
+
+if (months.length > 0) {
+const latestMonthKey = months[0];
+const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+selectMonthForDailyView(latestMonthKey, latestMonthElement);
+}
+
 } else {
-    monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-    if (dailyMonthlyVisitorsChart) {
-        dailyMonthlyVisitorsChart.destroy();
-        dailyMonthlyVisitorsChart = null;
-    }
+monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+if (dailyMonthlyVisitorsChart) {
+dailyMonthlyVisitorsChart.destroy();
+dailyMonthlyVisitorsChart = null;
+}
 }
 
 });
@@ -1136,249 +1140,189 @@ return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-    currentSelectedMonth = monthKey;
-    const [year, monthNum] = monthKey.split('-');
-    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+currentSelectedMonth = monthKey;
+const [year, monthNum] = monthKey.split('-');
+document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-    if (clickedElement) {
-        clickedElement.classList.add('selected');
-    }
+document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+if (clickedElement) {
+clickedElement.classList.add('selected');
+}
 
-    const dailyStatsList = document.getElementById('daily-stats-list');
-    // Ensure the list is cleared only when switching months, not for updates within the same month
-    if (!dailyStatsList.dataset.monthKey || dailyStatsList.dataset.monthKey !== monthKey) {
-        dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-        dailyStatsList.dataset.monthKey = monthKey; // Store the current monthKey
-    }
+const dailyStatsList = document.getElementById('daily-stats-list');
+dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-    // Listener for daily visitors data
-    const dailyVisitorsRef = database.ref('visitors/daily/');
-    const dailyAdsRef = database.ref('visitors/ads/daily/');
+Promise.all([
+database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value'),
+database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
+]).then(([visitorsSnapshot, adsSnapshot]) => {
+dailyStatsList.innerHTML = '';
+const dayLabels = [];
+const fullDateLabels = [];
+const dayViews = [];
+const dayAdsShown = [];
 
-    // Remove previous listeners to avoid duplicates
-    if (dailyStatsList.dataset.visitorsListenerId) {
-        dailyVisitorsRef.off('value', null, dailyStatsList.dataset.visitorsListenerId);
-        dailyAdsRef.off('value', null, dailyStatsList.dataset.adsListenerId);
-    }
+const visitorsData = visitorsSnapshot.val() || {}; // Robustly handle null/undefined
+const adsData = adsSnapshot.val() || {};           // Robustly handle null/undefined
 
-    const dailyDataListener = (visitorsSnapshot) => {
-        dailyAdsRef.orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
-            .then(adsSnapshot => {
-                const dayLabels = [];
-                const fullDateLabels = [];
-                const dayViews = [];
-                const dayAdsShown = [];
+// Corrected: Convert Set to Array before calling filter()
+const allDatesInMonth = Array.from(new Set([
+...Object.keys(visitorsData),
+...Object.keys(adsData)
+]))
+.filter(fullDateKey => fullDateKey.startsWith(monthKey))
+.sort();
 
-                const visitorsData = visitorsSnapshot.val() || {};
-                const adsData = adsSnapshot.val() || {};
+if (allDatesInMonth.length > 0) {
+allDatesInMonth.forEach(fullDateKey => {
+const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
 
-                const allDatesInMonth = Array.from(new Set([
-                    ...Object.keys(visitorsData),
-                    ...Object.keys(adsData)
-                ]))
-                .filter(fullDateKey => fullDateKey.startsWith(monthKey))
-                .sort();
+dayLabels.push(dayDay.toString()); 
+    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+    
+    const views = visitorsData[fullDateKey] || 0;
+    const adsShown = adsData[fullDateKey] || 0;
+    
+    dayViews.push(views);
+    dayAdsShown.push(adsShown);
 
-                // Check if the list content needs to be regenerated or just updated
-                const isFirstLoadForMonth = dailyStatsList.querySelector('p') && dailyStatsList.querySelector('p').textContent === 'Loading daily data...';
-                if (isFirstLoadForMonth || dailyStatsList.children.length !== allDatesInMonth.length) {
-                    dailyStatsList.innerHTML = ''; // Clear only if it's the first load or structure changed
+    const div = document.createElement('div');
+    div.className = 'daily-item';
+    // Updated line to remove year from daily stats list
+    div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${views} Views - ${adsShown} Ads Views</span>`;
+    dailyStatsList.appendChild(div);
+});
+
+if (dailyStatsList.children.length === 0) {
+    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+}
+
+} else {
+dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+}
+
+if (dailyMonthlyVisitorsChart) {
+dailyMonthlyVisitorsChart.data.labels = dayLabels;
+dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
+dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown; // Update ads data
+dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
+dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Update ads data
+
+// Update chart title and legend for "Monthly Daily Statistics"
+dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views'; // Changed label
+
+updateChartColors(dailyMonthlyVisitorsChart);
+
+dailyMonthlyVisitorsChart.update();
+
+} else {
+const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+dailyMonthlyVisitorsChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: dayLabels,
+datasets: [
+{
+label: 'Daily Views',
+data: dayViews,
+backgroundColor: 'rgba(3, 218, 197, 0.4)',
+borderColor: 'rgba(3, 218, 197, 1)',
+borderWidth: 2,
+tension: 0.3,
+fill: true,
+pointRadius: 6,
+pointHoverRadius: 8,
+pointHitRadius: 10,
+pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+fullDateLabels: fullDateLabels
+},
+{
+label: 'Daily Ads Views', // Changed label
+data: dayAdsShown,
+backgroundColor: 'rgba(98, 0, 234, 0.4)', // Primary color for ads
+borderColor: 'rgba(98, 0, 234, 1)',
+borderWidth: 2,
+tension: 0.3,
+fill: true,
+pointRadius: 6,
+pointHoverRadius: 8,
+pointHitRadius: 10,
+pointBackgroundColor: 'rgba(98, 0, 234, 1)',
+fullDateLabels: fullDateLabels
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+
+interaction: {
+            mode: 'index', 
+            intersect: false 
+        },
+
+        plugins: {
+            title: {
+                display: true,
+                text: `Daily Views & Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
+                color: getChartTextColor(),
+                font: {
+                    size: 18
                 }
-
-                if (allDatesInMonth.length > 0) {
-                    const existingItems = {};
-                    Array.from(dailyStatsList.children).forEach(item => {
-                        const dateSpan = item.querySelector('span:first-child');
-                        if (dateSpan) {
-                             // Extract date part (e.g., "November 1,") from the formatted string
-                            const dateMatch = dateSpan.textContent.match(/([A-Za-z]+ \d+)/);
-                            if (dateMatch) {
-                                // Reconstruct a simple key for lookup, like 'Nov 1'
-                                const monthDayKey = dateMatch[1]; 
-                                existingItems[monthDayKey] = item;
-                            }
-                        }
-                    });
-
-                    allDatesInMonth.forEach(fullDateKey => {
-                        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                        
-                        dayLabels.push(dayDay.toString()); 
-                        // MODIFIED: Chart title update
-                        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay)); 
-                        
-                        const views = visitorsData[fullDateKey] || 0;
-                        const adsShown = adsData[fullDateKey] || 0;
-                        
-                        dayViews.push(views);
-                        dayAdsShown.push(adsShown);
-
-                        // MODIFIED: Date format for the list (exclude year)
-                        const formattedDateForList = getFormattedDateUTC(dayYear, dayMonth, dayDay, true); // true to exclude year
-
-                        // Check if an item for this date already exists
-                        const dateMatchForLookup = formattedDateForList.match(/([A-Za-z]+ \d+)/);
-                        const monthDayKeyForLookup = dateMatchForLookup ? dateMatchForLookup[1] : formattedDateForList;
-
-
-                        let div = existingItems[monthDayKeyForLookup];
-                        if (div) {
-                            // Update existing item
-                            div.innerHTML = `<span>${formattedDateForList}</span><span>${views} views - ${adsShown} Ads Views</span>`;
-                        } else {
-                            // Create new item if it doesn't exist
-                            div = document.createElement('div');
-                            div.className = 'daily-item';
-                            div.innerHTML = `<span>${formattedDateForList}</span><span>${views} views - ${adsShown} Ads Views</span>`;
-                            dailyStatsList.appendChild(div);
-                        }
-                    });
-
-                    // Remove any items that no longer exist in the data
-                    // This is for scenarios where a date might be removed from Firebase
-                    const currentDisplayedDates = Array.from(dailyStatsList.children).map(item => {
-                        const dateSpan = item.querySelector('span:first-child');
-                        const dateMatch = dateSpan.textContent.match(/([A-Za-z]+ \d+)/);
-                        return dateMatch ? dateMatch[1] : dateSpan.textContent;
-                    });
-                    currentDisplayedDates.forEach((displayedDate, index) => {
-                        const existsInData = allDatesInMonth.some(fullDateKey => {
-                            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                            const formattedDate = getFormattedDateUTC(dayYear, dayMonth, dayDay, true);
-                            const dateMatch = formattedDate.match(/([A-Za-z]+ \d+)/);
-                            const monthDayKey = dateMatch ? dateMatch[1] : formattedDate;
-                            return monthDayKey === displayedDate;
-                        });
-                        if (!existsInData) {
-                            dailyStatsList.children[index].remove();
-                        }
-                    });
-
-                } else {
-                    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            },
+            legend: {
+                labels: {
+                    color: getChartTextColor()
                 }
-
-                if (dailyMonthlyVisitorsChart) {
-                    dailyMonthlyVisitorsChart.data.labels = dayLabels;
-                    dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
-                    dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown; 
-                    dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-                    dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; 
-                    
-                    // MODIFIED: Chart title update
-                    dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-                    updateChartColors(dailyMonthlyVisitorsChart);
-                    
-                    dailyMonthlyVisitorsChart.update();
-                } else {
-                    const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-                    dailyMonthlyVisitorsChart = new Chart(ctx, {
-                        type: 'line', 
-                        data: {
-                            labels: dayLabels,
-                            datasets: [
-                                {
-                                    label: 'Daily Views',
-                                    data: dayViews,
-                                    backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                                    borderColor: 'rgba(3, 218, 197, 1)',
-                                    borderWidth: 2,
-                                    tension: 0.3,
-                                    fill: true,
-                                    pointRadius: 6, 
-                                    pointHoverRadius: 8, 
-                                    pointHitRadius: 10, 
-                                    pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                                    fullDateLabels: fullDateLabels 
-                                },
-                                {
-                                    label: 'Daily Ads Views', // MODIFIED: Label update
-                                    data: dayAdsShown,
-                                    backgroundColor: 'rgba(98, 0, 234, 0.4)', // Primary color for ads
-                                    borderColor: 'rgba(98, 0, 234, 1)',
-                                    borderWidth: 2,
-                                    tension: 0.3,
-                                    fill: true,
-                                    pointRadius: 6, 
-                                    pointHoverRadius: 8, 
-                                    pointHitRadius: 10, 
-                                    pointBackgroundColor: 'rgba(98, 0, 234, 1)',
-                                    fullDateLabels: fullDateLabels 
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            
-                            interaction: {
-                                mode: 'index', 
-                                intersect: false 
-                            },
-
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    // MODIFIED: Chart title update
-                                    text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, 
-                                    color: getChartTextColor(),
-                                    font: {
-                                        size: 18
-                                    }
-                                },
-                                legend: {
-                                    labels: {
-                                        color: getChartTextColor()
-                                    }
-                                },
-                                tooltip: { 
-                                    callbacks: {
-                                        title: function(tooltipItems) {
-                                            const dataset = tooltipItems[0].dataset;
-                                            const index = tooltipItems[0].dataIndex;
-                                            return dataset.fullDateLabels[index];
-                                        },
-                                        label: function(tooltipItem) {
-                                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        color: getChartTextColor(),
-                                        precision: 0 
-                                    },
-                                    grid: {
-                                        color: 'rgba(255, 255, 255, 0.1)'
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        color: getChartTextColor()
-                                    },
-                                    grid: {
-                                        color: 'rgba(255, 255, 255, 0.1)'
-                                    }
-                                }
-                            }
-                        }
-                    });
+            },
+            tooltip: { 
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const dataset = tooltipItems[0].dataset;
+                        const index = tooltipItems[0].dataIndex;
+                        // Keep full date for tooltip title for context
+                        const [fullYear, fullMonth, fullDay] = allDatesInMonth[index].split('-').map(Number);
+                        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+                        return new Date(Date.UTC(fullYear, fullMonth - 1, fullDay)).toLocaleDateString('en-US', options);
+                    },
+                    label: function(tooltipItem) {
+                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                    }
                 }
-            })
-            .catch(error => {
-                console.error("Error fetching daily ad data:", error);
-                dailyStatsList.innerHTML = `<p>Error loading daily ad data: ${error.message || 'Unknown error'}</p>`;
-            });
-    };
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: getChartTextColor(),
+                    precision: 0 
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            },
+            x: {
+                ticks: {
+                    color: getChartTextColor()
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            }
+        }
+    }
+});
 
-    // Store the listener ID so we can turn it off later
-    dailyStatsList.dataset.visitorsListenerId = dailyVisitorsRef.orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', dailyDataListener);
-    dailyStatsList.dataset.adsListenerId = dailyAdsRef.orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', () => {}); // A dummy listener for ads to trigger updates in the combined handler
+}
 
+}).catch(error => {
+console.error("Error fetching daily visitor and ad data:", error);
+console.error("Firebase Error Code:", error.code); // Log Firebase specific error code
+console.error("Firebase Error Message:", error.message); // Log Firebase specific error message
+dailyStatsList.innerHTML = `<p>Error loading daily data: ${error.message || 'Unknown error'}</p>`; // Show error message to user
+});
 
 }
 
