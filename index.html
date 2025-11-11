@@ -1154,12 +1154,16 @@ Promise.all([
     const dayViews = [];
     const dayAdsShown = [];
 
-    const visitorsData = visitorsSnapshot.val() || {};
-    const adsData = adsSnapshot.val() || {};
+    const visitorsData = visitorsSnapshot.val() || {}; // Robustly handle null/undefined
+    const adsData = adsSnapshot.val() || {};           // Robustly handle null/undefined
 
-    const allDatesInMonth = new Set([...Object.keys(visitorsData), ...Object.keys(adsData)])
-        .filter(fullDateKey => fullDateKey.startsWith(monthKey))
-        .sort();
+    // Corrected: Convert Set to Array before calling filter()
+    const allDatesInMonth = Array.from(new Set([
+        ...Object.keys(visitorsData),
+        ...Object.keys(adsData)
+    ]))
+    .filter(fullDateKey => fullDateKey.startsWith(monthKey))
+    .sort();
 
     if (allDatesInMonth.length > 0) {
         allDatesInMonth.forEach(fullDateKey => {
