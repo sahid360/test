@@ -105,7 +105,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
       gap: 10px; 
-      margin-bottom: 20px;
+      margin-bottom: 0px; /* Adjusted margin */
     }
 
     .stat-item {
@@ -326,16 +326,16 @@
         padding: 10px;
         background-color: var(--card-bg);
     }
-    #daily-stats-list .daily-item {
+    .daily-item {
         display: flex;
         justify-content: space-between;
         padding: 8px 0;
         border-bottom: 1px dotted var(--border-color);
     }
-    #daily-stats-list .daily-item:last-child {
+    .daily-item:last-child {
         border-bottom: none;
     }
-    #daily-stats-list .daily-item span {
+    .daily-item span {
         font-size: 15px;
     }
 
@@ -668,7 +668,7 @@
         <span id="daily-visitors">0</span>
       </div>
     </div>
-    <div class="stat-grid" style="margin-top: 10px;">
+    <div class="stat-grid" style="margin-top: 15px;"> <!-- Added margin-top for separation -->
       <div class="stat-item">
         Total Ads Shown
         <span id="total-ads-shown">0</span>
@@ -729,7 +729,7 @@
   </div>
 
   <div class="card">
-    <h2>Monthly Daily Visitor</h2>
+    <h2>Monthly Daily Visitor & Ad Statistics</h2>
     <div class="chart-container">
         <canvas id="daily-monthly-visitors-chart"></canvas>
     </div>
@@ -745,9 +745,9 @@
             </div>
         </div>
         <div style="flex: 1;">
-            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
+            <h3>Daily for <span id="selected-month-display"></span>:</h3>
             <div id="daily-stats-list">
-                <p>Select a month to see daily views.</p>
+                <p>Select a month to see daily views and ads shown.</p>
             </div>
         </div>
     </div>
@@ -762,13 +762,13 @@
   <script>
     // Firebase configuration (replace with your actual config)
    const firebaseConfig = {
-  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4",
-  authDomain: "test-9c2fe.firebaseapp.com",
-  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com",
-  projectId: "test-9c2fe",
-  storageBucket: "test-9c2fe.firebasestorage.app",
-  messagingSenderId: "940783022173",
-  appId: "1:940783022173:web:72826d42d138be8a219db4"
+  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4", // REPLACE THIS
+  authDomain: "test-9c2fe.firebaseapp.com",        // REPLACE THIS
+  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com", // REPLACE THIS
+  projectId: "test-9c2fe",                        // REPLACE THIS
+  storageBucket: "test-9c2fe.firebasestorage.app", // REPLACE THIS
+  messagingSenderId: "940783022173",              // REPLACE THIS
+  appId: "1:940783022173:web:72826d42d138be8a219db4" // REPLACE THIS
 };
 
 
@@ -777,7 +777,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // Replace with your actual admin UID
+const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // REPLACE THIS with your actual admin UID
 let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
@@ -1298,7 +1298,9 @@ Promise.all([
 
 }).catch(error => {
     console.error("Error fetching daily visitor and ad data:", error);
-    dailyStatsList.innerHTML = '<p>Error loading daily data.</p>';
+    console.error("Firebase Error Code:", error.code); // Log Firebase specific error code
+    console.error("Firebase Error Message:", error.message); // Log Firebase specific error message
+    dailyStatsList.innerHTML = `<p>Error loading daily data: ${error.message || 'Unknown error'}</p>`; // Show error message to user
 });
 
 }
