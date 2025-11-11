@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -7,15 +6,11 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -672,6 +667,14 @@
         Today's Views (UTC)
         <span id="daily-visitors">0</span>
       </div>
+      <div class="stat-item">
+        Total Ads Shown
+        <span id="total-ads-shown">0</span>
+      </div>
+      <div class="stat-item">
+        Today's Ads Shown (UTC)
+        <span id="daily-ads-shown">0</span>
+      </div>
     </div>
   </div>
 
@@ -757,13 +760,13 @@
   <script>
     // Firebase configuration (replace with your actual config)
    const firebaseConfig = {
-  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4",
-  authDomain: "test-9c2fe.firebaseapp.com",
-  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com",
-  projectId: "test-9c2fe",
-  storageBucket: "test-9c2fe.firebasestorage.app",
-  messagingSenderId: "940783022173",
-  appId: "1:940783022173:web:72826d42d138be8a219db4"
+  apiKey: "YOUR_API_KEY", // Replace with your actual API Key
+  authDomain: "YOUR_AUTH_DOMAIN", // Replace with your actual Auth Domain
+  databaseURL: "YOUR_DATABASE_URL", // Replace with your actual Database URL
+  projectId: "YOUR_PROJECT_ID", // Replace with your actual Project ID
+  storageBucket: "YOUR_STORAGE_BUCKET", // Replace with your actual Storage Bucket
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your actual Messaging Sender ID
+  appId: "YOUR_APP_ID" // Replace with your actual App ID
 };
 
 
@@ -772,7 +775,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // Replace with your actual admin UID
+const ADMIN_UID = "YOUR_ADMIN_UID"; // Replace with your actual admin UID
 let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
@@ -930,6 +933,16 @@ database.ref('visitors/total').on('value', (snapshot) => {
 const fullCurrentDatePath = getTodayKeyUTC();
 database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
     document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+});
+
+// Load Total Ads Shown
+database.ref('ads/totalShown').on('value', (snapshot) => {
+    document.getElementById('total-ads-shown').textContent = snapshot.val() || 0;
+});
+
+// Load Today's Ads Shown
+database.ref(`ads/dailyShown/${fullCurrentDatePath}`).on('value', (snapshot) => {
+    document.getElementById('daily-ads-shown').textContent = snapshot.val() || 0;
 });
 
 // Load Ad Settings (pattern, totalSteps, and network toggles)
@@ -1289,4 +1302,3 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
-   
