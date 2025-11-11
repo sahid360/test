@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -7,15 +6,11 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -99,7 +94,7 @@
       border-bottom: 2px solid var(--primary);
       padding-bottom: 10px;
     }
-    
+
     .card h3 {
         color: var(--h3-color);
         margin-bottom: 10px;
@@ -108,28 +103,28 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
-      gap: 10px; 
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
       margin-bottom: 0px; /* Adjusted margin */
     }
 
     .stat-item {
       background: var(--card-bg);
-      padding: 10px; 
+      padding: 10px;
       border-radius: 10px;
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 13px; 
-      min-height: 70px; 
-      text-align: center; 
-      word-break: break-word; 
+      font-size: 13px;
+      min-height: 70px;
+      text-align: center;
+      word-break: break-word;
     }
 
     .stat-item span {
-      font-size: 26px; 
+      font-size: 26px;
       font-weight: bold;
       color: var(--secondary);
       margin-top: 5px;
@@ -151,11 +146,11 @@
       background: var(--card-bg);
       color: var(--text-color);
       font-size: 16px;
-      margin-right: 0px; 
+      margin-right: 0px;
     }
 
     .card input[type="text"]:last-child {
-        margin-right: 0; 
+        margin-right: 0;
     }
 
     .btn {
@@ -166,7 +161,7 @@
       padding: 12px 25px;
       cursor: pointer;
       font-weight: 600;
-      margin-right: 0px; 
+      margin-right: 0px;
       transition: background 0.2s ease, transform 0.2s ease;
       font-size: 16px;
     }
@@ -233,7 +228,7 @@
     #admin-content, #login-container {
       display: none;
     }
-    
+
     #loading-overlay {
         position: fixed;
         top: 0;
@@ -269,20 +264,20 @@
     #mode-toggle {
       position: absolute;
       top: 15px;
-      right: 30px; 
-      padding: 5px; 
-      background: transparent; 
-      color: var(--primary); 
-      border: none; 
+      right: 30px;
+      padding: 5px;
+      background: transparent;
+      color: var(--primary);
+      border: none;
       border-radius: 100px;
       cursor: pointer;
-      font-size: 18px; 
+      font-size: 18px;
       transition: all 0.3s ease;
       z-index: 1100;
-      display: none; 
+      display: none;
     }
     #mode-toggle:hover {
-      background-color: rgba(98, 0, 234, 0.1); 
+      background-color: rgba(98, 0, 234, 0.1);
     }
 
     .ad-notification {
@@ -331,7 +326,7 @@
         padding: 10px;
         background-color: var(--card-bg);
     }
-    
+
     /* MODIFIED: New styles for the daily details table */
     .daily-details-table {
         width: 100%;
@@ -380,26 +375,26 @@
     /* Override Chart.js default font color for dark mode */
     body:not(.light-mode) .chartjs-render-monitor,
     body:not(.light-mode) .chartjs-render-monitor canvas {
-        color: var(--text-color) !important; 
+        color: var(--text-color) !important;
     }
 
     /* Ad pattern buttons specific styles - UPDATED */
     .ad-pattern-buttons {
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: center; 
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 10px;
         margin-top: 15px;
     }
     .ad-pattern-buttons button {
         background-color: #555;
         color: white;
-        padding: 8px 12px; 
+        padding: 8px 12px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-weight: bold; 
-        font-size: 14px; 
+        font-weight: bold;
+        font-size: 14px;
         transition: background-color 0.2s ease;
         flex: 1 1 auto; /* Allow buttons to grow and shrink, but not have a fixed max-width */
         max-width: 120px; /* Still apply a max-width to keep them from becoming too wide */
@@ -415,17 +410,17 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        justify-content: center; 
+        justify-content: center;
     }
     .ad-step-control label {
         font-weight: bold;
-        white-space: nowrap; 
+        white-space: nowrap;
     }
     .ad-step-control input {
-        width: 60px; 
+        width: 60px;
         text-align: center;
-        padding: 8px; 
-        font-size: 14px; 
+        padding: 8px;
+        font-size: 14px;
     }
 
     /* New styles for Ad Network Toggle Buttons */
@@ -527,24 +522,24 @@
         margin-bottom: 12px;
         padding-bottom: 8px;
       }
-      
+
       .card h3 {
         font-size: 18px;
       }
 
       .stat-grid {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
-        gap: 5px; 
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 5px;
       }
-      
+
       .stat-item {
-        padding: 8px; 
-        font-size: 11px; 
-        min-height: 60px; 
+        padding: 8px;
+        font-size: 11px;
+        min-height: 60px;
       }
 
       .stat-item span {
-        font-size: 22px; 
+        font-size: 22px;
       }
 
       .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
@@ -571,7 +566,7 @@
         padding: 10px 15px;
         font-size: 15px;
       }
-      
+
       .btn-primary + .btn {
         margin-top: 10px;
       }
@@ -589,13 +584,13 @@
       }
 
       #mode-toggle {
-        right: 20px; 
-        font-size: 16px; 
+        right: 20px;
+        font-size: 16px;
         padding: 3px;
       }
 
       .chart-container {
-        height: 200px; 
+        height: 200px;
       }
 
       .monthly-daily-flex {
@@ -609,7 +604,7 @@
         font-size: 16px;
       }
       .ad-step-control {
-        flex-direction: row; 
+        flex-direction: row;
         align-items: center;
         justify-content: center;
       }
@@ -617,14 +612,14 @@
         margin-bottom: 0;
       }
       .ad-step-control input {
-        width: 50px; 
+        width: 50px;
       }
       .ad-step-control .btn-success {
         margin-top: 0;
       }
       .ad-pattern-buttons button {
-        flex: 1 1 30%; 
-        max-width: unset; 
+        flex: 1 1 30%;
+        max-width: unset;
       }
       .ad-network-toggles {
           flex-direction: row; /* Still keep row for wrap effect */
@@ -801,6 +796,7 @@ const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // REPLACE THIS with your actu
 let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
+let dailyAdsRef = null; // To store the reference for the daily ads listener
 
 // Helper function to get today's date in YYYY-MM-DD UTC format
 function getTodayKeyUTC() {
@@ -1154,193 +1150,195 @@ return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-currentSelectedMonth = monthKey;
-const [year, monthNum] = monthKey.split('-');
-document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+    currentSelectedMonth = monthKey;
+    const [year, monthNum] = monthKey.split('-');
+    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-if (clickedElement) {
-clickedElement.classList.add('selected');
-}
-
-const dailyStatsList = document.getElementById('daily-stats-list');
-dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-
-Promise.all([
-database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value'),
-database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
-]).then(([visitorsSnapshot, adsSnapshot]) => {
-const dayLabels = [];
-const fullDateLabels = []; // This will store the full date for tooltips
-const dayViews = [];
-const dayAdsShown = [];
-
-const visitorsData = visitorsSnapshot.val() || {}; // Robustly handle null/undefined
-const adsData = adsSnapshot.val() || {};           // Robustly handle null/undefined
-
-// Corrected: Convert Set to Array before calling filter()
-const allDatesInMonth = Array.from(new Set([
-...Object.keys(visitorsData),
-...Object.keys(adsData)
-]))
-.filter(fullDateKey => fullDateKey.startsWith(monthKey))
-.sort();
-
-dailyStatsList.innerHTML = ''; // Clear previous content
-
-if (allDatesInMonth.length > 0) {
-const table = document.createElement('table');
-table.className = 'daily-details-table';
-table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
-const tbody = table.querySelector('tbody');
-
-allDatesInMonth.forEach(fullDateKey => {
-    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-
-    dayLabels.push(dayDay.toString()); 
-    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay)); // Store full date for tooltip
-    
-    const views = visitorsData[fullDateKey] || 0;
-    const adsShown = adsData[fullDateKey] || 0;
-    
-    dayViews.push(views);
-    dayAdsShown.push(adsShown);
-
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${dayDay}</td> <!-- Display only the day number -->
-        <td>${views}</td>
-        <td>${adsShown}</td>
-    `;
-    tbody.appendChild(row);
-});
-dailyStatsList.appendChild(table);
-
-} else {
-dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-}
-
-if (dailyMonthlyVisitorsChart) {
-dailyMonthlyVisitorsChart.data.labels = dayLabels;
-dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
-dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown; // Update ads data
-dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; // Pass full date for tooltip
-dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Pass full date for tooltip
-
-// Update chart title and legend for "Monthly Daily Statistics"
-dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views'; // Changed label
-
-updateChartColors(dailyMonthlyVisitorsChart);
-
-dailyMonthlyVisitorsChart.update();
-
-} else {
-const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-dailyMonthlyVisitorsChart = new Chart(ctx, {
-type: 'line',
-data: {
-labels: dayLabels,
-datasets: [
-{
-label: 'Daily Views',
-data: dayViews,
-backgroundColor: 'rgba(3, 218, 197, 0.4)',
-borderColor: 'rgba(3, 218, 197, 1)',
-borderWidth: 2,
-tension: 0.3,
-fill: true,
-pointRadius: 6,
-pointHoverRadius: 8,
-pointHitRadius: 10,
-pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-fullDateLabels: fullDateLabels // Store full date for tooltip
-},
-{
-label: 'Daily Ads Views', // Changed label
-data: dayAdsShown,
-backgroundColor: 'rgba(98, 0, 234, 0.4)', // Primary color for ads
-borderColor: 'rgba(98, 0, 234, 1)',
-borderWidth: 2,
-tension: 0.3,
-fill: true,
-pointRadius: 6,
-pointHoverRadius: 8,
-pointHitRadius: 10,
-pointBackgroundColor: 'rgba(98, 0, 234, 1)',
-fullDateLabels: fullDateLabels // Store full date for tooltip
-}
-]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-
-interaction: {
-mode: 'index',
-intersect: false
-},
-
-plugins: {
-        title: {
-            display: true,
-            text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
-            color: getChartTextColor(),
-            font: {
-                size: 18
-            }
-        },
-        legend: {
-            labels: {
-                color: getChartTextColor()
-            }
-        },
-        tooltip: { 
-            callbacks: {
-                title: function(tooltipItems) {
-                    // Use the stored fullDateLabels for the tooltip title
-                    const fullDate = tooltipItems[0].dataset.fullDateLabels[tooltipItems[0].dataIndex];
-                    return fullDate;
-                },
-                label: function(tooltipItem) {
-                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                }
-            }
-        }
-    },
-    scales: {
-        y: {
-            beginAtZero: true,
-            ticks: {
-                color: getChartTextColor(),
-                precision: 0 
-            },
-            grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
-            }
-        },
-        x: {
-            ticks: {
-                color: getChartTextColor()
-            },
-            grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
-            }
-        }
+    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+    if (clickedElement) {
+        clickedElement.classList.add('selected');
     }
-}
 
-});
+    const dailyStatsList = document.getElementById('daily-stats-list');
+    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-}
+    // Detach previous daily ads listener if it exists
+    if (dailyAdsRef) {
+        dailyAdsRef.off('value');
+    }
 
-}).catch(error => {
-console.error("Error fetching daily visitor and ad data:", error);
-console.error("Firebase Error Code:", error.code); // Log Firebase specific error code
-console.error("Firebase Error Message:", error.message); // Log Firebase specific error message
-dailyStatsList.innerHTML = `<p>Error loading daily data: ${error.message || 'Unknown error'}</p>`; // Show error message to user
-});
+    // Attach new listeners for visitors and ads for the selected month
+    const visitorsPromise = database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value');
 
+    // THIS IS THE KEY CHANGE: Use on('value') for real-time updates for daily ads
+    dailyAdsRef = database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31');
+    dailyAdsRef.on('value', adsSnapshot => {
+        // We will now handle both visitors and ads data inside this listener
+        // to ensure they update together based on ads changes.
+        visitorsPromise.then(visitorsSnapshot => {
+            const dayLabels = [];
+            const fullDateLabels = [];
+            const dayViews = [];
+            const dayAdsShown = [];
+
+            const visitorsData = visitorsSnapshot.val() || {};
+            const adsData = adsSnapshot.val() || {};
+
+            const allDatesInMonth = Array.from(new Set([
+                ...Object.keys(visitorsData),
+                ...Object.keys(adsData)
+            ]))
+            .filter(fullDateKey => fullDateKey.startsWith(monthKey))
+            .sort();
+
+            dailyStatsList.innerHTML = '';
+
+            if (allDatesInMonth.length > 0) {
+                const table = document.createElement('table');
+                table.className = 'daily-details-table';
+                table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
+                const tbody = table.querySelector('tbody');
+
+                allDatesInMonth.forEach(fullDateKey => {
+                    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+
+                    dayLabels.push(dayDay.toString());
+                    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+
+                    const views = visitorsData[fullDateKey] || 0;
+                    const adsShown = adsData[fullDateKey] || 0;
+
+                    dayViews.push(views);
+                    dayAdsShown.push(adsShown);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${dayDay}</td>
+                        <td>${views}</td>
+                        <td>${adsShown}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                dailyStatsList.appendChild(table);
+
+            } else {
+                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            }
+
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.data.labels = dayLabels;
+                dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
+                dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown;
+                dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
+                dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels;
+
+                dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+                dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views';
+
+                updateChartColors(dailyMonthlyVisitorsChart);
+                dailyMonthlyVisitorsChart.update();
+
+            } else {
+                const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+                dailyMonthlyVisitorsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dayLabels,
+                        datasets: [
+                            {
+                                label: 'Daily Views',
+                                data: dayViews,
+                                backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                                borderColor: 'rgba(3, 218, 197, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 6,
+                                pointHoverRadius: 8,
+                                pointHitRadius: 10,
+                                pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                                fullDateLabels: fullDateLabels
+                            },
+                            {
+                                label: 'Daily Ads Views',
+                                data: dayAdsShown,
+                                backgroundColor: 'rgba(98, 0, 234, 0.4)',
+                                borderColor: 'rgba(98, 0, 234, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 6,
+                                pointHoverRadius: 8,
+                                pointHitRadius: 10,
+                                pointBackgroundColor: 'rgba(98, 0, 234, 1)',
+                                fullDateLabels: fullDateLabels
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                                color: getChartTextColor(),
+                                font: {
+                                    size: 18
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    color: getChartTextColor()
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const fullDate = tooltipItems[0].dataset.fullDateLabels[tooltipItems[0].dataIndex];
+                                        return fullDate;
+                                    },
+                                    label: function(tooltipItem) {
+                                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: getChartTextColor(),
+                                    precision: 0
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: getChartTextColor()
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }).catch(error => {
+            console.error("Error fetching daily visitor data:", error);
+            dailyStatsList.innerHTML = `<p>Error loading daily visitor data: ${error.message || 'Unknown error'}</p>`;
+        });
+    }).catch(error => {
+        console.error("Error setting up daily ad data listener:", error);
+        dailyStatsList.innerHTML = `<p>Error loading daily ad data: ${error.message || 'Unknown error'}</p>`;
+    });
 }
 
 function updateChartColors(chart) {
