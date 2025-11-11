@@ -673,58 +673,54 @@
         <span id="daily-visitors">0</span>
       </div>
     </div>
+  </div>
 
-    <!-- Canva Pro Link Section (moved up) -->
-    <div class="card">
-      <h2>Canva Pro Link</h2>
-      <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
-      <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
-      <div class="input-with-button">
-          <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
-      </div>
-      <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+  <div class="card">
+    <h2>Canva Pro Link</h2>
+    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
+    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+    <div class="input-with-button">
+        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+    </div>
+    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+  </div>
+
+  <div class="card">
+    <h2>Ad Settings</h2>
+    <div class="ad-step-control">
+        <label for="total-ad-steps">Total Ad Steps:</label>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+    </div>
+    <div class="ad-pattern-buttons">
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
+        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
     </div>
 
-    <!-- Ad Settings Section (moved down) -->
-    <div class="card">
-      <h2>Ad Settings</h2>
-      <div class="ad-pattern-buttons">
-          <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
-          <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
-          <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
-      </div>
-
-      <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
-      <div id="ad-network-toggle-controls" class="ad-network-toggles">
-          <label>
-              <span>Monetag</span>
-              <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-          </label>
-          <label>
-              <span>Gigapub</span>
-              <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-          </label>
-          <label>
-              <span>Adexora</span>
-              <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-          </label>
-          <label>
-              <span>Adexium</span>
-              <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-          </label>
-          <label>
-              <span>Adextra</span>
-              <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-          </label>
-      </div>
-
-      <div class="ad-step-control">
-          <label for="total-ad-steps">Total Ad Steps:</label>
-          <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-          <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
-      </div>
+    <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
+    <div id="ad-network-toggle-controls" class="ad-network-toggles">
+        <label>
+            <span>Monetag</span>
+            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+        </label>
+        <label>
+            <span>Gigapub</span>
+            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+        </label>
+        <label>
+            <span>Adexora</span>
+            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+        </label>
+        <label>
+            <span>Adexium</span>
+            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+        </label>
+        <label>
+            <span>Adextra</span>
+            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+        </label>
     </div>
-
   </div>
 
   <div class="card">
@@ -770,6 +766,7 @@
   appId: "1:940783022173:web:72826d42d138be8a219db4"
 };
 
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -782,501 +779,514 @@ let isInitialAuthCheckComplete = false;
 
 // Helper function to get today's date in YYYY-MM-DD UTC format
 function getTodayKeyUTC() {
-    const now = new Date();
-    const year = now.getUTCFullYear();
-    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = now.getUTCDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
+const now = new Date();
+const year = now.getUTCFullYear();
+const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+const day = now.getUTCDate().toString().padStart(2, '0');
+return `${year}-${month}-${day}`;
 }
 
 // Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
-    const date = new Date(Date.UTC(year, month - 1, day));
-    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-    return date.toLocaleDateString('en-US', options);
+const date = new Date(Date.UTC(year, month - 1, day));
+const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+return date.toLocaleDateString('en-US', options);
 }
 
 // Helper function to format a month in YYYY-MM UTC format
 function getFormattedMonthUTC(year, month) {
-    const date = new Date(Date.UTC(year, month - 1, 1));
-    const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
-    return date.toLocaleDateString('en-US', options);
+const date = new Date(Date.UTC(year, month - 1, 1));
+const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
+return date.toLocaleDateString('en-US', options);
 }
 
 // --- Authentication and Loading ---
 window.addEventListener("DOMContentLoaded", () => {
-    const savedMode = localStorage.getItem("themeMode");
-    if (savedMode === "light") {
-        document.body.classList.add("light-mode");
-        document.getElementById("mode-toggle").textContent = "☀️";
-    }
+const savedMode = localStorage.getItem("themeMode");
+if (savedMode === "light") {
+document.body.classList.add("light-mode");
+document.getElementById("mode-toggle").textContent = "☀️";
+}
 
-    showLoadingOverlay();
 
-    auth.onAuthStateChanged((user) => {
-        if (!isInitialAuthCheckComplete) {
-            if (user && user.uid === ADMIN_UID) {
-                setTimeout(() => {
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block';
-                    hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('admin-content').style.display = 'none';
-                    document.getElementById('mode-toggle').style.display = 'none';
-                    hideLoadingOverlay();
-                }, 1000);
-            }
-            isInitialAuthCheckComplete = true;
+showLoadingOverlay();
+
+auth.onAuthStateChanged((user) => {
+    if (!isInitialAuthCheckComplete) {
+        if (user && user.uid === ADMIN_UID) {
+            setTimeout(() => {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'block';
+                hideLoadingOverlay();
+                loadAdminData();
+            }, 1500);
         } else {
-            if (user && user.uid === ADMIN_UID) {
-                setTimeout(() => {
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('admin-content').style.display = 'block';
-                    document.getElementById('mode-toggle').style.display = 'block';
-                    hideLoadingOverlay();
-                    loadAdminData();
-                }, 1500);
-            } else {
-                document.getElementById('admin-content').style.display = 'none';
+            setTimeout(() => {
                 document.getElementById('login-container').style.display = 'block';
+                document.getElementById('admin-content').style.display = 'none';
                 document.getElementById('mode-toggle').style.display = 'none';
                 hideLoadingOverlay();
-            }
+            }, 1000);
         }
-    });
+        isInitialAuthCheckComplete = true;
+    } else {
+        if (user && user.uid === ADMIN_UID) {
+            setTimeout(() => {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'block';
+                hideLoadingOverlay();
+                loadAdminData();
+            }, 1500);
+        } else {
+            document.getElementById('admin-content').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('mode-toggle').style.display = 'none';
+            hideLoadingOverlay();
+        }
+    }
+});
+
 });
 
 function showLoadingOverlay(message = "Loading...") {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.querySelector('p').textContent = message;
-    loadingOverlay.style.display = 'flex';
-    document.getElementById('mode-toggle').style.display = 'none';
+const loadingOverlay = document.getElementById('loading-overlay');
+loadingOverlay.querySelector('p').textContent = message;
+loadingOverlay.style.display = 'flex';
+document.getElementById('mode-toggle').style.display = 'none';
 }
 
 function hideLoadingOverlay() {
-    document.getElementById('loading-overlay').style.display = 'none';
+document.getElementById('loading-overlay').style.display = 'none';
 }
 
 function loginAdminWithEmailPassword() {
-    const email = document.getElementById('admin-email').value;
-    const password = document.getElementById('admin-password').value;
+const email = document.getElementById('admin-email').value;
+const password = document.getElementById('admin-password').value;
 
-    if (!email || !password) {
-        showAdNotification("Please enter both email and password.");
-        return;
-    }
 
-    showLoadingOverlay("Logging in...");
-    document.getElementById('mode-toggle').style.display = 'none';
+if (!email || !password) {
+    showAdNotification("Please enter both email and password.");
+    return;
+}
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            if (user.uid === ADMIN_UID) {
-                document.getElementById('login-container').style.display = 'none';
-            } else {
-                auth.signOut();
-                showAdNotification("You are not authorized to access this panel.");
-                hideLoadingOverlay();
-                document.getElementById('login-container').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'none';
-            }
-        })
-        .catch((error) => {
-            console.error("Admin login failed:", error);
-            showAdNotification("Login failed: " + error.message);
+showLoadingOverlay("Logging in...");
+document.getElementById('mode-toggle').style.display = 'none';
+
+auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+        const user = userCredential.user;
+        if (user.uid === ADMIN_UID) {
+            document.getElementById('login-container').style.display = 'none';
+        } else {
+            auth.signOut();
+            showAdNotification("You are not authorized to access this panel.");
             hideLoadingOverlay();
             document.getElementById('login-container').style.display = 'block';
             document.getElementById('mode-toggle').style.display = 'none';
-        });
+        }
+    })
+    .catch((error) => {
+        console.error("Admin login failed:", error);
+        showAdNotification("Login failed: " + error.message);
+        hideLoadingOverlay();
+        document.getElementById('login-container').style.display = 'block';
+        document.getElementById('mode-toggle').style.display = 'none';
+    });
+
 }
 
 function logoutAdmin() {
-    showLoadingOverlay("Logging out...");
-    document.getElementById('mode-toggle').style.display = 'none';
-    auth.signOut().then(() => {
-        showAdNotification("Admin logged out.");
-        setTimeout(() => {
-            hideLoadingOverlay();
-        }, 500);
-    }).catch((error) => {
-        console.error("Logout error:", error);
-        showAdNotification("Logout error: " + error.message);
-        hideLoadingOverlay();
-    });
+showLoadingOverlay("Logging out...");
+document.getElementById('mode-toggle').style.display = 'none';
+auth.signOut().then(() => {
+showAdNotification("Admin logged out.");
+setTimeout(() => {
+hideLoadingOverlay();
+}, 500);
+}).catch((error) => {
+console.error("Logout error:", error);
+showAdNotification("Logout error: " + error.message);
+hideLoadingOverlay();
+});
 }
 
 // --- General UI and Data Loading ---
 function loadAdminData() {
-    // Load Canva Link
-    database.ref('canvaLink').on('value', (snapshot) => {
-        const link = snapshot.val();
-        document.getElementById('current-canva-link').textContent = link || 'N/A';
-        document.getElementById('new-canva-link').value = '';
+// Load Canva Link
+database.ref('canvaLink').on('value', (snapshot) => {
+const link = snapshot.val();
+document.getElementById('current-canva-link').textContent = link || 'N/A';
+document.getElementById('new-canva-link').value = '';
+});
+
+
+// Load Visitor Overview
+database.ref('visitors/total').on('value', (snapshot) => {
+    document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+});
+
+const fullCurrentDatePath = getTodayKeyUTC();
+database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+    document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+});
+
+// Load Ad Settings (pattern, totalSteps, and network toggles)
+database.ref('adSettings').on('value', (snapshot) => {
+    const settings = snapshot.val();
+    const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
+    const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
+    const adNetworkStates = settings && settings.adNetworks ? settings.adNetworks : {
+        monetag: true,
+        gigapub: true,
+        adexora: true,
+        adexium: true,
+        adextra: true,
+    };
+
+    // Update UI for ad pattern buttons
+    document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+        button.classList.remove('active');
     });
+    document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
-    // Load Visitor Overview
-    database.ref('visitors/total').on('value', (snapshot) => {
-        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-    });
+    // Show/hide ad network toggles based on selected pattern
+    const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
+    if (currentPattern === 2) {
+        adNetworkToggleControls.style.display = 'flex';
+    } else {
+        adNetworkToggleControls.style.display = 'none';
+    }
 
-    const fullCurrentDatePath = getTodayKeyUTC();
-    database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-        document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-    });
+    // Update UI for ad network toggle checkboxes
+    for (const network in adNetworkStates) {
+        const checkbox = document.getElementById(`toggle-${network}`);
+        if (checkbox) {
+            checkbox.checked = adNetworkStates[network];
+        }
+    }
 
-    // Load Ad Settings (pattern, totalSteps, and network toggles)
-    database.ref('adSettings').on('value', (snapshot) => {
-        const settings = snapshot.val();
-        const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-        const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-        const adNetworkStates = settings && settings.adNetworks ? settings.adNetworks : {
-            monetag: true,
-            gigapub: true,
-            adexora: true,
-            adexium: true,
-            adextra: true,
-        };
+    // Update UI for total ad steps
+    const totalAdStepsInput = document.getElementById('total-ad-steps');
+    totalAdStepsInput.value = currentSteps;
+});
 
-        // Update UI for ad pattern buttons
-        document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-            button.classList.remove('active');
+// Load Monthly Visitor Data
+database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+    const monthlyStatsList = document.getElementById('monthly-stats-list');
+    monthlyStatsList.innerHTML = '';
+
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        const months = Object.keys(data).sort((a, b) => {
+            const [yearA, monthA] = a.split('-').map(Number);
+            const [yearB, monthB] = b.split('-').map(Number);
+            if (yearA !== yearB) return yearB - yearA;
+            return monthB - monthA;
+        }); 
+
+        months.forEach(monthKey => {
+            const [year, monthNum] = monthKey.split('-');
+            const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+            const div = document.createElement('div');
+            div.className = 'monthly-list-item';
+            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+            div.onclick = () => selectMonthForDailyView(monthKey, div); 
+            monthlyStatsList.appendChild(div);
         });
-        document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
-        // Show/hide ad network toggles based on selected pattern
-        const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
-        if (currentPattern === 2) {
-            adNetworkToggleControls.style.display = 'flex';
-        } else {
-            adNetworkToggleControls.style.display = 'none';
+        if (months.length > 0) {
+            const latestMonthKey = months[0]; 
+            const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+            selectMonthForDailyView(latestMonthKey, latestMonthElement);
         }
-
-        // Update UI for ad network toggle checkboxes
-        for (const network in adNetworkStates) {
-            const checkbox = document.getElementById(`toggle-${network}`);
-            if (checkbox) {
-                checkbox.checked = adNetworkStates[network];
-            }
+    } else {
+        monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.destroy();
+            dailyMonthlyVisitorsChart = null;
         }
+    }
+});
 
-        // Update UI for total ad steps
-        const totalAdStepsInput = document.getElementById('total-ad-steps');
-        totalAdStepsInput.value = currentSteps;
-    });
-
-    // Load Monthly Visitor Data
-    database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-        const monthlyStatsList = document.getElementById('monthly-stats-list');
-        monthlyStatsList.innerHTML = '';
-
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const months = Object.keys(data).sort((a, b) => {
-                const [yearA, monthA] = a.split('-').map(Number);
-                const [yearB, monthB] = b.split('-').map(Number);
-                if (yearA !== yearB) return yearB - yearA;
-                return monthB - monthA;
-            }); 
-
-            months.forEach(monthKey => {
-                const [year, monthNum] = monthKey.split('-');
-                const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-                const div = document.createElement('div');
-                div.className = 'monthly-list-item';
-                div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-                div.onclick = () => selectMonthForDailyView(monthKey, div); 
-                monthlyStatsList.appendChild(div);
-            });
-
-            if (months.length > 0) {
-                const latestMonthKey = months[0]; 
-                const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-                selectMonthForDailyView(latestMonthKey, latestMonthElement);
-            }
-        } else {
-            monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-            if (dailyMonthlyVisitorsChart) {
-                dailyMonthlyVisitorsChart.destroy();
-                dailyMonthlyVisitorsChart = null;
-            }
-        }
-    });
 }
 
 // --- Ad Pattern and Steps Control ---
 function selectAdPattern(patternNumber) {
-    database.ref('adSettings/pattern').set(patternNumber)
-        .then(() => {
-            // UI will update via the 'on' listener for adSettings
-        })
-        .catch(error => {
-            console.error("Error setting ad pattern:", error);
-            showAdNotification("Failed to set ad pattern.");
-        });
+database.ref('adSettings/pattern').set(patternNumber)
+.then(() => {
+// UI will update via the 'on' listener for adSettings
+})
+.catch(error => {
+console.error("Error setting ad pattern:", error);
+showAdNotification("Failed to set ad pattern.");
+});
 }
 
 function updateTotalAdSteps() {
-    const input = document.getElementById('total-ad-steps');
-    let value = parseInt(input.value);
-    if (isNaN(value) || value < 1) {
-        value = 1;
-    } else if (value > 10) { // Max steps to prevent excessive ads
-        value = 10;
-    }
-    input.value = value;
+const input = document.getElementById('total-ad-steps');
+let value = parseInt(input.value);
+if (isNaN(value) || value < 1) {
+value = 1;
+} else if (value > 10) { // Max steps to prevent excessive ads
+value = 10;
+}
+input.value = value;
 }
 
 function saveTotalAdSteps() {
-    const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
-    database.ref('adSettings/totalSteps').set(totalSteps)
-        .then(() => {
-            showAdNotification("Total ad steps saved successfully!");
-        })
-        .catch(error => {
-            console.error("Error setting total ad steps:", error);
-            showAdNotification("Failed to save total ad steps.");
-        });
+const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
+database.ref('adSettings/totalSteps').set(totalSteps)
+.then(() => {
+showAdNotification("Total ad steps saved successfully!");
+})
+.catch(error => {
+console.error("Error setting total ad steps:", error);
+showAdNotification("Failed to save total ad steps.");
+});
 }
 
 function toggleAdNetwork(networkName) {
-    const checkbox = document.getElementById(`toggle-${networkName}`);
-    const isEnabled = checkbox.checked;
-    database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
-        .then(() => {
-            showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`);
-        })
-        .catch(error => {
-            console.error(`Error toggling ${networkName} ads:`, error);
-            showAdNotification(`Failed to toggle ${networkName} ads.`);
-            checkbox.checked = !isEnabled; // Revert UI on error
-        });
+const checkbox = document.getElementById(`toggle-${networkName}`);
+const isEnabled = checkbox.checked;
+database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
+.then(() => {
+showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`);
+})
+.catch(error => {
+console.error(`Error toggling ${networkName} ads:`, error);
+showAdNotification(`Failed to toggle ${networkName} ads.`);
+checkbox.checked = !isEnabled; // Revert UI on error
+});
 }
 
-
 function updateCanvaLink() {
-    const newLinkInput = document.getElementById('new-canva-link');
-    const newLink = newLinkInput.value.trim();
+const newLinkInput = document.getElementById('new-canva-link');
+const newLink = newLinkInput.value.trim();
 
-    if (newLink) {
-        database.ref('canvaLink').set(newLink)
-            .then(() => {
-                showAdNotification("Canva Pro link updated successfully!");
-                newLinkInput.value = '';
-            })
-            .catch((error) => {
-                console.error("Error updating Canva link:", error);
-                showAdNotification("Failed to update Canva Pro link.");
-            });
-    } else {
-        showAdNotification("Please enter a valid link.");
-    }
+
+if (newLink) {
+    database.ref('canvaLink').set(newLink)
+        .then(() => {
+            showAdNotification("Canva Pro link updated successfully!");
+            newLinkInput.value = '';
+        })
+        .catch((error) => {
+            console.error("Error updating Canva link:", error);
+            showAdNotification("Failed to update Canva Pro link.");
+        });
+} else {
+    showAdNotification("Please enter a valid link.");
+}
+
 }
 
 // --- Utility Functions ---
 function showAdNotification(msg) {
-    const el = document.getElementById('ad-notification');
-    el.textContent = msg;
-    el.style.display = 'block';
-    setTimeout(() => {
-        el.style.display = 'none';
-    }, 3000);
+const el = document.getElementById('ad-notification');
+el.textContent = msg;
+el.style.display = 'block';
+setTimeout(() => {
+el.style.display = 'none';
+}, 3000);
 }
 
 function toggleMode() {
-    const body = document.body;
-    const btn = document.getElementById('mode-toggle');
-    body.classList.toggle('light-mode');
-    if (body.classList.contains('light-mode')) {
-        btn.textContent = '☀️';
-        localStorage.setItem("themeMode", "light");
-    } else {
-        btn.textContent = '🌙';
-        localStorage.setItem("themeMode", "dark");
-    }
-    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+const body = document.body;
+const btn = document.getElementById('mode-toggle');
+body.classList.toggle('light-mode');
+if (body.classList.contains('light-mode')) {
+btn.textContent = '☀️';
+localStorage.setItem("themeMode", "light");
+} else {
+btn.textContent = '🌙';
+localStorage.setItem("themeMode", "dark");
+}
+document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
-    if (dailyMonthlyVisitorsChart) {
-        updateChartColors(dailyMonthlyVisitorsChart);
-        dailyMonthlyVisitorsChart.update();
-    }
+
+if (dailyMonthlyVisitorsChart) {
+    updateChartColors(dailyMonthlyVisitorsChart);
+    dailyMonthlyVisitorsChart.update();
+}
+
 }
 
 // --- Chart and Visitor Details ---
 function getChartTextColor() {
-    return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-    currentSelectedMonth = monthKey;
-    const [year, monthNum] = monthKey.split('-');
-    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+currentSelectedMonth = monthKey;
+const [year, monthNum] = monthKey.split('-');
+document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-    if (clickedElement) {
-        clickedElement.classList.add('selected');
-    }
 
-    const dailyStatsList = document.getElementById('daily-stats-list');
-    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+if (clickedElement) {
+    clickedElement.classList.add('selected');
+}
 
-    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-        dailyStatsList.innerHTML = '';
-        const dayLabels = []; 
-        const fullDateLabels = []; 
-        const dayCounts = [];
+const dailyStatsList = document.getElementById('daily-stats-list');
+dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const days = Object.keys(data).filter(fullDateKey => 
-                fullDateKey.startsWith(monthKey)
-            ).sort(); 
+database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+    dailyStatsList.innerHTML = '';
+    const dayLabels = []; 
+    const fullDateLabels = []; 
+    const dayCounts = [];
+
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        const days = Object.keys(data).filter(fullDateKey => 
+            fullDateKey.startsWith(monthKey)
+        ).sort(); 
+        
+        days.forEach(fullDateKey => {
+            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
             
-            days.forEach(fullDateKey => {
-                const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-                
-                dayLabels.push(dayDay.toString()); 
-                fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-                dayCounts.push(data[fullDateKey]);
+            dayLabels.push(dayDay.toString()); 
+            fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+            dayCounts.push(data[fullDateKey]);
 
-                const div = document.createElement('div');
-                div.className = 'daily-item';
-                div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-                dailyStatsList.appendChild(div);
-            });
+            const div = document.createElement('div');
+            div.className = 'daily-item';
+            div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+            dailyStatsList.appendChild(div);
+        });
 
-            if (dailyStatsList.children.length === 0) {
-                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-            }
-
-        } else {
+        if (dailyStatsList.children.length === 0) {
             dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
         }
 
-        if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.data.labels = dayLabels;
-            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-            
-            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+    } else {
+        dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+    }
 
-            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-            updateChartColors(dailyMonthlyVisitorsChart);
-            
-            dailyMonthlyVisitorsChart.options.interaction = {
-                mode: 'index', 
-                intersect: false 
-            };
+    if (dailyMonthlyVisitorsChart) {
+        dailyMonthlyVisitorsChart.data.labels = dayLabels;
+        dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+        dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+        
+        dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+        dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+        dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
 
-            dailyMonthlyVisitorsChart.update();
-        } else {
-            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-            dailyMonthlyVisitorsChart = new Chart(ctx, {
-                type: 'line', 
-                data: {
-                    labels: dayLabels,
-                    datasets: [{
-                        label: 'Daily Views',
-                        data: dayCounts,
-                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                        borderColor: 'rgba(3, 218, 197, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 6, 
-                        pointHoverRadius: 8, 
-                        pointHitRadius: 10, 
-                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                        fullDateLabels: fullDateLabels 
-                    }]
+        dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+        updateChartColors(dailyMonthlyVisitorsChart);
+        
+        dailyMonthlyVisitorsChart.options.interaction = {
+            mode: 'index', 
+            intersect: false 
+        };
+
+        dailyMonthlyVisitorsChart.update();
+    } else {
+        const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+        dailyMonthlyVisitorsChart = new Chart(ctx, {
+            type: 'line', 
+            data: {
+                labels: dayLabels,
+                datasets: [{
+                    label: 'Daily Views',
+                    data: dayCounts,
+                    backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                    borderColor: 'rgba(3, 218, 197, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 6, 
+                    pointHoverRadius: 8, 
+                    pointHitRadius: 10, 
+                    pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                    fullDateLabels: fullDateLabels 
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                
+                interaction: {
+                    mode: 'index', 
+                    intersect: false 
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    
-                    interaction: {
-                        mode: 'index', 
-                        intersect: false 
-                    },
 
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                            color: getChartTextColor(),
-                            font: {
-                                size: 18
-                            }
-                        },
-                        legend: {
-                            labels: {
-                                color: getChartTextColor()
-                            }
-                        },
-                        tooltip: { 
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const dataset = tooltipItems[0].dataset;
-                                    const index = tooltipItems[0].dataIndex;
-                                    return dataset.fullDateLabels[index];
-                                },
-                                label: function(tooltipItem) {
-                                    return `Views: ${tooltipItem.raw}`;
-                                }
-                            }
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                        color: getChartTextColor(),
+                        font: {
+                            size: 18
                         }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: getChartTextColor(),
-                                precision: 0 
+                    legend: {
+                        labels: {
+                            color: getChartTextColor()
+                        }
+                    },
+                    tooltip: { 
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const dataset = tooltipItems[0].dataset;
+                                const index = tooltipItems[0].dataIndex;
+                                return dataset.fullDateLabels[index];
                             },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: getChartTextColor()
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                            label: function(tooltipItem) {
+                                return `Views: ${tooltipItem.raw}`;
                             }
                         }
                     }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: getChartTextColor(),
+                            precision: 0 
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: getChartTextColor()
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
                 }
-            });
-        }
-    });
+            }
+        });
+    }
+});
+
 }
 
 function updateChartColors(chart) {
-    const textColor = getChartTextColor();
-    chart.options.scales.x.ticks.color = textColor;
-    chart.options.scales.y.ticks.color = textColor;
-    chart.options.plugins.title.color = textColor;
-    if (chart.options.plugins.legend) {
-        chart.options.plugins.legend.labels.color = textColor;
-    }
-    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-    chart.options.scales.x.grid.color = gridColor;
-    chart.options.scales.y.grid.color = gridColor;
+const textColor = getChartTextColor();
+chart.options.scales.x.ticks.color = textColor;
+chart.options.scales.y.ticks.color = textColor;
+chart.options.plugins.title.color = textColor;
+if (chart.options.plugins.legend) {
+chart.options.plugins.legend.labels.color = textColor;
+}
+const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+chart.options.scales.x.grid.color = gridColor;
+chart.options.scales.y.grid.color = gridColor;
 }
 
 // Initialize h3 color based on current mode on load
 window.addEventListener('load', () => {
-    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 });
 </script>
+
 </body>
 </html>
+   
