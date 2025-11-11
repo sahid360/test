@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -6,11 +7,15 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -701,29 +706,29 @@
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
     </div>
 
-    <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
-    <div id="ad-network-toggle-controls" class="ad-network-toggles">
-        <label>
-            <span>Monetag</span>
-            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-        </label>
-        <label>
-            <span>Gigapub</span>
-            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-        </label>
-        <label>
-            <span>Adexora</span>
-            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-        </label>
-        <label>
-            <span>Adexium</span>
-            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-        </label>
-        <label>
-            <span>Adextra</span>
-            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-        </label>
-    </div>
+<!-- Ad Network Toggles moved right after ad-pattern-buttons -->
+<div id="ad-network-toggle-controls" class="ad-network-toggles">
+    <label>
+        <span>Monetag</span>
+        <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+    </label>
+    <label>
+        <span>Gigapub</span>
+        <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+    </label>
+    <label>
+        <span>Adexora</span>
+        <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+    </label>
+    <label>
+        <span>Adexium</span>
+        <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+    </label>
+    <label>
+        <span>Adextra</span>
+        <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+    </label>
+</div>
   </div>
 
   <div class="card">
@@ -760,13 +765,13 @@
   <script>
     // Firebase configuration (replace with your actual config)
    const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // Replace with your actual API Key
-  authDomain: "YOUR_AUTH_DOMAIN", // Replace with your actual Auth Domain
-  databaseURL: "YOUR_DATABASE_URL", // Replace with your actual Database URL
-  projectId: "YOUR_PROJECT_ID", // Replace with your actual Project ID
-  storageBucket: "YOUR_STORAGE_BUCKET", // Replace with your actual Storage Bucket
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your actual Messaging Sender ID
-  appId: "YOUR_APP_ID" // Replace with your actual App ID
+  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4",
+  authDomain: "test-9c2fe.firebaseapp.com",
+  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com",
+  projectId: "test-9c2fe",
+  storageBucket: "test-9c2fe.firebasestorage.app",
+  messagingSenderId: "940783022173",
+  appId: "1:940783022173:web:72826d42d138be8a219db4"
 };
 
 
@@ -775,7 +780,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-const ADMIN_UID = "YOUR_ADMIN_UID"; // Replace with your actual admin UID
+const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // Replace with your actual admin UID
 let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
@@ -811,44 +816,43 @@ document.body.classList.add("light-mode");
 document.getElementById("mode-toggle").textContent = "☀️";
 }
 
-
 showLoadingOverlay();
 
 auth.onAuthStateChanged((user) => {
-    if (!isInitialAuthCheckComplete) {
-        if (user && user.uid === ADMIN_UID) {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'block';
-                hideLoadingOverlay();
-                loadAdminData();
-            }, 1500);
-        } else {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'block';
-                document.getElementById('admin-content').style.display = 'none';
-                document.getElementById('mode-toggle').style.display = 'none';
-                hideLoadingOverlay();
-            }, 1000);
-        }
-        isInitialAuthCheckComplete = true;
-    } else {
-        if (user && user.uid === ADMIN_UID) {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'block';
-                hideLoadingOverlay();
-                loadAdminData();
-            }, 1500);
-        } else {
-            document.getElementById('admin-content').style.display = 'none';
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('mode-toggle').style.display = 'none';
-            hideLoadingOverlay();
-        }
-    }
+if (!isInitialAuthCheckComplete) {
+if (user && user.uid === ADMIN_UID) {
+setTimeout(() => {
+document.getElementById('login-container').style.display = 'none';
+document.getElementById('admin-content').style.display = 'block';
+document.getElementById('mode-toggle').style.display = 'block';
+hideLoadingOverlay();
+loadAdminData();
+}, 1500);
+} else {
+setTimeout(() => {
+document.getElementById('login-container').style.display = 'block';
+document.getElementById('admin-content').style.display = 'none';
+document.getElementById('mode-toggle').style.display = 'none';
+hideLoadingOverlay();
+}, 1000);
+}
+isInitialAuthCheckComplete = true;
+} else {
+if (user && user.uid === ADMIN_UID) {
+setTimeout(() => {
+document.getElementById('login-container').style.display = 'none';
+document.getElementById('admin-content').style.display = 'block';
+document.getElementById('mode-toggle').style.display = 'block';
+hideLoadingOverlay();
+loadAdminData();
+}, 1500);
+} else {
+document.getElementById('admin-content').style.display = 'none';
+document.getElementById('login-container').style.display = 'block';
+document.getElementById('mode-toggle').style.display = 'none';
+hideLoadingOverlay();
+}
+}
 });
 
 });
@@ -868,35 +872,34 @@ function loginAdminWithEmailPassword() {
 const email = document.getElementById('admin-email').value;
 const password = document.getElementById('admin-password').value;
 
-
 if (!email || !password) {
-    showAdNotification("Please enter both email and password.");
-    return;
+showAdNotification("Please enter both email and password.");
+return;
 }
 
 showLoadingOverlay("Logging in...");
 document.getElementById('mode-toggle').style.display = 'none';
 
 auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
-        if (user.uid === ADMIN_UID) {
-            document.getElementById('login-container').style.display = 'none';
-        } else {
-            auth.signOut();
-            showAdNotification("You are not authorized to access this panel.");
-            hideLoadingOverlay();
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('mode-toggle').style.display = 'none';
-        }
-    })
-    .catch((error) => {
-        console.error("Admin login failed:", error);
-        showAdNotification("Login failed: " + error.message);
-        hideLoadingOverlay();
-        document.getElementById('login-container').style.display = 'block';
-        document.getElementById('mode-toggle').style.display = 'none';
-    });
+.then((userCredential) => {
+const user = userCredential.user;
+if (user.uid === ADMIN_UID) {
+document.getElementById('login-container').style.display = 'none';
+} else {
+auth.signOut();
+showAdNotification("You are not authorized to access this panel.");
+hideLoadingOverlay();
+document.getElementById('login-container').style.display = 'block';
+document.getElementById('mode-toggle').style.display = 'none';
+}
+})
+.catch((error) => {
+console.error("Admin login failed:", error);
+showAdNotification("Login failed: " + error.message);
+hideLoadingOverlay();
+document.getElementById('login-container').style.display = 'block';
+document.getElementById('mode-toggle').style.display = 'none';
+});
 
 }
 
@@ -924,104 +927,105 @@ document.getElementById('current-canva-link').textContent = link || 'N/A';
 document.getElementById('new-canva-link').value = '';
 });
 
-
 // Load Visitor Overview
 database.ref('visitors/total').on('value', (snapshot) => {
-    document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+document.getElementById('total-visitors').textContent = snapshot.val() || 0;
 });
 
 const fullCurrentDatePath = getTodayKeyUTC();
 database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-    document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
 });
 
 // Load Total Ads Shown
-database.ref('ads/totalShown').on('value', (snapshot) => {
-    document.getElementById('total-ads-shown').textContent = snapshot.val() || 0;
+database.ref('visitors/ads/total').on('value', (snapshot) => {
+document.getElementById('total-ads-shown').textContent = snapshot.val() || 0;
 });
 
 // Load Today's Ads Shown
-database.ref(`ads/dailyShown/${fullCurrentDatePath}`).on('value', (snapshot) => {
-    document.getElementById('daily-ads-shown').textContent = snapshot.val() || 0;
+database.ref(`visitors/ads/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+document.getElementById('daily-ads-shown').textContent = snapshot.val() || 0;
 });
 
 // Load Ad Settings (pattern, totalSteps, and network toggles)
 database.ref('adSettings').on('value', (snapshot) => {
-    const settings = snapshot.val();
-    const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-    const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-    const adNetworkStates = settings && settings.adNetworks ? settings.adNetworks : {
-        monetag: true,
-        gigapub: true,
-        adexora: true,
-        adexium: true,
-        adextra: true,
-    };
+const settings = snapshot.val();
+const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
+const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
+const adNetworkStates = settings && settings.adNetworks ? settings.adNetworks : {
+monetag: true,
+gigapub: true,
+adexora: true,
+adexium: true,
+adextra: true,
+};
 
-    // Update UI for ad pattern buttons
-    document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-        button.classList.remove('active');
-    });
-    document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
+// Update UI for ad pattern buttons
+document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+    button.classList.remove('active');
+});
+document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
-    // Show/hide ad network toggles based on selected pattern
-    const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
-    if (currentPattern === 2) {
-        adNetworkToggleControls.style.display = 'flex';
-    } else {
-        adNetworkToggleControls.style.display = 'none';
+// Show/hide ad network toggles based on selected pattern
+const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
+if (currentPattern === 2) {
+    adNetworkToggleControls.style.display = 'flex';
+} else {
+    adNetworkToggleControls.style.display = 'none';
+}
+
+// Update UI for ad network toggle checkboxes
+for (const network in adNetworkStates) {
+    const checkbox = document.getElementById(`toggle-${network}`);
+    if (checkbox) {
+        checkbox.checked = adNetworkStates[network];
     }
+}
 
-    // Update UI for ad network toggle checkboxes
-    for (const network in adNetworkStates) {
-        const checkbox = document.getElementById(`toggle-${network}`);
-        if (checkbox) {
-            checkbox.checked = adNetworkStates[network];
-        }
-    }
+// Update UI for total ad steps
+const totalAdStepsInput = document.getElementById('total-ad-steps');
+totalAdStepsInput.value = currentSteps;
 
-    // Update UI for total ad steps
-    const totalAdStepsInput = document.getElementById('total-ad-steps');
-    totalAdStepsInput.value = currentSteps;
 });
 
 // Load Monthly Visitor Data
 database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-    const monthlyStatsList = document.getElementById('monthly-stats-list');
-    monthlyStatsList.innerHTML = '';
+const monthlyStatsList = document.getElementById('monthly-stats-list');
+monthlyStatsList.innerHTML = '';
 
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        const months = Object.keys(data).sort((a, b) => {
-            const [yearA, monthA] = a.split('-').map(Number);
-            const [yearB, monthB] = b.split('-').map(Number);
-            if (yearA !== yearB) return yearB - yearA;
-            return monthB - monthA;
-        }); 
+if (snapshot.exists()) {
+    const data = snapshot.val();
+    const months = Object.keys(data).sort((a, b) => {
+        const [yearA, monthA] = a.split('-').map(Number);
+        const [yearB, monthB] = b.split('-').map(Number);
+        if (yearA !== yearB) return yearB - yearA;
+        return monthB - monthA;
+    }); 
 
-        months.forEach(monthKey => {
-            const [year, monthNum] = monthKey.split('-');
-            const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+    months.forEach(monthKey => {
+        const [year, monthNum] = monthKey.split('-');
+        const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-            const div = document.createElement('div');
-            div.className = 'monthly-list-item';
-            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-            div.onclick = () => selectMonthForDailyView(monthKey, div); 
-            monthlyStatsList.appendChild(div);
-        });
+        const div = document.createElement('div');
+        div.className = 'monthly-list-item';
+        div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+        div.onclick = () => selectMonthForDailyView(monthKey, div); 
+        monthlyStatsList.appendChild(div);
+    });
 
-        if (months.length > 0) {
-            const latestMonthKey = months[0]; 
-            const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-            selectMonthForDailyView(latestMonthKey, latestMonthElement);
-        }
-    } else {
-        monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-        if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.destroy();
-            dailyMonthlyVisitorsChart = null;
-        }
+    if (months.length > 0) {
+        const latestMonthKey = months[0]; 
+        const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+        selectMonthForDailyView(latestMonthKey, latestMonthElement);
     }
+} else {
+    monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+    if (dailyMonthlyVisitorsChart) {
+        dailyMonthlyVisitorsChart.destroy();
+        dailyMonthlyVisitorsChart = null;
+    }
+}
+
 });
 
 }
@@ -1079,19 +1083,18 @@ function updateCanvaLink() {
 const newLinkInput = document.getElementById('new-canva-link');
 const newLink = newLinkInput.value.trim();
 
-
 if (newLink) {
-    database.ref('canvaLink').set(newLink)
-        .then(() => {
-            showAdNotification("Canva Pro link updated successfully!");
-            newLinkInput.value = '';
-        })
-        .catch((error) => {
-            console.error("Error updating Canva link:", error);
-            showAdNotification("Failed to update Canva Pro link.");
-        });
+database.ref('canvaLink').set(newLink)
+.then(() => {
+showAdNotification("Canva Pro link updated successfully!");
+newLinkInput.value = '';
+})
+.catch((error) => {
+console.error("Error updating Canva link:", error);
+showAdNotification("Failed to update Canva Pro link.");
+});
 } else {
-    showAdNotification("Please enter a valid link.");
+showAdNotification("Please enter a valid link.");
 }
 
 }
@@ -1119,10 +1122,9 @@ localStorage.setItem("themeMode", "dark");
 }
 document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
-
 if (dailyMonthlyVisitorsChart) {
-    updateChartColors(dailyMonthlyVisitorsChart);
-    dailyMonthlyVisitorsChart.update();
+updateChartColors(dailyMonthlyVisitorsChart);
+dailyMonthlyVisitorsChart.update();
 }
 
 }
@@ -1137,146 +1139,146 @@ currentSelectedMonth = monthKey;
 const [year, monthNum] = monthKey.split('-');
 document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-
 document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
 if (clickedElement) {
-    clickedElement.classList.add('selected');
+clickedElement.classList.add('selected');
 }
 
 const dailyStatsList = document.getElementById('daily-stats-list');
 dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
 database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-    dailyStatsList.innerHTML = '';
-    const dayLabels = []; 
-    const fullDateLabels = []; 
-    const dayCounts = [];
+dailyStatsList.innerHTML = '';
+const dayLabels = [];
+const fullDateLabels = [];
+const dayCounts = [];
 
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        const days = Object.keys(data).filter(fullDateKey => 
-            fullDateKey.startsWith(monthKey)
-        ).sort(); 
+if (snapshot.exists()) {
+    const data = snapshot.val();
+    const days = Object.keys(data).filter(fullDateKey => 
+        fullDateKey.startsWith(monthKey)
+    ).sort(); 
+    
+    days.forEach(fullDateKey => {
+        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
         
-        days.forEach(fullDateKey => {
-            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-            
-            dayLabels.push(dayDay.toString()); 
-            fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-            dayCounts.push(data[fullDateKey]);
+        dayLabels.push(dayDay.toString()); 
+        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+        dayCounts.push(data[fullDateKey]);
 
-            const div = document.createElement('div');
-            div.className = 'daily-item';
-            div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-            dailyStatsList.appendChild(div);
-        });
+        const div = document.createElement('div');
+        div.className = 'daily-item';
+        div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+        dailyStatsList.appendChild(div);
+    });
 
-        if (dailyStatsList.children.length === 0) {
-            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-        }
-
-    } else {
+    if (dailyStatsList.children.length === 0) {
         dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
     }
 
-    if (dailyMonthlyVisitorsChart) {
-        dailyMonthlyVisitorsChart.data.labels = dayLabels;
-        dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-        dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-        
-        dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-        dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-        dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+} else {
+    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+}
 
-        dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-        updateChartColors(dailyMonthlyVisitorsChart);
-        
-        dailyMonthlyVisitorsChart.options.interaction = {
-            mode: 'index', 
-            intersect: false 
-        };
+if (dailyMonthlyVisitorsChart) {
+    dailyMonthlyVisitorsChart.data.labels = dayLabels;
+    dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+    dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+    
+    dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+    dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+    dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
 
-        dailyMonthlyVisitorsChart.update();
-    } else {
-        const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-        dailyMonthlyVisitorsChart = new Chart(ctx, {
-            type: 'line', 
-            data: {
-                labels: dayLabels,
-                datasets: [{
-                    label: 'Daily Views',
-                    data: dayCounts,
-                    backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                    borderColor: 'rgba(3, 218, 197, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 6, 
-                    pointHoverRadius: 8, 
-                    pointHitRadius: 10, 
-                    pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                    fullDateLabels: fullDateLabels 
-                }]
+    dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+    updateChartColors(dailyMonthlyVisitorsChart);
+    
+    dailyMonthlyVisitorsChart.options.interaction = {
+        mode: 'index', 
+        intersect: false 
+    };
+
+    dailyMonthlyVisitorsChart.update();
+} else {
+    const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+    dailyMonthlyVisitorsChart = new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: dayLabels,
+            datasets: [{
+                label: 'Daily Views',
+                data: dayCounts,
+                backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                borderColor: 'rgba(3, 218, 197, 1)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 6, 
+                pointHoverRadius: 8, 
+                pointHitRadius: 10, 
+                pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                fullDateLabels: fullDateLabels 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            
+            interaction: {
+                mode: 'index', 
+                intersect: false 
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                
-                interaction: {
-                    mode: 'index', 
-                    intersect: false 
-                },
 
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                        color: getChartTextColor(),
-                        font: {
-                            size: 18
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: getChartTextColor()
-                        }
-                    },
-                    tooltip: { 
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                const dataset = tooltipItems[0].dataset;
-                                const index = tooltipItems[0].dataIndex;
-                                return dataset.fullDateLabels[index];
-                            },
-                            label: function(tooltipItem) {
-                                return `Views: ${tooltipItem.raw}`;
-                            }
-                        }
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                    color: getChartTextColor(),
+                    font: {
+                        size: 18
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: getChartTextColor(),
-                            precision: 0 
+                legend: {
+                    labels: {
+                        color: getChartTextColor()
+                    }
+                },
+                tooltip: { 
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const dataset = tooltipItems[0].dataset;
+                            const index = tooltipItems[0].dataIndex;
+                            return dataset.fullDateLabels[index];
                         },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: getChartTextColor()
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
+                        label: function(tooltipItem) {
+                            return `Views: ${tooltipItem.raw}`;
                         }
                     }
                 }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: getChartTextColor(),
+                        precision: 0 
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: getChartTextColor()
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
             }
-        });
-    }
+        }
+    });
+}
+
 });
 
 }
