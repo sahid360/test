@@ -417,7 +417,9 @@
     /* New styles for Ad Network Toggle Buttons */
     .ad-network-toggles {
         display: flex;
-        flex-direction: column; /* Vertical layout for small screens */
+        flex-direction: row; /* Changed to row for horizontal display */
+        flex-wrap: wrap; /* Allow wrapping */
+        justify-content: center; /* Center buttons horizontally */
         gap: 8px; /* Reduced gap */
         margin-top: 15px;
         padding: 10px;
@@ -429,11 +431,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 8px 12px;
+        padding: 6px 10px; /* Smaller padding */
         background-color: var(--ad-item-bg);
         border-radius: 8px;
         cursor: pointer;
         transition: background-color 0.2s ease;
+        flex: 1 1 18%; /* Make each label take up about 18% width for ~5 per line */
+        max-width: 150px; /* Max width to keep them from getting too wide */
+        min-width: 100px; /* Minimum width for responsiveness */
+        height: 45px; /* Fixed height for consistency */
     }
     .ad-network-toggles label:hover {
         background-color: rgba(3, 218, 197, 0.1);
@@ -441,24 +447,26 @@
     .ad-network-toggles label span {
         font-weight: bold;
         color: var(--text-color);
+        font-size: 14px; /* Smaller font size */
     }
     .ad-network-toggles input[type="checkbox"] {
         appearance: none;
         -webkit-appearance: none;
-        width: 40px;
-        height: 20px;
+        width: 35px; /* Smaller toggle switch */
+        height: 18px; /* Smaller toggle switch */
         background: #ccc;
-        border-radius: 10px;
+        border-radius: 9px; /* Half of height */
         position: relative;
         cursor: pointer;
         outline: none;
         transition: background-color 0.2s ease;
+        flex-shrink: 0; /* Prevent checkbox from shrinking */
     }
     .ad-network-toggles input[type="checkbox"]::before {
         content: '';
         position: absolute;
-        width: 16px;
-        height: 16px;
+        width: 14px; /* Smaller circle */
+        height: 14px; /* Smaller circle */
         border-radius: 50%;
         background: white;
         top: 2px;
@@ -469,7 +477,7 @@
         background: var(--success);
     }
     .ad-network-toggles input[type="checkbox"]:checked::before {
-        left: 22px;
+        left: 19px; /* Adjusted left for smaller width (35-14-2=19) */
     }
 
     /* Hide ad network toggles by default, show only for Pattern 2 */
@@ -605,7 +613,30 @@
         max-width: unset; 
       }
       .ad-network-toggles {
-          flex-direction: column; /* Ensure vertical on small screens */
+          flex-direction: row; /* Still keep row for wrap effect */
+          justify-content: space-around; /* Distribute evenly */
+          padding: 8px;
+      }
+      .ad-network-toggles label {
+          flex: 1 1 45%; /* Two per row on small screens */
+          max-width: calc(50% - 8px); /* Account for gap */
+          height: 40px; /* Slightly smaller height */
+      }
+      .ad-network-toggles label span {
+          font-size: 13px;
+      }
+      .ad-network-toggles input[type="checkbox"] {
+          width: 30px;
+          height: 16px;
+      }
+      .ad-network-toggles input[type="checkbox"]::before {
+          width: 12px;
+          height: 12px;
+          top: 2px;
+          left: 2px;
+      }
+      .ad-network-toggles input[type="checkbox"]:checked::before {
+          left: 16px; /* 30-12-2=16 */
       }
     }
   </style>
@@ -650,14 +681,8 @@
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
     </div>
 
-    <div class="ad-step-control">
-        <label for="total-ad-steps">Total Ad Steps:</label>
-        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
-        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
-    </div>
-
+    <!-- Ad Network Toggles moved right after ad-pattern-buttons -->
     <div id="ad-network-toggle-controls" class="ad-network-toggles">
-        <h3>Ad Network Control (Pattern 2 Only):</h3>
         <label>
             <span>Monetag Ads</span>
             <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
@@ -678,6 +703,12 @@
             <span>Adextra Ads</span>
             <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
         </label>
+    </div>
+
+    <div class="ad-step-control">
+        <label for="total-ad-steps">Total Ad Steps:</label>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
     </div>
 
   </div>
@@ -1244,4 +1275,3 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
-   
