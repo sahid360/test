@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -6,11 +7,15 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -332,11 +337,11 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
-        font-size: 13px; /* Smaller font for compactness */
+        font-size: 14px; /* Slightly smaller font for thin appearance */
     }
     .daily-details-table th, .daily-details-table td {
         border: 1px solid var(--border-color);
-        padding: 5px 8px; /* Thinner padding */
+        padding: 6px 8px; /* Reduced padding for thin appearance */
         text-align: center;
         vertical-align: middle; /* Align text vertically in middle */
     }
@@ -806,15 +811,12 @@ const day = now.getUTCDate().toString().padStart(2, '0');
 return `${year}-${month}-${day}`;
 }
 
-// MODIFIED: Helper function to format a date in DD-MM-YYYY UTC format
+// Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
-    const date = new Date(Date.UTC(year, month - 1, day));
-    const d = date.getUTCDate().toString().padStart(2, '0');
-    const m = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-    const y = date.getUTCFullYear();
-    return `${d}-${m}-${y}`;
+const date = new Date(Date.UTC(year, month - 1, day));
+const options = { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }; // Changed to include year
+return date.toLocaleDateString('en-US', options);
 }
-
 
 // Helper function to format a month in YYYY-MM UTC format
 function getFormattedMonthUTC(year, month) {
@@ -1024,7 +1026,7 @@ const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNu
 const div = document.createElement('div');
 div.className = 'monthly-list-item';
 div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-div.onclick = () => selectMonthForDailyView(monthKey, div); 
+div.onclick = () => selectMonthForDailyView(monthKey, div);
 monthlyStatsList.appendChild(div);
 
 });
@@ -1169,7 +1171,7 @@ database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(mon
 database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
 ]).then(([visitorsSnapshot, adsSnapshot]) => {
 const dayLabels = [];
-const fullDateLabels = [];
+const fullDateLabels = []; // This will store the full date for tooltips
 const dayViews = [];
 const dayAdsShown = [];
 
@@ -1187,53 +1189,43 @@ const allDatesInMonth = Array.from(new Set([
 dailyStatsList.innerHTML = ''; // Clear previous content
 
 if (allDatesInMonth.length > 0) {
-    const table = document.createElement('table');
-    table.className = 'daily-details-table';
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th>Date</th> <!-- Changed to 'Date' -->
-                <th>Views</th>
-                <th>Ads View</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
+const table = document.createElement('table');
+table.className = 'daily-details-table';
+table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
+const tbody = table.querySelector('tbody');
+
+allDatesInMonth.forEach(fullDateKey => {
+    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+
+    dayLabels.push(dayDay.toString()); 
+    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay)); // Store full date for tooltip
+    
+    const views = visitorsData[fullDateKey] || 0;
+    const adsShown = adsData[fullDateKey] || 0;
+    
+    dayViews.push(views);
+    dayAdsShown.push(adsShown);
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${dayDay}</td> <!-- Display only the day number -->
+        <td>${views}</td>
+        <td>${adsShown}</td>
     `;
-    const tbody = table.querySelector('tbody');
-
-    allDatesInMonth.forEach(fullDateKey => {
-        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-
-        dayLabels.push(dayDay.toString()); 
-        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-        
-        const views = visitorsData[fullDateKey] || 0;
-        const adsShown = adsData[fullDateKey] || 0;
-        
-        dayViews.push(views);
-        dayAdsShown.push(adsShown);
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</td>
-            <td>${views}</td>
-            <td>${adsShown}</td>
-        `;
-        tbody.appendChild(row);
-    });
-    dailyStatsList.appendChild(table);
+    tbody.appendChild(row);
+});
+dailyStatsList.appendChild(table);
 
 } else {
-    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
 }
 
 if (dailyMonthlyVisitorsChart) {
 dailyMonthlyVisitorsChart.data.labels = dayLabels;
 dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
 dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown; // Update ads data
-dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
-dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Update ads data
+dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; // Pass full date for tooltip
+dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Pass full date for tooltip
 
 // Update chart title and legend for "Monthly Daily Statistics"
 dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
@@ -1262,7 +1254,7 @@ pointRadius: 6,
 pointHoverRadius: 8,
 pointHitRadius: 10,
 pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-fullDateLabels: fullDateLabels
+fullDateLabels: fullDateLabels // Store full date for tooltip
 },
 {
 label: 'Daily Ads Views', // Changed label
@@ -1276,7 +1268,7 @@ pointRadius: 6,
 pointHoverRadius: 8,
 pointHitRadius: 10,
 pointBackgroundColor: 'rgba(98, 0, 234, 1)',
-fullDateLabels: fullDateLabels
+fullDateLabels: fullDateLabels // Store full date for tooltip
 }
 ]
 },
@@ -1285,88 +1277,62 @@ responsive: true,
 maintainAspectRatio: false,
 
 interaction: {
-            mode: 'index', 
-            intersect: false 
-        },
+mode: 'index',
+intersect: false
+},
 
-        plugins: {
-            title: {
-                display: true,
-                text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
-                color: getChartTextColor(),
-                font: {
-                    size: 18
-                }
-            },
-            legend: {
-                labels: {
-                    color: getChartTextColor()
-                }
-            },
-            tooltip: { 
-                callbacks: {
-                    title: function(tooltipItems) {
-                        const dataset = tooltipItems[0].dataset;
-                        const index = tooltipItems[0].dataIndex;
-                        // Keep full date for tooltip title for context
-                        const [fullYear, fullMonth, fullDay] = allDatesInMonth[index].split('-').map(Number);
-                        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-                        return new Date(Date.UTC(fullYear, fullMonth - 1, fullDay)).toLocaleDateString('en-US', options);
-                    },
-                    label: function(tooltipItem) {
-                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                    }
-                }
+plugins: {
+        title: {
+            display: true,
+            text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`, // Changed title
+            color: getChartTextColor(),
+            font: {
+                size: 18
             }
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    color: getChartTextColor(),
-                    precision: 0 
+        legend: {
+            labels: {
+                color: getChartTextColor()
+            }
+        },
+        tooltip: { 
+            callbacks: {
+                title: function(tooltipItems) {
+                    // Use the stored fullDateLabels for the tooltip title
+                    const fullDate = tooltipItems[0].dataset.fullDateLabels[tooltipItems[0].dataIndex];
+                    return fullDate;
                 },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
+                label: function(tooltipItem) {
+                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
                 }
+            }
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            ticks: {
+                color: getChartTextColor(),
+                precision: 0 
             },
-            x: {
-                ticks: {
-                    color: getChartTextColor()
-                },
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                }
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            }
+        },
+        x: {
+            ticks: {
+                color: getChartTextColor()
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
             }
         }
     }
+}
+
 });
 
 }
-
-// To allow dynamic updates for the numbers within the daily table for the *currently selected month*, 
-// you would need to set up individual Firebase `on('value')` listeners for each day's views and ads.
-// This is more complex than a full table re-render when a *new month* is selected.
-// For now, when a new month is selected, the daily table is entirely rebuilt with the latest data.
-// If you specifically need live updates for the *currently viewed month's table*, 
-// uncomment and adapt the logic below.
-/*
-if (currentSelectedMonth === monthKey) { // Only set up live listeners if this is the currently selected month
-    allDatesInMonth.forEach(fullDateKey => {
-        const rowElement = dailyStatsList.querySelector(`tr[data-date="${fullDateKey}"]`);
-        if (rowElement) {
-            database.ref(`visitors/daily/${fullDateKey}`).on('value', (snapshot) => {
-                const views = snapshot.val() || 0;
-                rowElement.querySelector('.views-cell').textContent = views; // Assuming a class for view cells
-            });
-            database.ref(`visitors/ads/daily/${fullDateKey}`).on('value', (snapshot) => {
-                const adsShown = snapshot.val() || 0;
-                rowElement.querySelector('.ads-cell').textContent = adsShown; // Assuming a class for ad cells
-            });
-        }
-    });
-}
-*/
 
 }).catch(error => {
 console.error("Error fetching daily visitor and ad data:", error);
@@ -1398,4 +1364,3 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
-   
