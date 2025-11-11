@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -7,15 +6,11 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -663,8 +658,8 @@
     <h3>Select Ad Pattern:</h3>
     <div class="ad-pattern-buttons">
         <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
-        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Sequential</button>
+        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
     </div>
 
     <div class="ad-step-control">
@@ -996,6 +991,11 @@ function selectAdPattern(patternNumber) {
     database.ref('adSettings/pattern').set(patternNumber)
         .then(() => {
             showAdNotification(`Ad Pattern set to ${patternNumber}.`);
+            // Update UI immediately (Firebase 'on' listener will also update it)
+            document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(`ad-pattern-${patternNumber}-btn`).classList.add('active');
         })
         .catch(error => {
             console.error("Error setting ad pattern:", error);
