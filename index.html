@@ -332,12 +332,13 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
-        font-size: 15px;
+        font-size: 13px; /* Smaller font for compactness */
     }
     .daily-details-table th, .daily-details-table td {
         border: 1px solid var(--border-color);
-        padding: 8px 12px;
+        padding: 5px 8px; /* Thinner padding */
         text-align: center;
+        vertical-align: middle; /* Align text vertically in middle */
     }
     .daily-details-table th {
         background-color: var(--primary);
@@ -805,12 +806,15 @@ const day = now.getUTCDate().toString().padStart(2, '0');
 return `${year}-${month}-${day}`;
 }
 
-// Helper function to format a date in YYYY-MM-DD UTC format
+// MODIFIED: Helper function to format a date in DD-MM-YYYY UTC format
 function getFormattedDateUTC(year, month, day) {
-const date = new Date(Date.UTC(year, month - 1, day));
-const options = { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }; // Changed to include year
-return date.toLocaleDateString('en-US', options);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    const d = date.getUTCDate().toString().padStart(2, '0');
+    const m = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const y = date.getUTCFullYear();
+    return `${d}-${m}-${y}`;
 }
+
 
 // Helper function to format a month in YYYY-MM UTC format
 function getFormattedMonthUTC(year, month) {
@@ -1188,7 +1192,7 @@ if (allDatesInMonth.length > 0) {
     table.innerHTML = `
         <thead>
             <tr>
-                <th>Data</th>
+                <th>Date</th> <!-- Changed to 'Date' -->
                 <th>Views</th>
                 <th>Ads View</th>
             </tr>
@@ -1340,6 +1344,30 @@ interaction: {
 
 }
 
+// To allow dynamic updates for the numbers within the daily table for the *currently selected month*, 
+// you would need to set up individual Firebase `on('value')` listeners for each day's views and ads.
+// This is more complex than a full table re-render when a *new month* is selected.
+// For now, when a new month is selected, the daily table is entirely rebuilt with the latest data.
+// If you specifically need live updates for the *currently viewed month's table*, 
+// uncomment and adapt the logic below.
+/*
+if (currentSelectedMonth === monthKey) { // Only set up live listeners if this is the currently selected month
+    allDatesInMonth.forEach(fullDateKey => {
+        const rowElement = dailyStatsList.querySelector(`tr[data-date="${fullDateKey}"]`);
+        if (rowElement) {
+            database.ref(`visitors/daily/${fullDateKey}`).on('value', (snapshot) => {
+                const views = snapshot.val() || 0;
+                rowElement.querySelector('.views-cell').textContent = views; // Assuming a class for view cells
+            });
+            database.ref(`visitors/ads/daily/${fullDateKey}`).on('value', (snapshot) => {
+                const adsShown = snapshot.val() || 0;
+                rowElement.querySelector('.ads-cell').textContent = adsShown; // Assuming a class for ad cells
+            });
+        }
+    });
+}
+*/
+
 }).catch(error => {
 console.error("Error fetching daily visitor and ad data:", error);
 console.error("Firebase Error Code:", error.code); // Log Firebase specific error code
@@ -1370,3 +1398,4 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+   
