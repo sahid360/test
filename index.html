@@ -369,7 +369,7 @@
         color: var(--text-color) !important; 
     }
 
-    /* Ad pattern buttons specific styles */
+    /* Ad pattern buttons specific styles - UPDATED */
     .ad-pattern-buttons {
         display: flex; 
         flex-wrap: wrap; 
@@ -387,8 +387,8 @@
         font-weight: bold; 
         font-size: 14px; 
         transition: background-color 0.2s ease;
-        flex: 1 1 auto; 
-        max-width: 120px; 
+        flex: 1 1 auto; /* Allow buttons to grow and shrink, but not have a fixed max-width */
+        max-width: 120px; /* Still apply a max-width to keep them from becoming too wide */
     }
     .ad-pattern-buttons button.active {
         background-color: var(--primary);
@@ -414,89 +414,69 @@
         font-size: 14px; 
     }
 
-    /* New styles for Ad Network toggles */
+    /* New styles for Ad Network Toggle Buttons */
     .ad-network-toggles {
-        margin-top: 25px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 2 columns on larger, 1 on smaller */
-        gap: 10px;
-        border-top: 1px solid var(--border-color);
-        padding-top: 15px;
-        /* Initially hidden, shown only when pattern 2 is selected */
-        display: none; 
-    }
-
-    .ad-network-toggles.active {
-        display: grid; /* Show when active */
-    }
-
-    .ad-network-toggles .toggle-item {
         display: flex;
-        flex-direction: column; /* Stack label and toggle */
-        align-items: center;
-        gap: 5px;
-        background: var(--card-bg);
+        flex-direction: column; /* Vertical layout for small screens */
+        gap: 8px; /* Reduced gap */
+        margin-top: 15px;
         padding: 10px;
-        border-radius: 10px;
         border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: var(--card-bg);
+    }
+    .ad-network-toggles label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background-color: var(--ad-item-bg);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .ad-network-toggles label:hover {
+        background-color: rgba(3, 218, 197, 0.1);
+    }
+    .ad-network-toggles label span {
+        font-weight: bold;
+        color: var(--text-color);
+    }
+    .ad-network-toggles input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 40px;
+        height: 20px;
+        background: #ccc;
+        border-radius: 10px;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.2s ease;
+    }
+    .ad-network-toggles input[type="checkbox"]::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        top: 2px;
+        left: 2px;
+        transition: left 0.2s ease;
+    }
+    .ad-network-toggles input[type="checkbox"]:checked {
+        background: var(--success);
+    }
+    .ad-network-toggles input[type="checkbox"]:checked::before {
+        left: 22px;
     }
 
-    .ad-network-toggles .toggle-item label {
-        font-weight: 500;
-        font-size: 14px;
-        text-align: center;
-        margin-bottom: 5px; /* Space between label and switch */
+    /* Hide ad network toggles by default, show only for Pattern 2 */
+    #ad-network-toggle-controls {
+        display: none;
     }
 
-    /* Custom Switch styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 24px;
-    }
-
-    .switch input { 
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--primary);
-    }
-
-    input:focus + .slider {
-      box-shadow: 0 0 1px var(--primary);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(16px);
-    }
 
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
@@ -625,17 +605,9 @@
         max-width: unset; 
       }
       .ad-network-toggles {
-          grid-template-columns: repeat(2, 1fr); /* 2 columns on small screens for better use of space */
-      }
-      .ad-network-toggles.active {
-          display: grid;
+          flex-direction: column; /* Ensure vertical on small screens */
       }
     }
-     @media (max-width: 480px) {
-        .ad-network-toggles {
-            grid-template-columns: 1fr; /* Single column on very small screens */
-        }
-     }
   </style>
 
 </head>
@@ -670,14 +642,11 @@
         <span id="daily-visitors">0</span>
       </div>
     </div>
-  </div>
 
-  <div class="card">
     <h2>Ad Settings</h2>
-    <h3>Select Ad Pattern:</h3>
     <div class="ad-pattern-buttons">
-        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
-        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Sequential</button>
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag (Default)</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Multi-Network</button>
         <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
     </div>
 
@@ -687,44 +656,30 @@
         <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
     </div>
 
-    <!-- Ad Network Toggles - Initially hidden -->
-    <div class="ad-network-toggles" id="ad-network-toggles">
-        <div class="toggle-item">
-            <label>Monetag</label>
-            <label class="switch">
-                <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <div class="toggle-item">
-            <label>Gigapub</label>
-            <label class="switch">
-                <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <div class="toggle-item">
-            <label>Adexora</label>
-            <label class="switch">
-                <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <div class="toggle-item">
-            <label>Adexium</label>
-            <label class="switch">
-                <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <div class="toggle-item">
-            <label>Adextra</label>
-            <label class="switch">
-                <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-                <span class="slider round"></span>
-            </label>
-        </div>
+    <div id="ad-network-toggle-controls" class="ad-network-toggles">
+        <h3>Ad Network Control (Pattern 2 Only):</h3>
+        <label>
+            <span>Monetag Ads</span>
+            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+        </label>
+        <label>
+            <span>Gigapub Ads</span>
+            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+        </label>
+        <label>
+            <span>Adexora Ads</span>
+            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+        </label>
+        <label>
+            <span>Adexium Ads</span>
+            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+        </label>
+        <label>
+            <span>Adextra Ads</span>
+            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+        </label>
     </div>
+
   </div>
 
   <div class="card">
@@ -779,7 +734,6 @@
   appId: "1:940783022173:web:72826d42d138be8a219db4"
 };
 
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -792,513 +746,502 @@ let isInitialAuthCheckComplete = false;
 
 // Helper function to get today's date in YYYY-MM-DD UTC format
 function getTodayKeyUTC() {
-const now = new Date();
-const year = now.getUTCFullYear();
-const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-const day = now.getUTCDate().toString().padStart(2, '0');
-return `${year}-${month}-${day}`;
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = now.getUTCDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 // Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
-const date = new Date(Date.UTC(year, month - 1, day));
-const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-return date.toLocaleDateString('en-US', options);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 // Helper function to format a month in YYYY-MM UTC format
 function getFormattedMonthUTC(year, month) {
-const date = new Date(Date.UTC(year, month - 1, 1));
-const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
-return date.toLocaleDateString('en-US', options);
+    const date = new Date(Date.UTC(year, month - 1, 1));
+    const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 // --- Authentication and Loading ---
 window.addEventListener("DOMContentLoaded", () => {
-const savedMode = localStorage.getItem("themeMode");
-if (savedMode === "light") {
-document.body.classList.add("light-mode");
-document.getElementById("mode-toggle").textContent = "☀️";
-}
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
+    }
 
-showLoadingOverlay();
+    showLoadingOverlay();
 
-auth.onAuthStateChanged((user) => {
-    if (!isInitialAuthCheckComplete) {
-        if (user && user.uid === ADMIN_UID) {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'block';
-                hideLoadingOverlay();
-                loadAdminData();
-            }, 1500);
+    auth.onAuthStateChanged((user) => {
+        if (!isInitialAuthCheckComplete) {
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block';
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('admin-content').style.display = 'none';
+                    document.getElementById('mode-toggle').style.display = 'none';
+                    hideLoadingOverlay();
+                }, 1000);
+            }
+            isInitialAuthCheckComplete = true;
         } else {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'block';
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block';
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500);
+            } else {
                 document.getElementById('admin-content').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block';
                 document.getElementById('mode-toggle').style.display = 'none';
                 hideLoadingOverlay();
-            }, 1000);
+            }
         }
-        isInitialAuthCheckComplete = true;
-    } else {
-        if (user && user.uid === ADMIN_UID) {
-            setTimeout(() => {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                document.getElementById('mode-toggle').style.display = 'block';
-                hideLoadingOverlay();
-                loadAdminData();
-            }, 1500);
-        } else {
-            document.getElementById('admin-content').style.display = 'none';
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('mode-toggle').style.display = 'none';
-            hideLoadingOverlay();
-        }
-    }
-});
-
+    });
 });
 
 function showLoadingOverlay(message = "Loading...") {
-const loadingOverlay = document.getElementById('loading-overlay');
-loadingOverlay.querySelector('p').textContent = message;
-loadingOverlay.style.display = 'flex';
-document.getElementById('mode-toggle').style.display = 'none';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.querySelector('p').textContent = message;
+    loadingOverlay.style.display = 'flex';
+    document.getElementById('mode-toggle').style.display = 'none';
 }
 
 function hideLoadingOverlay() {
-document.getElementById('loading-overlay').style.display = 'none';
+    document.getElementById('loading-overlay').style.display = 'none';
 }
 
 function loginAdminWithEmailPassword() {
-const email = document.getElementById('admin-email').value;
-const password = document.getElementById('admin-password').value;
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
 
-if (!email || !password) {
-    showAdNotification("Please enter both email and password.");
-    return;
-}
+    if (!email || !password) {
+        showAdNotification("Please enter both email and password.");
+        return;
+    }
 
-showLoadingOverlay("Logging in...");
-document.getElementById('mode-toggle').style.display = 'none';
+    showLoadingOverlay("Logging in...");
+    document.getElementById('mode-toggle').style.display = 'none';
 
-auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
-        if (user.uid === ADMIN_UID) {
-            document.getElementById('login-container').style.display = 'none';
-        } else {
-            auth.signOut();
-            showAdNotification("You are not authorized to access this panel.");
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            if (user.uid === ADMIN_UID) {
+                document.getElementById('login-container').style.display = 'none';
+            } else {
+                auth.signOut();
+                showAdNotification("You are not authorized to access this panel.");
+                hideLoadingOverlay();
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none';
+            }
+        })
+        .catch((error) => {
+            console.error("Admin login failed:", error);
+            showAdNotification("Login failed: " + error.message);
             hideLoadingOverlay();
             document.getElementById('login-container').style.display = 'block';
             document.getElementById('mode-toggle').style.display = 'none';
-        }
-    })
-    .catch((error) => {
-        console.error("Admin login failed:", error);
-        showAdNotification("Login failed: " + error.message);
-        hideLoadingOverlay();
-        document.getElementById('login-container').style.display = 'block';
-        document.getElementById('mode-toggle').style.display = 'none';
-    });
-
+        });
 }
 
 function logoutAdmin() {
-showLoadingOverlay("Logging out...");
-document.getElementById('mode-toggle').style.display = 'none';
-auth.signOut().then(() => {
-showAdNotification("Admin logged out.");
-setTimeout(() => {
-hideLoadingOverlay();
-}, 500);
-}).catch((error) => {
-console.error("Logout error:", error);
-showAdNotification("Logout error: " + error.message);
-hideLoadingOverlay();
-});
+    showLoadingOverlay("Logging out...");
+    document.getElementById('mode-toggle').style.display = 'none';
+    auth.signOut().then(() => {
+        showAdNotification("Admin logged out.");
+        setTimeout(() => {
+            hideLoadingOverlay();
+        }, 500);
+    }).catch((error) => {
+        console.error("Logout error:", error);
+        showAdNotification("Logout error: " + error.message);
+        hideLoadingOverlay();
+    });
 }
 
 // --- General UI and Data Loading ---
 function loadAdminData() {
-// Load Canva Link
-database.ref('canvaLink').on('value', (snapshot) => {
-const link = snapshot.val();
-document.getElementById('current-canva-link').textContent = link || 'N/A';
-document.getElementById('new-canva-link').value = '';
-});
-
-// Load Visitor Overview
-database.ref('visitors/total').on('value', (snapshot) => {
-    document.getElementById('total-visitors').textContent = snapshot.val() || 0;
-});
-
-const fullCurrentDatePath = getTodayKeyUTC();
-database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
-    document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
-});
-
-// Load Ad Pattern, Total Steps, and Ad Network Toggles
-database.ref('adSettings').on('value', (snapshot) => {
-    const settings = snapshot.val();
-    const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
-    const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
-    const enabledNetworks = settings && settings.enabledNetworks ? settings.enabledNetworks : {
-        monetag: true, gigapub: true, adexora: true, adexium: true, adextra: true
-    };
-    
-    // Update UI for ad pattern buttons
-    document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-        button.classList.remove('active');
+    // Load Canva Link
+    database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        document.getElementById('current-canva-link').textContent = link || 'N/A';
+        document.getElementById('new-canva-link').value = '';
     });
-    document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
-    // Show/hide ad network toggles based on selected pattern
-    const adNetworkToggles = document.getElementById('ad-network-toggles');
-    if (currentPattern === 2) {
-        adNetworkToggles.classList.add('active');
-    } else {
-        adNetworkToggles.classList.remove('active');
-    }
+    // Load Visitor Overview
+    database.ref('visitors/total').on('value', (snapshot) => {
+        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+    });
 
-    // Update UI for total ad steps
-    const totalAdStepsInput = document.getElementById('total-ad-steps');
-    totalAdStepsInput.value = currentSteps;
+    const fullCurrentDatePath = getTodayKeyUTC();
+    database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+        document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+    });
 
-    // Update UI for ad network toggles
-    document.getElementById('toggle-monetag').checked = enabledNetworks.monetag;
-    document.getElementById('toggle-gigapub').checked = enabledNetworks.gigapub;
-    document.getElementById('toggle-adexora').checked = enabledNetworks.adexora;
-    document.getElementById('toggle-adexium').checked = enabledNetworks.adexium;
-    document.getElementById('toggle-adextra').checked = enabledNetworks.adextra;
-});
+    // Load Ad Settings (pattern, totalSteps, and network toggles)
+    database.ref('adSettings').on('value', (snapshot) => {
+        const settings = snapshot.val();
+        const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
+        const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
+        const adNetworkStates = settings && settings.adNetworks ? settings.adNetworks : {
+            monetag: true,
+            gigapub: true,
+            adexora: true,
+            adexium: true,
+            adextra: true,
+        };
 
-// Load Monthly Visitor Data
-database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
-    const monthlyStatsList = document.getElementById('monthly-stats-list');
-    monthlyStatsList.innerHTML = '';
-
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        const months = Object.keys(data).sort((a, b) => {
-            const [yearA, monthA] = a.split('-').map(Number);
-            const [yearB, monthB] = b.split('-').map(Number);
-            if (yearA !== yearB) return yearB - yearA;
-            return monthB - monthA;
-        }); 
-
-        months.forEach(monthKey => {
-            const [year, monthNum] = monthKey.split('-');
-            const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-            const div = document.createElement('div');
-            div.className = 'monthly-list-item';
-            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-            div.onclick = () => selectMonthForDailyView(monthKey, div); 
-            monthlyStatsList.appendChild(div);
+        // Update UI for ad pattern buttons
+        document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+            button.classList.remove('active');
         });
+        document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
 
-        if (months.length > 0) {
-            const latestMonthKey = months[0]; 
-            const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-            selectMonthForDailyView(latestMonthKey, latestMonthElement);
+        // Show/hide ad network toggles based on selected pattern
+        const adNetworkToggleControls = document.getElementById('ad-network-toggle-controls');
+        if (currentPattern === 2) {
+            adNetworkToggleControls.style.display = 'flex';
+        } else {
+            adNetworkToggleControls.style.display = 'none';
         }
-    } else {
-        monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-        if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.destroy();
-            dailyMonthlyVisitorsChart = null;
-        }
-    }
-});
 
+        // Update UI for ad network toggle checkboxes
+        for (const network in adNetworkStates) {
+            const checkbox = document.getElementById(`toggle-${network}`);
+            if (checkbox) {
+                checkbox.checked = adNetworkStates[network];
+            }
+        }
+
+        // Update UI for total ad steps
+        const totalAdStepsInput = document.getElementById('total-ad-steps');
+        totalAdStepsInput.value = currentSteps;
+    });
+
+    // Load Monthly Visitor Data
+    database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+        const monthlyStatsList = document.getElementById('monthly-stats-list');
+        monthlyStatsList.innerHTML = '';
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const months = Object.keys(data).sort((a, b) => {
+                const [yearA, monthA] = a.split('-').map(Number);
+                const [yearB, monthB] = b.split('-').map(Number);
+                if (yearA !== yearB) return yearB - yearA;
+                return monthB - monthA;
+            }); 
+
+            months.forEach(monthKey => {
+                const [year, monthNum] = monthKey.split('-');
+                const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+                const div = document.createElement('div');
+                div.className = 'monthly-list-item';
+                div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+                div.onclick = () => selectMonthForDailyView(monthKey, div); 
+                monthlyStatsList.appendChild(div);
+            });
+
+            if (months.length > 0) {
+                const latestMonthKey = months[0]; 
+                const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+                selectMonthForDailyView(latestMonthKey, latestMonthElement);
+            }
+        } else {
+            monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.destroy();
+                dailyMonthlyVisitorsChart = null;
+            }
+        }
+    });
 }
 
 // --- Ad Pattern and Steps Control ---
 function selectAdPattern(patternNumber) {
-database.ref('adSettings/pattern').set(patternNumber)
-.then(() => {
-showAdNotification(`Ad Pattern set to ${patternNumber}.`);
-// Update UI immediately (Firebase 'on' listener will also update it)
-document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
-button.classList.remove('active');
-});
-document.getElementById(`ad-pattern-${patternNumber}-btn`).classList.add('active');
-
-// Show/hide ad network toggles based on selected pattern
-const adNetworkToggles = document.getElementById('ad-network-toggles');
-if (patternNumber === 2) {
-    adNetworkToggles.classList.add('active');
-} else {
-    adNetworkToggles.classList.remove('active');
-}
-})
-.catch(error => {
-console.error("Error setting ad pattern:", error);
-showAdNotification("Failed to set ad pattern.");
-});
+    database.ref('adSettings/pattern').set(patternNumber)
+        .then(() => {
+            // UI will update via the 'on' listener for adSettings
+        })
+        .catch(error => {
+            console.error("Error setting ad pattern:", error);
+            showAdNotification("Failed to set ad pattern.");
+        });
 }
 
 function updateTotalAdSteps() {
-const input = document.getElementById('total-ad-steps');
-let value = parseInt(input.value);
-if (isNaN(value) || value < 1) {
-value = 1;
-} else if (value > 10) { // Max steps to prevent excessive ads
-value = 10;
-}
-input.value = value;
+    const input = document.getElementById('total-ad-steps');
+    let value = parseInt(input.value);
+    if (isNaN(value) || value < 1) {
+        value = 1;
+    } else if (value > 10) { // Max steps to prevent excessive ads
+        value = 10;
+    }
+    input.value = value;
 }
 
 function saveTotalAdSteps() {
-const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
-database.ref('adSettings/totalSteps').set(totalSteps)
-.then(() => {
-showAdNotification("Total ad steps saved successfully.");
-})
-.catch(error => {
-console.error("Error setting total ad steps:", error);
-showAdNotification("Failed to save total ad steps.");
-});
+    const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
+    database.ref('adSettings/totalSteps').set(totalSteps)
+        .then(() => {
+            showAdNotification("Total ad steps saved successfully!");
+        })
+        .catch(error => {
+            console.error("Error setting total ad steps:", error);
+            showAdNotification("Failed to save total ad steps.");
+        });
 }
 
 function toggleAdNetwork(networkName) {
-const checkbox = document.getElementById(`toggle-${networkName}`);
-database.ref(`adSettings/enabledNetworks/${networkName}`).set(checkbox.checked)
-.then(() => {
-showAdNotification(`${networkName} ads ${checkbox.checked ? 'enabled' : 'disabled'}.`);
-})
-.catch(error => {
-console.error(`Error toggling ${networkName} ads:`, error);
-showAdNotification(`Failed to toggle ${networkName} ads.`);
-});
+    const checkbox = document.getElementById(`toggle-${networkName}`);
+    const isEnabled = checkbox.checked;
+    database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
+        .then(() => {
+            showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`);
+        })
+        .catch(error => {
+            console.error(`Error toggling ${networkName} ads:`, error);
+            showAdNotification(`Failed to toggle ${networkName} ads.`);
+            checkbox.checked = !isEnabled; // Revert UI on error
+        });
 }
+
 
 function updateCanvaLink() {
-const newLinkInput = document.getElementById('new-canva-link');
-const newLink = newLinkInput.value.trim();
+    const newLinkInput = document.getElementById('new-canva-link');
+    const newLink = newLinkInput.value.trim();
 
-if (newLink) {
-    database.ref('canvaLink').set(newLink)
-        .then(() => {
-            showAdNotification("Canva Pro link updated successfully.");
-            newLinkInput.value = '';
-        })
-        .catch((error) => {
-            console.error("Error updating Canva link:", error);
-            showAdNotification("Failed to update Canva Pro link.");
-        });
-} else {
-    showAdNotification("Please enter a valid link.");
-}
-
+    if (newLink) {
+        database.ref('canvaLink').set(newLink)
+            .then(() => {
+                showAdNotification("Canva Pro link updated successfully!");
+                newLinkInput.value = '';
+            })
+            .catch((error) => {
+                console.error("Error updating Canva link:", error);
+                showAdNotification("Failed to update Canva Pro link.");
+            });
+    } else {
+        showAdNotification("Please enter a valid link.");
+    }
 }
 
 // --- Utility Functions ---
 function showAdNotification(msg) {
-const el = document.getElementById('ad-notification');
-el.textContent = msg;
-el.style.display = 'block';
-setTimeout(() => {
-el.style.display = 'none';
-}, 3000);
+    const el = document.getElementById('ad-notification');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 3000);
 }
 
 function toggleMode() {
-const body = document.body;
-const btn = document.getElementById('mode-toggle');
-body.classList.toggle('light-mode');
-if (body.classList.contains('light-mode')) {
-btn.textContent = '☀️';
-localStorage.setItem("themeMode", "light");
-} else {
-btn.textContent = '🌙';
-localStorage.setItem("themeMode", "dark");
-}
-document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+    const body = document.body;
+    const btn = document.getElementById('mode-toggle');
+    body.classList.toggle('light-mode');
+    if (body.classList.contains('light-mode')) {
+        btn.textContent = '☀️';
+        localStorage.setItem("themeMode", "light");
+    } else {
+        btn.textContent = '🌙';
+        localStorage.setItem("themeMode", "dark");
+    }
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 
-if (dailyMonthlyVisitorsChart) {
-    updateChartColors(dailyMonthlyVisitorsChart);
-    dailyMonthlyVisitorsChart.update();
-}
-
+    if (dailyMonthlyVisitorsChart) {
+        updateChartColors(dailyMonthlyVisitorsChart);
+        dailyMonthlyVisitorsChart.update();
+    }
 }
 
 // --- Chart and Visitor Details ---
 function getChartTextColor() {
-return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+    return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-currentSelectedMonth = monthKey;
-const [year, monthNum] = monthKey.split('-');
-document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+    currentSelectedMonth = monthKey;
+    const [year, monthNum] = monthKey.split('-');
+    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-if (clickedElement) {
-    clickedElement.classList.add('selected');
-}
+    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+    if (clickedElement) {
+        clickedElement.classList.add('selected');
+    }
 
-const dailyStatsList = document.getElementById('daily-stats-list');
-dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+    const dailyStatsList = document.getElementById('daily-stats-list');
+    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-    dailyStatsList.innerHTML = '';
-    const dayLabels = []; 
-    const fullDateLabels = []; 
-    const dayCounts = [];
+    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+        dailyStatsList.innerHTML = '';
+        const dayLabels = []; 
+        const fullDateLabels = []; 
+        const dayCounts = [];
 
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        const days = Object.keys(data).filter(fullDateKey => 
-            fullDateKey.startsWith(monthKey)
-        ).sort(); 
-        
-        days.forEach(fullDateKey => {
-            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const days = Object.keys(data).filter(fullDateKey => 
+                fullDateKey.startsWith(monthKey)
+            ).sort(); 
             
-            dayLabels.push(dayDay.toString()); 
-            fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-            dayCounts.push(data[fullDateKey]);
+            days.forEach(fullDateKey => {
+                const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                
+                dayLabels.push(dayDay.toString()); 
+                fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+                dayCounts.push(data[fullDateKey]);
 
-            const div = document.createElement('div');
-            div.className = 'daily-item';
-            div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-            dailyStatsList.appendChild(div);
-        });
+                const div = document.createElement('div');
+                div.className = 'daily-item';
+                div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+                dailyStatsList.appendChild(div);
+            });
 
-        if (dailyStatsList.children.length === 0) {
+            if (dailyStatsList.children.length === 0) {
+                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            }
+
+        } else {
             dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
         }
 
-    } else {
-        dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-    }
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.data.labels = dayLabels;
+            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+            
+            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
 
-    if (dailyMonthlyVisitorsChart) {
-        dailyMonthlyVisitorsChart.data.labels = dayLabels;
-        dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-        dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-        
-        dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-        dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-        dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+            updateChartColors(dailyMonthlyVisitorsChart);
+            
+            dailyMonthlyVisitorsChart.options.interaction = {
+                mode: 'index', 
+                intersect: false 
+            };
 
-        dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-        updateChartColors(dailyMonthlyVisitorsChart);
-        
-        dailyMonthlyVisitorsChart.options.interaction = {
-            mode: 'index', 
-            intersect: false 
-        };
-
-        dailyMonthlyVisitorsChart.update();
-    } else {
-        const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-        dailyMonthlyVisitorsChart = new Chart(ctx, {
-            type: 'line', 
-            data: {
-                labels: dayLabels,
-                datasets: [{
-                    label: 'Daily Views',
-                    data: dayCounts,
-                    backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                    borderColor: 'rgba(3, 218, 197, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 6, 
-                    pointHoverRadius: 8, 
-                    pointHitRadius: 10, 
-                    pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                    fullDateLabels: fullDateLabels 
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                
-                interaction: {
-                    mode: 'index', 
-                    intersect: false 
+            dailyMonthlyVisitorsChart.update();
+        } else {
+            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+            dailyMonthlyVisitorsChart = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Daily Views',
+                        data: dayCounts,
+                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                        borderColor: 'rgba(3, 218, 197, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                        fullDateLabels: fullDateLabels 
+                    }]
                 },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    
+                    interaction: {
+                        mode: 'index', 
+                        intersect: false 
+                    },
 
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                        color: getChartTextColor(),
-                        font: {
-                            size: 18
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                            color: getChartTextColor(),
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: getChartTextColor()
+                            }
+                        },
+                        tooltip: { 
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const dataset = tooltipItems[0].dataset;
+                                    const index = tooltipItems[0].dataIndex;
+                                    return dataset.fullDateLabels[index];
+                                },
+                                label: function(tooltipItem) {
+                                    return `Views: ${tooltipItem.raw}`;
+                                }
+                            }
                         }
                     },
-                    legend: {
-                        labels: {
-                            color: getChartTextColor()
-                        }
-                    },
-                    tooltip: { 
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                const dataset = tooltipItems[0].dataset;
-                                const index = tooltipItems[0].dataIndex;
-                                return dataset.fullDateLabels[index];
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: getChartTextColor(),
+                                precision: 0 
                             },
-                            label: function(tooltipItem) {
-                                return `Views: ${tooltipItem.raw}`;
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: getChartTextColor()
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
                             }
                         }
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: getChartTextColor(),
-                            precision: 0 
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: getChartTextColor()
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
                 }
-            }
-        });
-    }
-});
-
+            });
+        }
+    });
 }
 
 function updateChartColors(chart) {
-const textColor = getChartTextColor();
-chart.options.scales.x.ticks.color = textColor;
-chart.options.scales.y.ticks.color = textColor;
-chart.options.plugins.title.color = textColor;
-if (chart.options.plugins.legend) {
-chart.options.plugins.legend.labels.color = textColor;
-}
-const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-chart.options.scales.x.grid.color = gridColor;
-chart.options.scales.y.grid.color = gridColor;
+    const textColor = getChartTextColor();
+    chart.options.scales.x.ticks.color = textColor;
+    chart.options.scales.y.ticks.color = textColor;
+    chart.options.plugins.title.color = textColor;
+    if (chart.options.plugins.legend) {
+        chart.options.plugins.legend.labels.color = textColor;
+    }
+    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    chart.options.scales.x.grid.color = gridColor;
+    chart.options.scales.y.grid.color = gridColor;
 }
 
 // Initialize h3 color based on current mode on load
 window.addEventListener('load', () => {
-document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
 });
 </script>
-
 </body>
 </html>
+   
