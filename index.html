@@ -1,1242 +1,1261 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
 
+<html lang="en">
 <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
 
-	<title>Adextra Italia | Leading Your Business</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="HandheldFriendly" content="true">
-	<meta name="author" content="bslthemes" />
-	<meta name="description" content="Digital Agency at the intersection of branding, lead generation and technology.">
+  <!-- Firebase SDK -->
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Chart.js for graphs -->
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #6200ea;
+      --secondary: #03dac5;
+      --light: #ffffff;
+      --dark: #121212;
+      --card-bg: #1f1f1f;
+      --text-color: #ffffff;
+      --ad-bg: #222;
+      --ad-item-bg: #333;
+      --border-color: #444;
+      --danger: #dc3545;
+      --success: #28a745;
+      --info: #17a2b8;
+      --h3-color: var(--text-color);
+    }
+
+    body.light-mode {
+      --dark: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #000000;
+      --ad-bg: #f9f9f9;
+      --ad-item-bg: #f1f1f1;
+      --border-color: #dddddd;
+      background: #ffffff !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--dark), #1a1a2e);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 30px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--ad-item-bg);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+      font-size: 26px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+    
+    .card h3 {
+        color: var(--h3-color);
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+      gap: 10px; 
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: var(--card-bg);
+      padding: 10px; 
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px; 
+      min-height: 70px; 
+      text-align: center; 
+      word-break: break-word; 
+    }
+
+    .stat-item span {
+      font-size: 26px; 
+      font-weight: bold;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+
+    .input-with-button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
+      flex-grow: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 16px;
+      margin-right: 0px; 
+    }
+
+    .card input[type="text"]:last-child {
+        margin-right: 0; 
+    }
+
+    .btn {
+      background: var(--secondary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 0px; 
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      margin-top: 10px;
+    }
+    .btn-success {
+        background: var(--success);
+        color: #fff;
+        padding: 8px 15px; /* Smaller padding for Save button */
+        font-size: 14px; /* Smaller font size */
+        margin-left: 10px; /* Space from input */
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    #login-container {
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    #login-container input {
+        display: block;
+        margin: 10px auto;
+        width: 80%;
+        max-width: 300px;
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-size: 17px;
+    }
+
+    #login-button {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 10px;
+      font-size: 19px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s ease;
+      margin-top: 20px;
+    }
+
+    #login-button:hover {
+      filter: brightness(1.2);
+    }
+
+    /* Initially hide everything except loading, or login based on JS */
+    #admin-content, #login-container {
+      display: none;
+    }
+    
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+        color: var(--light);
+        font-size: 24px;
+        flex-direction: column;
+    }
+
+    .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-top: 8px solid var(--primary);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
 
-	<!-- Fonts -->
-	<link rel="dns-prefetch" href="//fonts.googleapis.com" />
-	<link rel="stylesheet"
-		href="https://fonts.googleapis.com/css?family=Epilogue%3Aital%2Cwght%400%2C100%3B0%2C200%3B0%2C300%3B0%2C400%3B0%2C500%3B0%2C600%3B0%2C700%3B0%2C800%3B0%2C900%3B1%2C100%3B1%2C200%3B1%2C300%3B1%2C400%3B1%2C500%3B1%2C600%3B1%2C700%3B1%2C800%3B1%2C900&#038;display=swap"
-		type="text/css" media="all" />
-	<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    #mode-toggle {
+      position: absolute;
+      top: 15px;
+      right: 30px; 
+      padding: 5px; 
+      background: transparent; 
+      color: var(--primary); 
+      border: none; 
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 18px; 
+      transition: all 0.3s ease;
+      z-index: 1100;
+      display: none; 
+    }
+    #mode-toggle:hover {
+      background-color: rgba(98, 0, 234, 0.1); 
+    }
 
-	<!-- CSS STYLES -->
-	<link rel="stylesheet" href="assets/css/vendors/bootstrap.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/vendors/magnific-popup.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/vendors/splitting.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/vendors/swiper.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/vendors/animate.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/vendors/jquery.pagepiling.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="assets/css/style.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    .ad-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: var(--light);
+      padding: 20px 40px;
+      border-radius: 12px;
+      z-index: 1000;
+      display: none;
+      font-size: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
 
+    .monthly-list-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        border-bottom: 1px dashed var(--border-color);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .monthly-list-item:hover {
+        background-color: rgba(3, 218, 197, 0.05);
+    }
+    .monthly-list-item:last-child {
+        border-bottom: none;
+    }
+    .monthly-list-item span {
+        font-weight: 500;
+        font-size: 15px;
+    }
+    .monthly-list-item.selected {
+        background-color: rgba(3, 218, 197, 0.15);
+        border-radius: 5px;
+        padding: 10px;
+    }
+    #daily-stats-list, #monthly-stats-list {
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px;
+        background-color: var(--card-bg);
+    }
+    #daily-stats-list .daily-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dotted var(--border-color);
+    }
+    #daily-stats-list .daily-item:last-child {
+        border-bottom: none;
+    }
+    #daily-stats-list .daily-item span {
+        font-size: 15px;
+    }
 
+    .monthly-daily-flex {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
 
-	<!-- Favicon -->
-	<link rel="shortcut icon" href="/assets/images/logo/favicon.webp" type="image/x-icon">
-	<link rel="icon" href="/assets/images/logo/favicon.webp" type="image/x-icon">
+    /* --- CHART CONTAINER STYLES --- */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      margin-top: 15px;
+    }
+    .chart-container canvas {
+      max-width: 100%;
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    /* Override Chart.js default font color for dark mode */
+    body:not(.light-mode) .chartjs-render-monitor,
+    body:not(.light-mode) .chartjs-render-monitor canvas {
+        color: var(--text-color) !important; 
+    }
+
+    /* Ad pattern buttons specific styles */
+    .ad-pattern-buttons {
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .ad-pattern-buttons button {
+        background-color: #555;
+        color: white;
+        padding: 8px 12px; 
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold; 
+        font-size: 14px; 
+        transition: background-color 0.2s ease;
+        flex: 1 1 auto; 
+        max-width: 120px; 
+    }
+    .ad-pattern-buttons button.active {
+        background-color: var(--primary);
+    }
+    .ad-pattern-buttons button:hover:not(.active) {
+        background-color: #777;
+    }
+    .ad-step-control {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center; 
+    }
+    .ad-step-control label {
+        font-weight: bold;
+        white-space: nowrap; 
+    }
+    .ad-step-control input {
+        width: 60px; 
+        text-align: center;
+        padding: 8px; 
+        font-size: 14px; 
+    }
+
+    /* New styles for Ad Network toggles */
+    .ad-network-toggles {
+        margin-top: 25px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 2 columns on larger, 1 on smaller */
+        gap: 10px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+    }
+
+    .ad-network-toggles .toggle-item {
+        display: flex;
+        flex-direction: column; /* Stack label and toggle */
+        align-items: center;
+        gap: 5px;
+        background: var(--card-bg);
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .ad-network-toggles .toggle-item label {
+        font-weight: 500;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 5px; /* Space between label and switch */
+    }
+
+    /* Custom Switch styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 15px;
+      }
+
+      h1 {
+        font-size: 30px;
+        margin-bottom: 25px;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+      }
+      
+      .card h3 {
+        font-size: 18px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
+        gap: 5px; 
+      }
+      
+      .stat-item {
+        padding: 8px; 
+        font-size: 11px; 
+        min-height: 60px; 
+      }
+
+      .stat-item span {
+        font-size: 22px; 
+      }
+
+      .card input[type="text"], .card input[type="password"], .card select, .card input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        margin-right: 0;
+      }
+
+      .input-with-button {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-with-button input {
+        margin-right: 0;
+        margin-bottom: 0px;
+      }
+
+      .btn {
+        width: 100%;
+        margin-right: 0;
+        margin-top: 10px;
+        padding: 10px 15px;
+        font-size: 15px;
+      }
+      
+      .btn-primary + .btn {
+        margin-top: 10px;
+      }
+
+      #login-container input {
+        width: 90%;
+        max-width: none;
+        padding: 12px;
+        font-size: 16px;
+      }
+
+      #login-button {
+        padding: 12px 25px;
+        font-size: 17px;
+      }
+
+      #mode-toggle {
+        right: 20px; 
+        font-size: 16px; 
+        padding: 3px;
+      }
+
+      .chart-container {
+        height: 200px; 
+      }
+
+      .monthly-daily-flex {
+          grid-template-columns: 1fr;
+          gap: 15px;
+      }
+
+      .ad-notification {
+        width: 90%;
+        padding: 15px 25px;
+        font-size: 16px;
+      }
+      .ad-step-control {
+        flex-direction: row; 
+        align-items: center;
+        justify-content: center;
+      }
+      .ad-step-control label {
+        margin-bottom: 0;
+      }
+      .ad-step-control input {
+        width: 50px; 
+      }
+      .ad-step-control .btn-success {
+        margin-top: 0;
+      }
+      .ad-pattern-buttons button {
+        flex: 1 1 30%; 
+        max-width: unset; 
+      }
+      .ad-network-toggles {
+          grid-template-columns: 1fr; /* Single column on small screens */
+      }
+    }
+  </style>
 
 </head>
-
 <body>
-
-	<!-- Page -->
-	<div class="onovo-page footer--fixed">
-
-		<!-- Preloader -->
-		<div class="preloader">
-			<div class="preloader__spinner">
-				<span class="preloader__double-bounce"></span>
-				<span class="preloader__double-bounce preloader__double-bounce--delay"></span>
-			</div>
-		</div>
-
-		<!-- Header -->
-		<header class="onovo-header header--white sticky slideDown">
-			<div class="header--builder">
-				<div class="container">
-					<div class="row">
-						<div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-3 align-self-center">
-
-							<!-- Logo -->
-							<div class="onovo-logo-image">
-								<a href="index.html">
-									<img class="logo--white" src="assets/images/logo/logo-white.webp" alt=" Adextra">
-								</a>
-							</div>
-
-						</div>
-						<div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-6 align-self-center align-center">
-
-							<!-- Menu Hamburger -->
-							<a href="#" class="onovo-menu-btn"><span></span></a>
-							<div class="onovo-menu-popup align-left">
-								<div class="onovo-menu-overlay"></div>
-								<div class="onovo-menu-overlay-after"></div>
-								<div class="onovo-menu-container onovo--noscroll">
-									<div class="container">
-										<div class="onovo-menu">
-											<ul class="onovo-menu-nav">
-												<li class="onovo-lnk lnk--active">
-													<a class=" onovo-lnk lnk--active " href=" index.html">Home</a>
-
-												</li>
-												<li class="onovo-lnk lnk--active">
-													<a class=" onovo-lnk lnk--active" href="index.html#section-servizi"
-														id="servizi">Servizi</a>
-												</li>
-
-												<li>
-													<a class="onovo-lnk lnk--active" href="blog.html" id="news">Notizie
-													</a>
-												</li>
-												<li>
-													<a class="onovo-lnk lnk--active" href="contact-us.html"
-														id="contact">Contattaci
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</div>
-
-						</div>
-						<div class="col-4 col-xs-4 col-sm-4 col-md-4 col-lg-3 align-self-center align-right">
-							<div id="flags">
-								<!-- Button -->
-								<a class="onovo-head-btn onovo-hover-btn" href="">
-
-									<img class="flag" src="/assets/images/flags/italy.png" alt="italy-flag"
-										style="height:43px" width="43px" data-lang="it">
-								</a>
-								<a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;">
-
-									<img class="flag" src="/assets/images/flags/uk.png" alt="uk-flag"
-										style="height:35px" width="35px" data-lang="en">
-								</a>
-								<a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;">
-
-									<img class="flag" src="/assets/images/flags/spain.png" alt="spain-flag"
-										style="height:35px" width="35px" data-lang="es">
-								</a>
-								<a class="onovo-head-btn onovo-hover-btn" href="" style="margin-left: 5px;"
-									alt="france-flag"><img class="flag " src="/assets/images/flags/france.png"
-										style="height:35px" width="35px" data-lang="fr">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
-
-		<!-- Wrapper -->
-		<div class="wrapper">
-
-			<!-- Onovo Hero -->
-			<section class="onovo-section onovo-hero">
-				<div class="image">
-					<video autoplay muted loop playsinline id="heroVideo">
-						<source src="assets/images/stvideo.mp4" type="video/mp4">
-					</video>
-					<div class="ovrl" style="opacity: 0.25;"></div>
-				</div>
-				<div class="container">
-					<h1 class="title onovo-text-white">
-						<span data-splitting data-onovo-scroll>
-							<span id="welcome-text-1">Leading </span><br><span id="welcome-text-2"> Your Business
-							</span><span class="onovo-sep word">
-								<i class="sep-img" style="background-image: url(assets/images/title_icon.svg);"></i>
-							</span>
-					</h1>
-					<div class="text">
-						<div class="subtitle onovo-text-white">
-							<div data-splitting data-onovo-scroll id="sottotitolo"> Digital Agency at the <br>
-								intersection of branding,
-								<br>lead generation and technology.
-							</div>
-						</div>
-					</div>
-					<a href="#" class="onovo-play-btn">
-						<span class="play-circles"></span>
-						<span class="play-lines">
-							<span></span>
-							<span></span>
-							<span></span>
-							<span></span>
-						</span>
-					</a>
-				</div>
-			</section>
-
-			<!-- Onovo Services -->
-			<section class="onovo-section gap-top-140 gap-bottom-140">
-				<div class="container-xl">
-
-					<!-- Services items -->
-					<div class="row onovo-services-grid-fw">
-
-						<!--service item-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 align-center">
-							<div class="onovo-service-grid-item onovo-hover-1">
-								<div class="image">
-									<img decoding="async" src="assets/images/lead-icon.png" alt="Lead Icon" />
-								</div>
-								<h5 class="onovo-title-3">
-									<span id="lead-quality-title"> Lead Quality</span>
-								</h5>
-								<div class="onovo-text">
-									<div>
-										<p id="lead-quality-text">Generazione di lead qualificati e rilevanti, mirata a
-											ottenere contatti di
-											alta qualità</p>
-									</div>
-								</div>
-								<div class="onovo-bubble">
-									<div class="bubble-1"></div>
-									<div class="bubble-2"></div>
-									<div class="bubble-3"></div>
-								</div>
-							</div>
-						</div>
-
-						<!--service item-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 align-center">
-							<div class="onovo-service-grid-item onovo-hover-1 active active--default">
-								<div class="image">
-
-									<img decoding="async" src="assets/images/direct-marketing.png"
-										alt="Direct Marketing" />
-
-								</div>
-								<h5 class="onovo-title-3">
-
-									<span id="direct-marketing-title"> Direct Marketing </span>
-
-								</h5>
-								<div class="onovo-text">
-									<div>
-										<p id="direct-marketing-text">Strategia per comunicare direttamente con il
-											target, personalizzando offerte
-											e messaggi.</p>
-									</div>
-								</div>
-								<div class="onovo-bubble">
-									<div class="bubble-1"></div>
-									<div class="bubble-2"></div>
-									<div class="bubble-3"></div>
-								</div>
-							</div>
-						</div>
-
-						<!--service item-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 align-center">
-							<div class="onovo-service-grid-item onovo-hover-1">
-								<div class="image">
-									<a href="about-us.html">
-										<img decoding="async" src="assets/images/madtech.png" alt="MadTech" />
-									</a>
-								</div>
-								<h5 class="onovo-title-3">
-									<a href="about-us.html">
-										<span> MadTech </span>
-									</a>
-								</h5>
-								<div class="onovo-text">
-									<div>
-										<p id="madtech-text">Integrazione di marketing, advertising e tecnologia per
-											sviluppare soluzioni
-											avanzate e personalizzate.</p>
-									</div>
-								</div>
-								<div class="onovo-bubble">
-									<div class="bubble-1"></div>
-									<div class="bubble-2"></div>
-									<div class="bubble-3"></div>
-								</div>
-							</div>
-						</div>
-
-					</div>
-
-				</div>
-			</section>
-
-			<!-- Onovo About -->
-			<section class="onovo-section gap-bottom-140">
-				<div class="container">
-					<div class="row">
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-
-							<div class="row">
-								<div class="col-xs-12 col-sm-12 col-md-8 col-lg-12">
-
-									<!-- Heading -->
-									<div class="onovo-heading gap-bottom-40">
-										<div class="onovo-subtitle-1">
-											<span id="benvenuto-in-adextra"> Benvenuto in Adextra Italia </span>
-										</div>
-										<h2 class="onovo-title-2">
-											<span id="digital-agency-crescita"> La Digital Agency <br>Che Supporta<br>La
-												Tua Crescita!
-											</span>
-										</h2>
-									</div>
-
-								</div>
-								<div class="col-xs-12 col-sm-12 col-md-4 col-lg-12 hide-on-desktop gap-bottom-60">
-
-									<!-- Number -->
-									<div class="onovo-number onovo-circle-text mrg-left">
-										<div class="num onovo-text-white">
-											<span> 10 </span>
-										</div>
-										<div class="label onovo-text-black onovo-circle-text-label">
-											Paesi sui qualli attualmente lavoriamo:</div>
-									</div>
-
-								</div>
-							</div>
-
-							<!-- Description -->
-							<div class="row">
-								<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-									<h5 class="text-uppercase" id="nostra-missione-title">La Nostra Missione</h5>
-									<p id="nostra-missione-text">Promuovere un ecosistema pubblicitario trasparente,
-										affidabile ed equo,
-										adattandoci alle innovazioni tecnologiche e ai valori etici dei consumatori, con
-										l’obiettivo di creare fiducia e sostenibilità nel mondo digitale.
-									</p>
-								</div>
-								<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-									<h5 class="text-uppercase" id="nostro-obiettivo-title">Il Nostro Obiettivo</h5>
-									<p id="nostro-obiettivo-text">Offrire soluzioni multicanale che uniscono dati e
-										innovazione, ottimizzando
-										strategie per messaggi personalizzati e rilevanti, il tutto nel pieno rispetto
-										delle normative GDPR.</p>
-									<a class="onovo-btn onovo-hover-btn" href="contact-us.html">
-										<i class="arrow"><span></span></i>
-										<span id="contact"> Contattaci </span>
-									</a>
-								</div>
-							</div>
-
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 hide-on-mobile">
-
-							<!-- Number -->
-							<div class="onovo-number onovo-circle-text mrg-right">
-								<div class="num onovo-text-white">
-									<span> 10 </span>
-								</div>
-								<div class="label onovo-text-black onovo-circle-text-label">
-									Countries on which we're currently working:</div>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- Onovo Ticker -->
-			<section class="onovo-section gap-bottom-140">
-
-				<!-- Ticker swiper -->
-				<div class="onovo-ticker-slider gap-top-90 gap-bottom-100">
-					<div class="swiper-container js-ticker-slider" data-autoplay="12000">
-						<div class="swiper-wrapper">
-
-							<!--slide-->
-							<div class="swiper-slide">
-								<h5 class="title onovo-text-white">
-
-									<span> - Brand Strategy </span>
-
-								</h5>
-							</div>
-
-							<!--slide-->
-							<div class="swiper-slide">
-								<h5 class="title onovo-text-white">
-
-									<span> - Lead Generation </span>
-
-								</h5>
-							</div>
-
-							<!--slide-->
-							<div class="swiper-slide">
-								<h5 class="title onovo-text-white">
-
-									<span> - Social & Display</span>
-
-								</h5>
-							</div>
-
-							<!--slide-->
-							<div class="swiper-slide">
-								<h5 class="title onovo-text-white">
-									<span> - Machine Learning / AI </span>
-
-								</h5>
-							</div>
-
-						</div>
-					</div>
-				</div>
-
-			</section>
-
-			<!-- Onovo Showcase -->
-			<section class="onovo-section gap-bottom-140" style="border-bottom: 1px solid #555;">
-				<div class="container">
-
-					<!-- Heading -->
-					<div class="onovo-heading gap-bottom-40" id="section-servizi">
-						<div class="onovo-subtitle-1">
-							<span id="progetti"> Progetti </span>
-						</div>
-						<h2 class="onovo-title-2">
-							<span id="nostri-servizi-title"> I Nostri Servizi </span>
-						</h2>
-					</div>
-
-					<!-- Showcase -->
-					<div class="onovo-showcase gap-bottom-40">
-						<div class="img-circle onovo-circle-move"></div>
-
-						<!-- Showcase items -->
-						<div class="onovo-showcase-items">
-
-							<!--showcase item-->
-							<div class="onovo-showcase-item">
-								<div class="category">
-									<a href="https://ad-sentry.com/">
-										<span data-splitting data-onovo-scroll>
-											<span id="programmatic">Programmatic</span>
-										</span>
-									</a>
-								</div>
-								<h3 class="title">
-									<a href="https://ad-sentry.com/">
-										<span class="onovo-lnk" data-splitting data-onovo-scroll> AD-Sentry
-										</span>
-									</a>
-								</h3>
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<img src="assets/images/services/hero-adsentry-index.png">
-								</div>
-							</div>
-
-							<!--showcase item-->
-							<div class="onovo-showcase-item">
-								<div class="category">
-									<a href="https://your-scouty.com/">
-										<span data-splitting data-onovo-scroll>
-											<span id="people-based-marketing-title">People Based Marketing</span>
-										</span>
-									</a>
-								</div>
-								<h3 class="title">
-									<a href="https://your-scouty.com/">
-										<span class="onovo-lnk" data-splitting data-onovo-scroll>Scouty</span>
-									</a>
-								</h3>
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<span class="img"
-										style="background-image: url(assets/images/services/hero-scouty.png)"></span>
-								</div>
-							</div>
-
-							<!--showcase item-->
-							<div class=" onovo-showcase-item">
-								<div class="category">
-									<a href="lead-multicanale.html">
-										<span data-splitting data-onovo-scroll>
-											<span id="lead-acquisition-title">Lead Acquisition</span>
-										</span>
-									</a>
-								</div>
-								<h3 class="title">
-									<a href="lead-multicanale.html">
-										<span id="lead-generation-multicanale-title" class="onovo-lnk" data-splitting
-											data-onovo-scroll> Lead
-											Generation
-											Multicanale</span>
-									</a>
-								</h3>
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<span class="img"
-										style="background-image: url(assets/images/services/lead-generation.jpg);"></span>
-								</div>
-							</div>
-
-							<!--showcase item-->
-							<div class="onovo-showcase-item">
-								<div class="category">
-									<a href="dati-proprietari.html">
-										<span data-splitting data-onovo-scroll>
-											<span id="first-party-data-title">Dati di Prima Parte</span>
-										</span>
-									</a>
-								</div>
-								<h3 class="title">
-									<a href="dati-proprietari.html">
-										<span id="dati-proprietari" class="onovo-lnk" data-splitting data-onovo-scroll>
-											Dati Proprietari
-										</span>
-									</a>
-								</h3>
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<span class="img"
-										style="background-image: url(assets/images/services/safe-data.jpg);"></span>
-								</div>
-							</div>
-
-							<!--showcase item-->
-							<div class="onovo-showcase-item">
-								<div class="category">
-									<a href="paid-media.html">
-										<span data-splitting data-onovo-scroll>
-											<span>Paid Media</span>
-										</span>
-									</a>
-								</div>
-								<h3 class="title">
-									<a href="paid-media.html">
-										<span class="onovo-lnk" data-splitting data-onovo-scroll> Social , Google &
-											Display</span>
-									</a>
-								</h3>
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<span class="img"
-										style="background-image: url(assets/images/services/social-media.jpg);"></span>
-								</div>
-							</div>
-
-						</div>
-
-					</div>
-
-					<!-- Button -->
-					<a class="onovo-btn onovo-hover-btn" href="contact-us.html">
-						<i class="arrow">
-							<span></span>
-						</i>
-						<span id="contact"> Contattaci </span>
-					</a>
-
-				</div>
-			<section class="onovo-section gap-top-140 gap-bottom-140">
-				<div class="container">
-
-					<div class="onovo-heading align-center gap-bottom-40">
-						<div class="onovo-subtitle-1">
-							<span> Experts Team Members </span>
-						</div>
-						<h2 class="onovo-title-2">
-							<span> We do awesome Services <br>for our clients. </span>
-						</h2>
-					</div>
-
-					<div class="row gap-row">
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-							<div class="onovo-team" data-onovo-overlay data-onovo-scroll>
-								<div class="onovo-team-item onovo-hover-3">
-									<div class="desc">
-										<h5 class="title">
-											<a href="team-detail.html" class="onovo-lnk">
-												<span data-splitting data-onovo-scroll> Thomas Jackki </span>
-											</a>
-										</h5>
-										<div class="onovo-subtitle-1">
-											<span data-splitting data-onovo-scroll> UI &amp; UX Designer </span>
-										</div>
-										<div class="onovo-social-1">
-											<ul>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="facebook.com"
-														title="Fa" target="_blank">
-														<i aria-hidden="true" class="fab fa-facebook-f"></i>
-													</a>
-												</li>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="linkedin.com"
-														title="In" target="_blank">
-														<i aria-hidden="true" class="fab fa-linkedin-in"></i>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-									<div class="image">
-										<a href="team-detail.html">
-											<img decoding="async" src="assets/images/team-2-t-min.png" width="350"
-												height="530" alt="Thomas Jackki" />
-										</a>
-									</div>
-									<div class="num onovo-text-white">
-										<span> T </span>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-							<div class="onovo-team" data-onovo-overlay data-onovo-scroll>
-								<div class="onovo-team-item onovo-hover-3">
-									<div class="desc">
-										<h5 class="title">
-											<a href="team-detail.html" class="onovo-lnk">
-												<span data-splitting data-onovo-scroll> Melanie Robinson </span>
-											</a>
-										</h5>
-										<div class="onovo-subtitle-1">
-											<span data-splitting data-onovo-scroll> Seo &amp; Marketing </span>
-										</div>
-										<div class="onovo-social-1">
-											<ul>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="facebook.com"
-														title="Fa" target="_blank">
-														<i aria-hidden="true" class="fab fa-facebook-f"></i>
-													</a>
-												</li>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="linkedin.com"
-														title="In" target="_blank">
-														<i aria-hidden="true" class="fab fa-linkedin-in"></i>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-									<div class="image">
-										<a href="team-detail.html">
-											<img decoding="async" src="assets/images/team-6-t-min.png" width="350"
-												height="530" alt="Melanie Robinson" />
-										</a>
-									</div>
-									<div class="num onovo-text-white">
-										<span> M </span>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-							<div class="onovo-team" data-onovo-overlay data-onovo-scroll>
-								<div class="onovo-team-item onovo-hover-3">
-									<div class="desc">
-										<h5 class="title">
-											<a href="team-detail.html" class="onovo-lnk">
-												<span data-splitting data-onovo-scroll> Steven Morrison </span>
-											</a>
-										</h5>
-										<div class="onovo-subtitle-1">
-											<span data-splitting data-onovo-scroll> Full-stack Developer </span>
-										</div>
-										<div class="onovo-social-1">
-											<ul>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="facebook.com"
-														title="Fa" target="_blank">
-														<i aria-hidden="true" class="fab fa-facebook-f"></i>
-													</a>
-												</li>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="linkedin.com"
-														title="In" target="_blank">
-														<i aria-hidden="true" class="fab fa-linkedin-in"></i>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-									<div class="image">
-										<a href="team-detail.html">
-											<img decoding="async" src="assets/images/team-1-t-min.png" width="350"
-												height="530" alt="Steven Morrison" />
-										</a>
-									</div>
-									<div class="num onovo-text-white">
-										<span> S </span>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-							<div class="onovo-team" data-onovo-overlay data-onovo-scroll>
-								<div class="onovo-team-item onovo-hover-3">
-									<div class="desc">
-										<h5 class="title">
-											<a href="team-detail.html" class="onovo-lnk">
-												<span data-splitting data-onovo-scroll> Charlotte Johnson </span>
-											</a>
-										</h5>
-										<div class="onovo-subtitle-1">
-											<span data-splitting data-onovo-scroll> Seo &amp; Copywriter </span>
-										</div>
-										<div class="onovo-social-1">
-											<ul>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="facebook.com"
-														title="Fa" target="_blank">
-														<i aria-hidden="true" class="fab fa-facebook-f"></i>
-													</a>
-												</li>
-												<li>
-													<a class="onovo-social-link onovo-hover-2" href="linkedin.com"
-														title="In" target="_blank">
-														<i aria-hidden="true" class="fab fa-linkedin-in"></i>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-									<div class="image">
-										<a href="team-detail.html">
-											<img decoding="async" src="assets/images/team-7-t-min.png" width="350"
-												height="530" alt="Charlotte Johnson" />
-										</a>
-									</div>
-									<div class="num onovo-text-white">
-										<span> E </span>
-									</div>
-								</div>
-							</div>
-						</div>
-
-					</div>
-
-				</div>
-			</section>
-			-->
-			<!-- Onovo Video -->
-			<section class="onovo-section">
-				<div class="container">
-
-					<!--video-->
-					<div class="onovo-video" data-onovo-overlay data-onovo-scroll>
-						<div class="image" style="background-image: url(assets/images/adextra-video.png);"></div>
-						<iframe class="js-video-iframe"
-							data-src="https://www.youtube.com/embed/fRS587WYAAI?si=daFxF_hntWTiZExS"></iframe>
-						<div class="play onovo-circle-text">
-							<div class="arrow"></div>
-							<div class="label onovo-text-black onovo-circle-text-label">
-								Play Video - Play Video - Play Video
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</section>
-
-			<!-- Onovo Numbers -->
-			<section class="onovo-section gap-top-140 gap-bottom-140">
-				<div class="container">
-
-					<!-- Numbers items -->
-					<div class="row">
-
-						<!--number item-->
-						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 align-center">
-							<div class="onovo-counter">
-								<div class="num onovo-text-white js-counter" data-end-value="2">0</div>
-								<div class="num-after onovo-text-white"> M+ </div>
-								<div class="label" id="lead-annuali"> Lead Annuali </div>
-							</div>
-						</div>
-
-						<!--number item-->
-						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 align-center">
-							<div class="onovo-counter">
-								<div class="num onovo-text-white js-counter" data-end-value="320">0</div>
-								<div class="num-after onovo-text-white"> M+ </div>
-								<div class="label" id="view-certificate"> View Certificate </div>
-							</div>
-						</div>
-
-						<!--number item-->
-						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 align-center">
-							<div class="onovo-counter">
-								<div class="num onovo-text-white js-counter" data-end-value="150">0</div>
-								<div class="num-after onovo-text-white"> + </div>
-								<div class="label" id="brand-soddisfatti"> Brand Soddisfatti </div>
-							</div>
-						</div>
-
-					</div>
-
-				</div>
-			</section>
-
-			<!-- Onovo CTA -->
-			<section class="onovo-section gap-top-140 gap-bottom-140"
-				style="background-image: url(assets/images/cta-bg.webp); background-position: center center; background-repeat: no-repeat; background-size: cover;">
-				<div class="container">
-					<div class="row">
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
-
-							<!-- Heading -->
-							<div class="onovo-heading gap-bottom-40 onovo-text-white">
-								<div class="onovo-subtitle-1">
-									<span id="resta-in-contatto"> Resta in Contatto </span>
-								</div>
-								<h2 class="onovo-title-2">
-									<span id="scopri-di-piu">Scopri Di Più Sul<br></span>
-									<strong id="people-based-marketing-title"> People based Marketing</strong>
-
-								</h2>
-							</div>
-
-
-
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
-
-							<!-- Social -->
-							<div class="onovo-cta-social">
-								<div class="image" style="background-image: url(assets/images/cta-circle2.png);">
-									<div class="cta-img-circle img-circle--1"></div>
-									<div class="cta-img-circle img-circle--2"></div>
-									<div class="cta-img-circle img-circle--3"></div>
-								</div>
-								<div class="desc">
-									<ul>
-										<li>
-											<a class="onovo-btn btn--white btn--large btn--icon onovo-hover-btn"
-												href="https://www.facebook.com/adextraitalia" target="_blank">
-												<i aria-hidden="true" class="fab fa-facebook-f"></i>
-												<span> Facebook </span>
-											</a>
-										</li>
-										<li>
-											<a class="onovo-btn btn--white btn--large btn--icon onovo-hover-btn"
-												href="https://www.instagram.com/adextraitalia/" target="_blank">
-												<i aria-hidden="true" class="fab fa-instagram"></i>
-												<span> Instagram </span>
-											</a>
-										</li>
-										<li>
-											<a class="onovo-btn btn--white btn--large btn--icon onovo-hover-btn"
-												href="https://www.youtube.com/@AdextraItaliasrls" target="_blank">
-												<i aria-hidden="true" class="fab fa-youtube"></i>
-												<span> Youtube </span>
-											</a>
-										</li>
-										<li>
-											<a class="onovo-btn btn--white btn--large btn--icon onovo-hover-btn"
-												href="https://www.linkedin.com/company/adextra-italia-srls/posts/?feedView=all"
-												target="_blank">
-												<i aria-hidden="true" class="fab fa-linkedin-in"></i>
-												<span> LinkedIn </span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- Onovo Blog -->
-			<section class="onovo-section gap-top-140 gap-bottom-140">
-				<div class="container">
-
-					<!-- Heading -->
-					<div class="onovo-heading align-center gap-bottom-40">
-						<div class="onovo-subtitle-1">
-							<span id="news-title"> Notizie </span>
-						</div>
-						<h2 class="onovo-title-2">
-							<span id="rimani-aggiornato"> Rimani aggiornato sulle</span> <br><span
-								id="nostre-novità">nostre novità</span>
-						</h2>
-					</div>
-
-					<!-- Blog items -->
-					<div class="row">
-						<!--blog item-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="onovo-blog-item">
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<a
-										href="https://www.engage.it/tecnologia/adextra-italia-punta-su-adsentry-e-scouty-per-un-marketing-digitale-piu-sicuro-e-personalizzato.aspx">
-										<img decoding="async"
-											src="assets/images/blog/articolo-romina/romina-articolo.png" width="400"
-											height="240" alt="Romina-Home" />
-									</a>
-								</div>
-								<div class="desc">
-
-									<h5 class="title">
-										<a
-											href="https://www.engage.it/tecnologia/adextra-italia-punta-su-adsentry-e-scouty-per-un-marketing-digitale-piu-sicuro-e-personalizzato.aspx">
-											<span id="romina-home-news-title">Adextra Italia punta su AdSentry e Scouty
-												per un marketing digitale più sicuro e personalizzato</span>
-										</a>
-									</h5>
-									<div class="onovo-text">
-										<div>
-											<p id="romina-home-news-paragraph">AdSentry garantisce che le campagne
-												pubblicitarie siano safe e pertinenti, Scouty permette...<br>
-											</p>
-											<a href="https://www.engage.it/tecnologia/adextra-italia-punta-su-adsentry-e-scouty-per-un-marketing-digitale-piu-sicuro-e-personalizzato.aspx"
-												class="onovo-btn onovo-hover-btn">
-												<span id="leggi">Leggi</span>
-											</a>
-
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="onovo-blog-item">
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<a href="articolo-adsentry.html">
-										<img decoding="async"
-											src="assets/images/blog/articolo-adsentry/hero-adsentry.png" width="400"
-											height="240" alt="Hero-AdSentry" />
-									</a>
-								</div>
-								<div class="desc">
-
-									<h5 class="title">
-										<a href="articolo-adsentry.html">
-											<span id="adsentry-home-news-title">Ad-Sentry, la tecnologia che ottimizza i
-												first data party</span>
-										</a>
-									</h5>
-									<div class="onovo-text">
-										<div>
-											<p id="adsentry-home-news-paragraph">Adextra Italia è lieta di annunciare il
-												lancio di Ad-Sentry, una
-												piattaforma innovativa che segna un passo avanti nella protezione della
-												brand safety
-												...<br />
-											</p>
-											<a href="articolo-adsentry.html" class="onovo-btn onovo-hover-btn">
-												<span id="leggi">Leggi</span>
-											</a>
-
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						<!--blog item-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="onovo-blog-item">
-								<div class="image" data-onovo-overlay data-onovo-scroll>
-									<a href="articolo-scouty.html">
-										<img decoding="async" src="assets/images/blog/articolo-scouty/hero-scouty.png"
-											width="400" height="240" alt="Scouty-Home" />
-									</a>
-								</div>
-								<div class="desc">
-
-									<h5 class="title">
-										<a href="articolo-scouty.html">
-											<span id="scouty-home-news-title">Umanizzare l’esperienza digitale con
-												Scouty</span>
-										</a>
-									</h5>
-									<div class="onovo-text">
-										<div>
-											<p id="scouty-home-news-paragraph">Adextra Italia lancia Scouty, un progetto
-												innovativo che rivoluziona il
-												modo di concepire le comunicazioni commerciali digitali, mettendo
-												l’utente al ... <br />
-											</p>
-											<a href="articolo-scouty.html" class="onovo-btn onovo-hover-btn">
-												<span id="leggi">Leggi</span>
-											</a>
-
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!--blog item-->
-
-
-
-
-					</div>
-
-					<!-- Button -->
-					<div class="align-center">
-						<a class="onovo-btn onovo-hover-btn" href="blog.html">
-							<i class="arrow">
-								<span></span>
-							</i>
-							<span id="leggi-tutti"> Leggi Tutti Gli Articoli</span>
-						</a>
-					</div>
-
-				</div>
-			</section>
-
-			<!-- Onovo Brands -->
-			<section class="onovo-section">
-				<div class="container">
-
-					<!-- Heading -->
-					<div class="onovo-heading gap-bottom-40">
-						<div class="onovo-subtitle-1">
-							<span id="fantastici-clienti"> I Nostri Fantastici Clienti </span>
-						</div>
-						<h2 class="onovo-title-2">
-							<span id="alcuni-clienti"> Alcuni dei clienti che ci hanno</span><br><span
-								id="scelto-noi">scelto e si affidano a noi </span>
-						</h2>
-					</div>
-
-					<!-- Brands items -->
-					<div class="row gap-row">
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<a target="_blank" href="https://www.mint.ai/">
-									<span class="image">
-										<img decoding="async" src="assets/images/clienti/mint.png" width="285"
-											height="200" alt="Mint Logo" />
-									</span>
-									<span class="label onovo-white-black"> Mint </span>
-								</a>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/dentsu.png" width="285"
-										height="200" alt="Dentsu Logo" />
-								</span>
-								<span class="label onovo-white-black"> Dentsu </span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/trade.png" width="285" height="200"
-										alt="Tradedoubler logo" />
-								</span>
-								<span class="label onovo-white-black"> Tradedoubler </span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/carplanner.png" width="285"
-										height="200" alt="Carplanner Logo" />
-								</span>
-								<span class="label onovo-white-black"> Carplanner </span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/edita.png" width="285" height="200"
-										alt="Edita Logo" />
-								</span>
-								<span class="label onovo-white-black"> Edita</span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/medici.png" width="285"
-										height="200" alt="Medici Logo" />
-								</span>
-								<span class="label onovo-white-black"> Medici Senza Frontiere</span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/sembox.png" width="285"
-										height="200" alt="Sembox Logo" />
-								</span>
-								<span class="label onovo-white-black"> Sembox</span>
-							</div>
-						</div>
-
-						<!--brand item-->
-						<div class="col-6 col-xs-6 col-sm-6 col-md-4 col-lg-3">
-							<div class="onovo-brands onovo-hover-3 onovo-hover-label" data-onovo-overlay
-								data-onovo-scroll>
-								<span class="image">
-									<img decoding="async" src="assets/images/clienti/biomur.png" width="285"
-										height="200" alt="Biomur Logo" />
-								</span>
-								<span class="label onovo-white-black"> Biomur</span>
-							</div>
-						</div>
-
-					</div>
-
-				</div>
-			</section>
-
-		</div>
-
-		<footer class="onovo-footer footer--dark">
-			<div class="footer--default">
-				<div class="container">
-
-					<div class="row">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-
-							<!-- Description -->
-							<div class="onovo-text onovo-text-white">
-								<h5 id="footer-why-choose-us-title">Perchè Scegliere Noi</h5>
-								<p style="opacity: 0.6;" id="footer-why-choose-us-paragraph">Affidabilità, Trasparenza e
-									Presenza. Dalla
-									visione alla
-									realtà, guidiamo il tuo brand attraverso il mondo digital, per darti i migliori
-									risultati. Studiamo, miglioriamo e cresciamo insieme a te! </p>
-							</div>
-
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 offset-lg-1">
-
-							<!-- Description -->
-							<div class="onovo-text onovo-text-white">
-								<h5 id="contact">Contattaci</h5>
-								<p style="opacity: 0.6;">Via Rovereto 7, 00198, Roma (RM) </p>
-								<p style="opacity: 0.6;">
-									<a href="tel:+393701352826" class="onovo-lnk lnk--white" target="_blank">+39 370 135
-										2826</a><br>
-									<a href="mailto:info@adextraitalia.it" class="onovo-lnk lnk--white"
-										target="_blank">info@adextraitalia.it
-
-									</a>
-								</p>
-							</div>
-
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-
-							<div class="onovo-text onovo-text-white">
-								<h5>Policy</h5>
-								<a href="privacy-adextra.pdf" class="onovo-lnk lnk--white">Privacy Policy
-								</a>
-								<br>
-
-								<a href="cookie-policy.pdf" class="onovo-lnk lnk--white">
-									Cookie Policy</a><br>
-								<a href="informativa-candidati2.pdf" class="onovo-lnk lnk--white" target="_blank"
-									id="informativa-privacy-candidati">
-									Informativa Privacy Candidati</a><br>
-
-
-							</div>
-
-
-						</div>
-					</div>
-
-					<div class="separator"></div>
-
-					<div class="row">
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-12 align-self-center">
-
-							<!-- Copyright -->
-							<div class="copyright onovo-text-white">
-								© 2025 Adextra Italia ®, All Rights Reserved - Designed By Adextra Italia Rome, Italy |
-								c.f
-								e p.i 03862950544 | Registro Imprese di Roma
-
-
-							</div>
-
-						</div>
-
-					</div>
-
-				</div>
-			</div>
-		</footer>
-
-	</div>
-	<div id="cookie-notice" style="position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: #fff; padding: 10px 20px; text-align: center; font-family: sans-serif; z-index: 9999;">
-  Questo sito utilizza solo cookie tecnici essenziali. 
-  <a href="https://www.adextraitalia.it/cookie-policy.pdf" target="_blank" style="color: #ffd700; text-decoration: underline;">Leggi la cookie policy completa</a>.
-  <button id="cookie-close" style="margin-left: 15px; padding: 5px 10px; border: none; background: #ffd700; color: #222; cursor: pointer;">Chiudi</button>
+  <div class="ad-notification" id="ad-notification"></div>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading Admin Panel...</p>
+  </div>
+  <div class="container">
+    <button id="mode-toggle" onclick="toggleMode()">🌙</button>
+
+<div id="login-container">
+  <h1>Admin Login</h1>
+  <input type="text" id="admin-email" placeholder="Admin Email" autocomplete="username">
+  <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+  <button id="login-button" onclick="loginAdminWithEmailPassword()">Login</button>
 </div>
-<script>
-  // Controlla se il cookie esiste
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
-  // Mostra il banner solo se il cookie non esiste
-  if (!getCookie('cookie_notice_accepted')) {
-    document.getElementById('cookie-notice').style.display = 'block';
-  } else {
-    document.getElementById('cookie-notice').style.display = 'none';
-  }
+<div id="admin-content">
+  <h1>Admin Panel</h1>
 
-  // Chiudi banner e salva cookie
-  document.getElementById('cookie-close').onclick = function() {
-    document.getElementById('cookie-notice').style.display = 'none';
-    // Cookie valido 30 giorni
-    var d = new Date();
-    d.setTime(d.getTime() + (30*24*60*60*1000));
-    document.cookie = "cookie_notice_accepted=true; expires=" + d.toUTCString() + "; path=/";
-  };
+  <div class="card">
+    <h2>Visitor Overview</h2>
+    <div class="stat-grid">
+      <div class="stat-item">
+        Total Views
+        <span id="total-visitors">0</span>
+      </div>
+      <div class="stat-item">
+        Today's Views (UTC)
+        <span id="daily-visitors">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Ad Settings</h2>
+    <h3>Select Ad Pattern:</h3>
+    <div class="ad-pattern-buttons">
+        <button id="ad-pattern-1-btn" onclick="selectAdPattern(1)">Monetag</button>
+        <button id="ad-pattern-3-btn" onclick="selectAdPattern(3)">Gigapub</button>
+        <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">Sequential</button>
+    </div>
+
+    <div class="ad-step-control">
+        <label for="total-ad-steps">Total Ad Steps:</label>
+        <input type="number" id="total-ad-steps" min="1" max="10" value="0" onchange="updateTotalAdSteps()">
+        <button class="btn btn-success" onclick="saveTotalAdSteps()">Save</button>
+    </div>
+
+    <div class="ad-network-toggles">
+        <div class="toggle-item">
+            <label>Monetag</label>
+            <label class="switch">
+                <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="toggle-item">
+            <label>Gigapub</label>
+            <label class="switch">
+                <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="toggle-item">
+            <label>Adexora</label>
+            <label class="switch">
+                <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="toggle-item">
+            <label>Adexium</label>
+            <label class="switch">
+                <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="toggle-item">
+            <label>Adextra</label>
+            <label class="switch">
+                <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Canva Pro Link</h2>
+    <p>Canva Pro Link: <span id="current-canva-link" style="color: var(--secondary); word-break: break-all;">Loading...</span></p>
+    <label for="new-canva-link" style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+    <div class="input-with-button">
+        <input type="text" id="new-canva-link" placeholder="https://www.canva.com/brand/join?token=..." value="">
+    </div>
+    <button class="btn btn-primary" onclick="updateCanvaLink()">Update Link</button>
+  </div>
+  <div class="card">
+    <h2>Monthly Daily Visitor</h2>
+    <div class="chart-container">
+        <canvas id="daily-monthly-visitors-chart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Visitor Details</h2>
+    <div class="monthly-daily-flex">
+        <div style="flex: 1;">
+            <h3>Select Month:</h3>
+            <div id="monthly-stats-list">
+                <p>Loading monthly data...</p>
+            </div>
+        </div>
+        <div style="flex: 1;">
+            <h3>Daily Views for <span id="selected-month-display"></span>:</h3>
+            <div id="daily-stats-list">
+                <p>Select a month to see daily views.</p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+<button class="btn btn-danger" onclick="logoutAdmin()" style="margin-top: 20px;">Logout</button>
+
+</div>
+
+</div>
+  <script>
+    // Firebase configuration (replace with your actual config)
+   const firebaseConfig = {
+  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4",
+  authDomain: "test-9c2fe.firebaseapp.com",
+  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com",
+  projectId: "test-9c2fe",
+  storageBucket: "test-9c2fe.firebasestorage.app",
+  messagingSenderId: "940783022173",
+  appId: "1:940783022173:web:72826d42d138be8a219db4"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
+
+const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // Replace with your actual admin UID
+let dailyMonthlyVisitorsChart;
+let currentSelectedMonth = '';
+let isInitialAuthCheckComplete = false;
+
+// Helper function to get today's date in YYYY-MM-DD UTC format
+function getTodayKeyUTC() {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = now.getUTCDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Helper function to format a date in YYYY-MM-DD UTC format
+function getFormattedDateUTC(year, month, day) {
+    const date = new Date(Date.UTC(year, month - 1, day));
+    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// Helper function to format a month in YYYY-MM UTC format
+function getFormattedMonthUTC(year, month) {
+    const date = new Date(Date.UTC(year, month - 1, 1));
+    const options = { year: 'numeric', month: 'long', timeZone: 'UTC' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// --- Authentication and Loading ---
+window.addEventListener("DOMContentLoaded", () => {
+    const savedMode = localStorage.getItem("themeMode");
+    if (savedMode === "light") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-toggle").textContent = "☀️";
+    }
+
+    showLoadingOverlay();
+
+    auth.onAuthStateChanged((user) => {
+        if (!isInitialAuthCheckComplete) {
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block';
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('admin-content').style.display = 'none';
+                    document.getElementById('mode-toggle').style.display = 'none';
+                    hideLoadingOverlay();
+                }, 1000);
+            }
+            isInitialAuthCheckComplete = true;
+        } else {
+            if (user && user.uid === ADMIN_UID) {
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    document.getElementById('mode-toggle').style.display = 'block';
+                    hideLoadingOverlay();
+                    loadAdminData();
+                }, 1500);
+            } else {
+                document.getElementById('admin-content').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none';
+                hideLoadingOverlay();
+            }
+        }
+    });
+});
+
+function showLoadingOverlay(message = "Loading...") {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.querySelector('p').textContent = message;
+    loadingOverlay.style.display = 'flex';
+    document.getElementById('mode-toggle').style.display = 'none';
+}
+
+function hideLoadingOverlay() {
+    document.getElementById('loading-overlay').style.display = 'none';
+}
+
+function loginAdminWithEmailPassword() {
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
+
+    if (!email || !password) {
+        showAdNotification("Please enter both email and password.");
+        return;
+    }
+
+    showLoadingOverlay("Logging in...");
+    document.getElementById('mode-toggle').style.display = 'none';
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            if (user.uid === ADMIN_UID) {
+                document.getElementById('login-container').style.display = 'none';
+            } else {
+                auth.signOut();
+                showAdNotification("You are not authorized to access this panel.");
+                hideLoadingOverlay();
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('mode-toggle').style.display = 'none';
+            }
+        })
+        .catch((error) => {
+            console.error("Admin login failed:", error);
+            showAdNotification("Login failed: " + error.message);
+            hideLoadingOverlay();
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('mode-toggle').style.display = 'none';
+        });
+}
+
+function logoutAdmin() {
+    showLoadingOverlay("Logging out...");
+    document.getElementById('mode-toggle').style.display = 'none';
+    auth.signOut().then(() => {
+        showAdNotification("Admin logged out.");
+        setTimeout(() => {
+            hideLoadingOverlay();
+        }, 500);
+    }).catch((error) => {
+        console.error("Logout error:", error);
+        showAdNotification("Logout error: " + error.message);
+        hideLoadingOverlay();
+    });
+}
+
+// --- General UI and Data Loading ---
+function loadAdminData() {
+    // Load Canva Link
+    database.ref('canvaLink').on('value', (snapshot) => {
+        const link = snapshot.val();
+        document.getElementById('current-canva-link').textContent = link || 'N/A';
+        document.getElementById('new-canva-link').value = '';
+    });
+
+    // Load Visitor Overview
+    database.ref('visitors/total').on('value', (snapshot) => {
+        document.getElementById('total-visitors').textContent = snapshot.val() || 0;
+    });
+
+    const fullCurrentDatePath = getTodayKeyUTC();
+    database.ref(`visitors/daily/${fullCurrentDatePath}`).on('value', (snapshot) => {
+        document.getElementById('daily-visitors').textContent = snapshot.val() || 0;
+    });
+
+    // Load Ad Pattern, Total Steps, and Ad Network Toggles
+    database.ref('adSettings').on('value', (snapshot) => {
+        const settings = snapshot.val();
+        const currentPattern = settings ? settings.pattern : 1; // Default to pattern 1
+        const currentSteps = settings ? settings.totalSteps : 5; // Default to 5 steps
+        const enabledNetworks = settings && settings.enabledNetworks ? settings.enabledNetworks : {
+            monetag: true, gigapub: true, adexora: true, adexium: true, adextra: true
+        };
+        
+        // Update UI for ad pattern buttons
+        document.querySelectorAll('.ad-pattern-buttons button').forEach(button => {
+            button.classList.remove('active');
+        });
+        document.getElementById(`ad-pattern-${currentPattern}-btn`).classList.add('active');
+
+        // Update UI for total ad steps
+        const totalAdStepsInput = document.getElementById('total-ad-steps');
+        totalAdStepsInput.value = currentSteps;
+
+        // Update UI for ad network toggles
+        document.getElementById('toggle-monetag').checked = enabledNetworks.monetag;
+        document.getElementById('toggle-gigapub').checked = enabledNetworks.gigapub;
+        document.getElementById('toggle-adexora').checked = enabledNetworks.adexora;
+        document.getElementById('toggle-adexium').checked = enabledNetworks.adexium;
+        document.getElementById('toggle-adextra').checked = enabledNetworks.adextra;
+    });
+
+    // Load Monthly Visitor Data
+    database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => {
+        const monthlyStatsList = document.getElementById('monthly-stats-list');
+        monthlyStatsList.innerHTML = '';
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const months = Object.keys(data).sort((a, b) => {
+                const [yearA, monthA] = a.split('-').map(Number);
+                const [yearB, monthB] = b.split('-').map(Number);
+                if (yearA !== yearB) return yearB - yearA;
+                return monthB - monthA;
+            }); 
+
+            months.forEach(monthKey => {
+                const [year, monthNum] = monthKey.split('-');
+                const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+                const div = document.createElement('div');
+                div.className = 'monthly-list-item';
+                div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+                div.onclick = () => selectMonthForDailyView(monthKey, div); 
+                monthlyStatsList.appendChild(div);
+            });
+
+            if (months.length > 0) {
+                const latestMonthKey = months[0]; 
+                const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
+                selectMonthForDailyView(latestMonthKey, latestMonthElement);
+            }
+        } else {
+            monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+            if (dailyMonthlyVisitorsChart) {
+                dailyMonthlyVisitorsChart.destroy();
+                dailyMonthlyVisitorsChart = null;
+            }
+        }
+    });
+}
+
+// --- Ad Pattern and Steps Control ---
+function selectAdPattern(patternNumber) {
+    database.ref('adSettings/pattern').set(patternNumber)
+        .then(() => {
+            showAdNotification(`Ad Pattern set to ${patternNumber}.`);
+        })
+        .catch(error => {
+            console.error("Error setting ad pattern:", error);
+            showAdNotification("Failed to set ad pattern.");
+        });
+}
+
+function updateTotalAdSteps() {
+    const input = document.getElementById('total-ad-steps');
+    let value = parseInt(input.value);
+    if (isNaN(value) || value < 1) {
+        value = 1;
+    } else if (value > 10) { // Max steps to prevent excessive ads
+        value = 10;
+    }
+    input.value = value;
+}
+
+function saveTotalAdSteps() {
+    const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
+    database.ref('adSettings/totalSteps').set(totalSteps)
+        .then(() => {
+            showAdNotification("Total ad steps saved successfully.");
+        })
+        .catch(error => {
+            console.error("Error setting total ad steps:", error);
+            showAdNotification("Failed to save total ad steps.");
+        });
+}
+
+function toggleAdNetwork(networkName) {
+    const checkbox = document.getElementById(`toggle-${networkName}`);
+    database.ref(`adSettings/enabledNetworks/${networkName}`).set(checkbox.checked)
+        .then(() => {
+            showAdNotification(`${networkName} ads ${checkbox.checked ? 'enabled' : 'disabled'}.`);
+        })
+        .catch(error => {
+            console.error(`Error toggling ${networkName} ads:`, error);
+            showAdNotification(`Failed to toggle ${networkName} ads.`);
+        });
+}
+
+
+function updateCanvaLink() {
+    const newLinkInput = document.getElementById('new-canva-link');
+    const newLink = newLinkInput.value.trim();
+
+    if (newLink) {
+        database.ref('canvaLink').set(newLink)
+            .then(() => {
+                showAdNotification("Canva Pro link updated successfully.");
+                newLinkInput.value = '';
+            })
+            .catch((error) => {
+                console.error("Error updating Canva link:", error);
+                showAdNotification("Failed to update Canva Pro link.");
+            });
+    } else {
+        showAdNotification("Please enter a valid link.");
+    }
+}
+
+// --- Utility Functions ---
+function showAdNotification(msg) {
+    const el = document.getElementById('ad-notification');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 3000);
+}
+
+function toggleMode() {
+    const body = document.body;
+    const btn = document.getElementById('mode-toggle');
+    body.classList.toggle('light-mode');
+    if (body.classList.contains('light-mode')) {
+        btn.textContent = '☀️';
+        localStorage.setItem("themeMode", "light");
+    } else {
+        btn.textContent = '🌙';
+        localStorage.setItem("themeMode", "dark");
+    }
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+
+    if (dailyMonthlyVisitorsChart) {
+        updateChartColors(dailyMonthlyVisitorsChart);
+        dailyMonthlyVisitorsChart.update();
+    }
+}
+
+// --- Chart and Visitor Details ---
+function getChartTextColor() {
+    return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
+}
+
+function selectMonthForDailyView(monthKey, clickedElement) {
+    currentSelectedMonth = monthKey;
+    const [year, monthNum] = monthKey.split('-');
+    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+    if (clickedElement) {
+        clickedElement.classList.add('selected');
+    }
+
+    const dailyStatsList = document.getElementById('daily-stats-list');
+    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+
+    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
+        dailyStatsList.innerHTML = '';
+        const dayLabels = []; 
+        const fullDateLabels = []; 
+        const dayCounts = [];
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const days = Object.keys(data).filter(fullDateKey => 
+                fullDateKey.startsWith(monthKey)
+            ).sort(); 
+            
+            days.forEach(fullDateKey => {
+                const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+                
+                dayLabels.push(dayDay.toString()); 
+                fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+                dayCounts.push(data[fullDateKey]);
+
+                const div = document.createElement('div');
+                div.className = 'daily-item';
+                div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
+                dailyStatsList.appendChild(div);
+            });
+
+            if (dailyStatsList.children.length === 0) {
+                dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+            }
+
+        } else {
+            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+        }
+
+        if (dailyMonthlyVisitorsChart) {
+            dailyMonthlyVisitorsChart.data.labels = dayLabels;
+            dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
+            dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+            
+            dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
+            dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
+
+            dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+            updateChartColors(dailyMonthlyVisitorsChart);
+            
+            dailyMonthlyVisitorsChart.options.interaction = {
+                mode: 'index', 
+                intersect: false 
+            };
+
+            dailyMonthlyVisitorsChart.update();
+        } else {
+            const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+            dailyMonthlyVisitorsChart = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Daily Views',
+                        data: dayCounts,
+                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                        borderColor: 'rgba(3, 218, 197, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                        fullDateLabels: fullDateLabels 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    
+                    interaction: {
+                        mode: 'index', 
+                        intersect: false 
+                    },
+
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                            color: getChartTextColor(),
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: getChartTextColor()
+                            }
+                        },
+                        tooltip: { 
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const dataset = tooltipItems[0].dataset;
+                                    const index = tooltipItems[0].dataIndex;
+                                    return dataset.fullDateLabels[index];
+                                },
+                                label: function(tooltipItem) {
+                                    return `Views: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: getChartTextColor(),
+                                precision: 0 
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: getChartTextColor()
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
+
+function updateChartColors(chart) {
+    const textColor = getChartTextColor();
+    chart.options.scales.x.ticks.color = textColor;
+    chart.options.scales.y.ticks.color = textColor;
+    chart.options.plugins.title.color = textColor;
+    if (chart.options.plugins.legend) {
+        chart.options.plugins.legend.labels.color = textColor;
+    }
+    const gridColor = document.body.classList.contains('light-mode') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    chart.options.scales.x.grid.color = gridColor;
+    chart.options.scales.y.grid.color = gridColor;
+}
+
+// Initialize h3 color based on current mode on load
+window.addEventListener('load', () => {
+    document.documentElement.style.setProperty('--h3-color', document.body.classList.contains('light-mode') ? '#000000' : '#ffffff');
+});
 </script>
-
-
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/bootstrap.js"></script>
-	<script src="assets/js/swiper.js"></script>
-	<script src="assets/js/splitting.js"></script>
-	<script src="assets/js/scroll-out.js"></script>
-	<script src="assets/js/jquery.pagepiling.js"></script>
-	<script src="assets/js/jquery.easy_number_animate.js"></script>
-	<script src="assets/js/magnific-popup.js"></script>
-	<script src="assets/js/imagesloaded.pkgd.js"></script>
-	<script src="assets/js/isotope.pkgd.js"></script>
-	<script src="assets/js/common.js"></script>
-	<script src="assets/js/language.js"></script>
-
 </body>
-
 </html>
