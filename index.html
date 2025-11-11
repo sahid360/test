@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -7,15 +6,11 @@
   <title>Admin Panel</title>
 
   <!-- Firebase SDK -->
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <!-- Chart.js for graphs -->
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -672,6 +667,8 @@
         Today's Views (UTC)
         <span id="daily-visitors">0</span>
       </div>
+    </div>
+    <div class="stat-grid" style="margin-top: 10px;">
       <div class="stat-item">
         Total Ads Shown
         <span id="total-ads-shown">0</span>
@@ -1147,138 +1144,161 @@ clickedElement.classList.add('selected');
 const dailyStatsList = document.getElementById('daily-stats-list');
 dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
 
-database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').on('value', (snapshot) => {
-dailyStatsList.innerHTML = '';
-const dayLabels = [];
-const fullDateLabels = [];
-const dayCounts = [];
+Promise.all([
+    database.ref('visitors/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value'),
+    database.ref('visitors/ads/daily/').orderByKey().startAt(monthKey + '-01').endAt(monthKey + '-31').once('value')
+]).then(([visitorsSnapshot, adsSnapshot]) => {
+    dailyStatsList.innerHTML = '';
+    const dayLabels = [];
+    const fullDateLabels = [];
+    const dayViews = [];
+    const dayAdsShown = [];
 
-if (snapshot.exists()) {
-    const data = snapshot.val();
-    const days = Object.keys(data).filter(fullDateKey => 
-        fullDateKey.startsWith(monthKey)
-    ).sort(); 
-    
-    days.forEach(fullDateKey => {
-        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
-        
-        dayLabels.push(dayDay.toString()); 
-        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
-        dayCounts.push(data[fullDateKey]);
+    const visitorsData = visitorsSnapshot.val() || {};
+    const adsData = adsSnapshot.val() || {};
 
-        const div = document.createElement('div');
-        div.className = 'daily-item';
-        div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${data[fullDateKey]} views</span>`;
-        dailyStatsList.appendChild(div);
-    });
+    const allDatesInMonth = new Set([...Object.keys(visitorsData), ...Object.keys(adsData)])
+        .filter(fullDateKey => fullDateKey.startsWith(monthKey))
+        .sort();
 
-    if (dailyStatsList.children.length === 0) {
+    if (allDatesInMonth.length > 0) {
+        allDatesInMonth.forEach(fullDateKey => {
+            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+            
+            dayLabels.push(dayDay.toString()); 
+            fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+            
+            const views = visitorsData[fullDateKey] || 0;
+            const adsShown = adsData[fullDateKey] || 0;
+            
+            dayViews.push(views);
+            dayAdsShown.push(adsShown);
+
+            const div = document.createElement('div');
+            div.className = 'daily-item';
+            div.innerHTML = `<span>${getFormattedDateUTC(dayYear, dayMonth, dayDay)}</span><span>${views} views - ${adsShown} Ads Views</span>`;
+            dailyStatsList.appendChild(div);
+        });
+
+        if (dailyStatsList.children.length === 0) {
+            dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+        }
+
+    } else {
         dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
     }
 
-} else {
-    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-}
-
-if (dailyMonthlyVisitorsChart) {
-    dailyMonthlyVisitorsChart.data.labels = dayLabels;
-    dailyMonthlyVisitorsChart.data.datasets[0].data = dayCounts;
-    dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
-    
-    dailyMonthlyVisitorsChart.data.datasets[0].pointRadius = 6;
-    dailyMonthlyVisitorsChart.data.datasets[0].pointHoverRadius = 8;
-    dailyMonthlyVisitorsChart.data.datasets[0].pointHitRadius = 10; 
-
-    dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-    updateChartColors(dailyMonthlyVisitorsChart);
-    
-    dailyMonthlyVisitorsChart.options.interaction = {
-        mode: 'index', 
-        intersect: false 
-    };
-
-    dailyMonthlyVisitorsChart.update();
-} else {
-    const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-    dailyMonthlyVisitorsChart = new Chart(ctx, {
-        type: 'line', 
-        data: {
-            labels: dayLabels,
-            datasets: [{
-                label: 'Daily Views',
-                data: dayCounts,
-                backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                borderColor: 'rgba(3, 218, 197, 1)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true,
-                pointRadius: 6, 
-                pointHoverRadius: 8, 
-                pointHitRadius: 10, 
-                pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                fullDateLabels: fullDateLabels 
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            
-            interaction: {
-                mode: 'index', 
-                intersect: false 
+    if (dailyMonthlyVisitorsChart) {
+        dailyMonthlyVisitorsChart.data.labels = dayLabels;
+        dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
+        dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown; // Update ads data
+        dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels; 
+        dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels; // Update ads data
+        
+        dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Shown for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+        updateChartColors(dailyMonthlyVisitorsChart);
+        
+        dailyMonthlyVisitorsChart.update();
+    } else {
+        const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+        dailyMonthlyVisitorsChart = new Chart(ctx, {
+            type: 'line', 
+            data: {
+                labels: dayLabels,
+                datasets: [
+                    {
+                        label: 'Daily Views',
+                        data: dayViews,
+                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                        borderColor: 'rgba(3, 218, 197, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                        fullDateLabels: fullDateLabels 
+                    },
+                    {
+                        label: 'Daily Ads Shown',
+                        data: dayAdsShown,
+                        backgroundColor: 'rgba(98, 0, 234, 0.4)', // Primary color for ads
+                        borderColor: 'rgba(98, 0, 234, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 6, 
+                        pointHoverRadius: 8, 
+                        pointHitRadius: 10, 
+                        pointBackgroundColor: 'rgba(98, 0, 234, 1)',
+                        fullDateLabels: fullDateLabels 
+                    }
+                ]
             },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                
+                interaction: {
+                    mode: 'index', 
+                    intersect: false 
+                },
 
-            plugins: {
-                title: {
-                    display: true,
-                    text: `Daily Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                    color: getChartTextColor(),
-                    font: {
-                        size: 18
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Daily Views & Ads Shown for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                        color: getChartTextColor(),
+                        font: {
+                            size: 18
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: getChartTextColor()
+                        }
+                    },
+                    tooltip: { 
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const dataset = tooltipItems[0].dataset;
+                                const index = tooltipItems[0].dataIndex;
+                                return dataset.fullDateLabels[index];
+                            },
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                            }
+                        }
                     }
                 },
-                legend: {
-                    labels: {
-                        color: getChartTextColor()
-                    }
-                },
-                tooltip: { 
-                    callbacks: {
-                        title: function(tooltipItems) {
-                            const dataset = tooltipItems[0].dataset;
-                            const index = tooltipItems[0].dataIndex;
-                            return dataset.fullDateLabels[index];
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: getChartTextColor(),
+                            precision: 0 
                         },
-                        label: function(tooltipItem) {
-                            return `Views: ${tooltipItem.raw}`;
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: getChartTextColor()
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: getChartTextColor(),
-                        precision: 0 
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: getChartTextColor()
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    }
-                }
             }
-        }
-    });
-}
+        });
+    }
 
+}).catch(error => {
+    console.error("Error fetching daily visitor and ad data:", error);
+    dailyStatsList.innerHTML = '<p>Error loading daily data.</p>';
 });
 
 }
