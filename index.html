@@ -1262,7 +1262,7 @@ function saveTotalAdSteps() {
 const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
 database.ref('adSettings/totalSteps').set(totalSteps)
 .then(() => {
-showAdNotification("Total ad steps saved successfully!");
+showAdNotification("Ad steps saved successfully!");
 })
 .catch(error => {
 console.error("Error setting total ad steps:", error);
@@ -1597,4 +1597,5 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+
 
