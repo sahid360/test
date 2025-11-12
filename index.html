@@ -1107,15 +1107,15 @@ totalAdStepsInput.value = currentSteps;
 database.ref('facebookFollowSettings').on('value', (snapshot) => {
     const settings = snapshot.val() || {};
     document.getElementById('toggle-facebook-follow').checked = settings.enabled || false;
-    document.getElementById('facebook-follow-title').value = settings.title || 'Follow My Facebook Account';
-    document.getElementById('facebook-profile-link').value = settings.link || 'https://www.facebook.com/yourprofile';
+    document.getElementById('facebook-follow-title').value = settings.title || '';
+    document.getElementById('facebook-profile-link').value = settings.link || '';
 });
 
 // NEW: Load Promotional Ad Space Settings
 database.ref('promotionalAdSpace').on('value', (snapshot) => {
     const settings = snapshot.val() || {};
-    document.getElementById('promo-ad-title').value = settings.title || '💎 Ad Space Promote Your Channel';
-    document.getElementById('promo-ad-link').value = settings.link || 'https://t.me/FCanvaOwner';
+    document.getElementById('promo-ad-title').value = settings.title || '';
+    document.getElementById('promo-ad-link').value = settings.link || '';
 });
 
 
@@ -1572,5 +1572,6 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+
 
 
