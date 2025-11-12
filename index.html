@@ -1291,7 +1291,7 @@ const newLink = newLinkInput.value.trim();
 if (newLink) {
 database.ref('canvaLink').set(newLink)
 .then(() => {
-showAdNotification("Canva Pro link updated successfully!");
+showAdNotification("Link updated successfully!");
 newLinkInput.value = '';
 })
 .catch((error) => {
@@ -1318,7 +1318,7 @@ function toggleFacebookFollow() {
 function saveFacebookFollowTitle() {
     const title = document.getElementById('facebook-follow-title').value.trim();
     database.ref('facebookFollowSettings/title').set(title)
-        .then(() => showAdNotification("Facebook Follow Title updated successfully!"))
+        .then(() => showAdNotification("Title updated successfully!"))
         .catch(error => {
             console.error("Error updating Facebook Follow Title:", error);
             showAdNotification("Failed to update Facebook Follow Title.");
@@ -1328,7 +1328,7 @@ function saveFacebookFollowTitle() {
 function saveFacebookProfileLink() {
     const link = document.getElementById('facebook-profile-link').value.trim();
     database.ref('facebookFollowSettings/link').set(link)
-        .then(() => showAdNotification("Facebook Profile Link updated successfully!"))
+        .then(() => showAdNotification("Link updated successfully!"))
         .catch(error => {
             console.error("Error updating Facebook Profile Link:", error);
             showAdNotification("Failed to update Facebook Profile Link.");
@@ -1339,7 +1339,7 @@ function saveFacebookProfileLink() {
 function savePromotionalAdTitle() {
     const title = document.getElementById('promo-ad-title').value.trim();
     database.ref('promotionalAdSpace/title').set(title)
-        .then(() => showAdNotification("Promotional Ad Title updated successfully!"))
+        .then(() => showAdNotification("Ad Title updated successfully!"))
         .catch(error => {
             console.error("Error updating Promotional Ad Title:", error);
             showAdNotification("Failed to update Promotional Ad Title.");
@@ -1349,7 +1349,7 @@ function savePromotionalAdTitle() {
 function savePromotionalAdLink() {
     const link = document.getElementById('promo-ad-link').value.trim();
     database.ref('promotionalAdSpace/link').set(link)
-        .then(() => showAdNotification("Promotional Ad Link updated successfully!"))
+        .then(() => showAdNotification("Ad Link updated successfully!"))
         .catch(error => {
             console.error("Error updating Promotional Ad Link:", error);
             showAdNotification("Failed to update Promotional Ad Link.");
@@ -1597,3 +1597,4 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+
