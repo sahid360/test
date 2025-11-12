@@ -28,8 +28,6 @@
       --success: #28a745;
       --info: #17a2b8;
       --h3-color: var(--text-color);
-      --notification-bg: #28a745; /* Green background for notifications */
-      --notification-text: #ffffff; /* White text for notifications */
     }
 
     body.light-mode {
@@ -40,8 +38,6 @@
       --ad-item-bg: #f1f1f1;
       --border-color: #dddddd;
       background: #ffffff !important;
-      --notification-bg: #28a745; /* Green background for notifications in light mode */
-      --notification-text: #ffffff; /* White text for notifications in light mode */
     }
 
     * {
@@ -299,24 +295,23 @@
       background-color: rgba(98, 0, 234, 0.1);
     }
 
-    /* MODIFIED: Ad notification styles */
     .ad-notification {
       position: fixed;
-      top: 20px; /* Position at the top */
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--notification-bg); /* Use the new CSS variable for background */
-      color: var(--notification-text); /* Use the new CSS variable for text color */
+      top: 20px; /* Changed from 50% to 20px for smaller, top-right placement */
+      right: 20px; /* Added for top-right placement */
+      left: auto; /* Reset left property */
+      transform: none; /* Reset transform */
+      background: var(--success); /* Green background */
+      color: var(--light); /* White text */
       padding: 10px 20px; /* Smaller padding */
-      border-radius: 8px; /* Slightly smaller border radius */
+      border-radius: 8px; /* Slightly smaller border-radius */
       z-index: 1000;
       display: none;
-      font-size: 16px; /* Smaller font size */
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Slightly smaller shadow */
-      text-align: center;
-      max-width: 80%; /* Limit width on larger screens */
+      font-size: 15px; /* Smaller font size */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* Subtle shadow */
+      max-width: 300px; /* Limit width */
+      text-align: center; /* Center text */
     }
-
 
     .monthly-list-item {
         display: flex;
@@ -674,11 +669,14 @@
           gap: 15px;
       }
 
-      /* MODIFIED: Ad notification responsive styles */
       .ad-notification {
         width: 90%;
-        padding: 10px 15px;
-        font-size: 15px;
+        padding: 15px 25px;
+        font-size: 16px;
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: unset;
       }
       .ad-step-control {
         flex-direction: row;
@@ -802,31 +800,32 @@
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
     </div>
 
-    <div id="ad-network-toggle-controls" class="ad-network-toggles">
-        <label>
-            <span>Monetag</span>
-            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-        </label>
-        <label>
-            <span>Gigapub</span>
-            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-        </label>
-        <label>
-            <span>Adexora</span>
-            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-        </label>
-        <label>
-            <span>Adexium</span>
-            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-        </label>
-        <label>
-            <span>Adextra</span>
-            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-        </label>
-    </div>
+<div id="ad-network-toggle-controls" class="ad-network-toggles">
+    <label>
+        <span>Monetag</span>
+        <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+    </label>
+    <label>
+        <span>Gigapub</span>
+        <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+    </label>
+    <label>
+        <span>Adexora</span>
+        <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+    </label>
+    <label>
+        <span>Adexium</span>
+        <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+    </label>
+    <label>
+        <span>Adextra</span>
+        <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+    </label>
+</div>
   </div>
 
   <!-- NEW: Facebook Follow Settings Card -->
+
   <div class="card">
     <h2>Step Ad Settings</h2>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -842,14 +841,15 @@
     </div>
     <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button> <!-- MODIFIED -->
 
-    <label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label> <!-- MODIFIED margin-top -->
-    <div class="input-with-button">
-        <input type="text" id="facebook-profile-link" placeholder="type a URL">
-    </div>
-    <button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button> <!-- MODIFIED -->
+<label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label> <!-- MODIFIED margin-top -->
+<div class="input-with-button">
+    <input type="text" id="facebook-profile-link" placeholder="type a URL">
+</div>
+<button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button> <!-- MODIFIED -->
   </div>
 
   <!-- NEW: Promotional Ad Space Settings Card -->
+
   <div class="card">
     <h2>Ad Space Settings</h2>
     <label for="promo-ad-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Ad Title:</label>
@@ -858,11 +858,11 @@
     </div>
     <button class="btn btn-save-centered" onclick="savePromotionalAdTitle()">Save Ad Title</button> <!-- MODIFIED -->
 
-    <label for="promo-ad-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label> <!-- MODIFIED margin-top -->
-    <div class="input-with-button">
-        <input type="text" id="promo-ad-link" placeholder="type a Ad Link">
-    </div>
-    <button class="btn btn-save-centered" onclick="savePromotionalAdLink()">Save Ad Link</button> <!-- MODIFIED -->
+<label for="promo-ad-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label> <!-- MODIFIED margin-top -->
+<div class="input-with-button">
+    <input type="text" id="promo-ad-link" placeholder="type a Ad Link">
+</div>
+<button class="btn btn-save-centered" onclick="savePromotionalAdLink()">Save Ad Link</button> <!-- MODIFIED -->
   </div>
 
   <div class="card">
@@ -935,12 +935,11 @@ return `${year}-${month}-${day}`;
 
 // Helper function to get current month key in YYYY-MM UTC format
 function getCurrentMonthKeyUTC() {
-    const now = new Date();
-    const year = now.getUTCFullYear();
-    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
-    return `${year}-${month}`;
+const now = new Date();
+const year = now.getUTCFullYear();
+const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+return `${year}-${month}`;
 }
-
 
 // Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
@@ -1139,107 +1138,106 @@ totalAdStepsInput.value = currentSteps;
 
 // NEW: Load Facebook Follow Settings
 database.ref('facebookFollowSettings').on('value', (snapshot) => {
-    const settings = snapshot.val() || {};
-    document.getElementById('toggle-facebook-follow').checked = settings.enabled || false;
-    document.getElementById('facebook-follow-title').value = settings.title || '';
-    document.getElementById('facebook-profile-link').value = settings.link || '';
+const settings = snapshot.val() || {};
+document.getElementById('toggle-facebook-follow').checked = settings.enabled || false;
+document.getElementById('facebook-follow-title').value = settings.title || '';
+document.getElementById('facebook-profile-link').value = settings.link || '';
 });
 
 // NEW: Load Promotional Ad Space Settings
 database.ref('promotionalAdSpace').on('value', (snapshot) => {
-    const settings = snapshot.val() || {};
-    document.getElementById('promo-ad-title').value = settings.title || '';
-    document.getElementById('promo-ad-link').value = settings.link || '';
+const settings = snapshot.val() || {};
+document.getElementById('promo-ad-title').value = settings.title || '';
+document.getElementById('promo-ad-link').value = settings.link || '';
 });
-
 
 // Load Monthly Visitor Data - Now using .on() for real-time updates and auto-selecting current month
 database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => { // Changed .once to .on
-    const monthlyStatsList = document.getElementById('monthly-stats-list');
-    monthlyStatsList.innerHTML = '';
+const monthlyStatsList = document.getElementById('monthly-stats-list');
+monthlyStatsList.innerHTML = '';
 
-    if (snapshot.exists()) {
-        const data = snapshot.val();
-        allMonthlyData = data; // Cache the monthly data
-        const months = Object.keys(data).sort((a, b) => {
-            const [yearA, monthA] = a.split('-').map(Number);
-            const [yearB, monthB] = b.split('-').map(Number);
-            if (yearA !== yearB) return yearB - yearA;
-            return monthB - monthA;
-        });
+if (snapshot.exists()) {
+    const data = snapshot.val();
+    allMonthlyData = data; // Cache the monthly data
+    const months = Object.keys(data).sort((a, b) => {
+        const [yearA, monthA] = a.split('-').map(Number);
+        const [yearB, monthB] = b.split('-').map(Number);
+        if (yearA !== yearB) return yearB - yearA;
+        return monthB - monthA;
+    });
 
-        const currentMonthKey = getCurrentMonthKeyUTC();
-        let monthToSelect = currentMonthKey; // Default to current month
+    const currentMonthKey = getCurrentMonthKeyUTC();
+    let monthToSelect = currentMonthKey; // Default to current month
 
-        // If current month is not in data, select the latest available month
-        if (!months.includes(currentMonthKey) && months.length > 0) {
-            monthToSelect = months[0]; // The latest month is at index 0 due to sort order
-        } else if (months.length === 0) {
-            monthToSelect = ''; // No months available
-        }
-
-
-        months.forEach(monthKey => {
-            const [year, monthNum] = monthKey.split('-');
-            const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
-
-            const div = document.createElement('div');
-            div.className = 'monthly-list-item';
-            div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-            div.onclick = () => selectMonthForDailyView(monthKey, div);
-            monthlyStatsList.appendChild(div);
-
-            // If this is the month to select, mark it
-            if (monthKey === monthToSelect) {
-                currentSelectedMonth = monthKey; // Update currentSelectedMonth
-            }
-        });
-
-        // Trigger selection of the identified month (current or latest)
-        if (monthToSelect) {
-            const elementToSelect = monthlyStatsList.querySelector(`[onclick*="${monthToSelect}"]`);
-            if (elementToSelect) {
-                selectMonthForDailyView(monthToSelect, elementToSelect);
-            }
-        }
-
-    } else {
-        monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
-        if (dailyMonthlyVisitorsChart) {
-            dailyMonthlyVisitorsChart.destroy();
-            dailyMonthlyVisitorsChart = null;
-        }
-        document.getElementById('selected-month-display').textContent = 'N/A';
-        document.getElementById('daily-stats-list').innerHTML = '<p>No daily data available for this month.</p>';
+    // If current month is not in data, select the latest available month
+    if (!months.includes(currentMonthKey) && months.length > 0) {
+        monthToSelect = months[0]; // The latest month is at index 0 due to sort order
+    } else if (months.length === 0) {
+        monthToSelect = ''; // No months available
     }
-}, (error) => {
-    console.error("Error loading monthly data:", error);
-    document.getElementById('monthly-stats-list').innerHTML = `<p>Error loading monthly data: ${error.message}</p>`;
-});
 
+
+    months.forEach(monthKey => {
+        const [year, monthNum] = monthKey.split('-');
+        const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+
+        const div = document.createElement('div');
+        div.className = 'monthly-list-item';
+        div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+        div.onclick = () => selectMonthForDailyView(monthKey, div);
+        monthlyStatsList.appendChild(div);
+
+        // If this is the month to select, mark it
+        if (monthKey === monthToSelect) {
+            currentSelectedMonth = monthKey; // Update currentSelectedMonth
+        }
+    });
+
+    // Trigger selection of the identified month (current or latest)
+    if (monthToSelect) {
+        const elementToSelect = monthlyStatsList.querySelector(`[onclick*="${monthToSelect}"]`);
+        if (elementToSelect) {
+            selectMonthForDailyView(monthToSelect, elementToSelect);
+        }
+    }
+
+} else {
+    monthlyStatsList.innerHTML = '<p>No monthly data available yet.</p>';
+    if (dailyMonthlyVisitorsChart) {
+        dailyMonthlyVisitorsChart.destroy();
+        dailyMonthlyVisitorsChart = null;
+    }
+    document.getElementById('selected-month-display').textContent = 'N/A';
+    document.getElementById('daily-stats-list').innerHTML = '<p>No daily data available for this month.</p>';
+}
+
+}, (error) => {
+console.error("Error loading monthly data:", error);
+document.getElementById('monthly-stats-list').innerHTML = `<p>Error loading monthly data: ${error.message}</p>`;
+});
 
 // Load all daily visitor data in real-time
 database.ref('visitors/daily').on('value', (snapshot) => {
-    allDailyVisitorData = snapshot.val() || {};
-    // If a month is currently selected, refresh its daily view with new data
-    if (currentSelectedMonth) {
-        const selectedElement = document.querySelector(`.monthly-list-item.selected`);
-        selectMonthForDailyView(currentSelectedMonth, selectedElement);
-    }
+allDailyVisitorData = snapshot.val() || {};
+// If a month is currently selected, refresh its daily view with new data
+if (currentSelectedMonth) {
+const selectedElement = document.querySelector('.monthly-list-item.selected');
+selectMonthForDailyView(currentSelectedMonth, selectedElement);
+}
 }, (error) => {
-    console.error("Error loading all daily visitor data:", error);
+console.error("Error loading all daily visitor data:", error);
 });
 
 // Load all daily ads data in real-time
 database.ref('visitors/ads/daily').on('value', (snapshot) => {
-    allDailyAdsData = snapshot.val() || {};
-    // If a month is currently selected, refresh its daily view with new data
-    if (currentSelectedMonth) {
-        const selectedElement = document.querySelector(`.monthly-list-item.selected`);
-        selectMonthForDailyView(currentSelectedMonth, selectedElement);
-    }
+allDailyAdsData = snapshot.val() || {};
+// If a month is currently selected, refresh its daily view with new data
+if (currentSelectedMonth) {
+const selectedElement = document.querySelector('.monthly-list-item.selected');
+selectMonthForDailyView(currentSelectedMonth, selectedElement);
+}
 }, (error) => {
-    console.error("Error loading all daily ads data:", error);
+console.error("Error loading all daily ads data:", error);
 });
 
 } // End of loadAdminData
@@ -1315,56 +1313,55 @@ showAdNotification("Please enter a valid link.");
 
 // NEW: Facebook Follow Settings Functions
 function toggleFacebookFollow() {
-    const isEnabled = document.getElementById('toggle-facebook-follow').checked;
-    database.ref('facebookFollowSettings/enabled').set(isEnabled)
-        .then(() => showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`))
-        .catch(error => {
-            console.error("Error toggling Facebook Follow:", error);
-            showAdNotification("Failed to toggle Facebook Follow.");
-        });
+const isEnabled = document.getElementById('toggle-facebook-follow').checked;
+database.ref('facebookFollowSettings/enabled').set(isEnabled)
+.then(() => showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`))
+.catch(error => {
+console.error("Error toggling Facebook Follow:", error);
+showAdNotification("Failed to toggle Facebook Follow.");
+});
 }
 
 function saveFacebookFollowTitle() {
-    const title = document.getElementById('facebook-follow-title').value.trim();
-    database.ref('facebookFollowSettings/title').set(title)
-        .then(() => showAdNotification("Title updated successfully!"))
-        .catch(error => {
-            console.error("Error updating Facebook Follow Title:", error);
-            showAdNotification("Failed to update Facebook Follow Title.");
-        });
+const title = document.getElementById('facebook-follow-title').value.trim();
+database.ref('facebookFollowSettings/title').set(title)
+.then(() => showAdNotification("Title updated successfully!"))
+.catch(error => {
+console.error("Error updating Facebook Follow Title:", error);
+showAdNotification("Failed to update Facebook Follow Title.");
+});
 }
 
 function saveFacebookProfileLink() {
-    const link = document.getElementById('facebook-profile-link').value.trim();
-    database.ref('facebookFollowSettings/link').set(link)
-        .then(() => showAdNotification("Link updated successfully!"))
-        .catch(error => {
-            console.error("Error updating Facebook Profile Link:", error);
-            showAdNotification("Failed to update Facebook Profile Link.");
-        });
+const link = document.getElementById('facebook-profile-link').value.trim();
+database.ref('facebookFollowSettings/link').set(link)
+.then(() => showAdNotification("Link updated successfully!"))
+.catch(error => {
+console.error("Error updating Facebook Profile Link:", error);
+showAdNotification("Failed to update Facebook Profile Link.");
+});
 }
 
 // NEW: Promotional Ad Space Settings Functions
 function savePromotionalAdTitle() {
-    const title = document.getElementById('promo-ad-title').value.trim();
-    database.ref('promotionalAdSpace/title').set(title)
-        .then(() => showAdNotification("Ad Title updated successfully!"))
-        .catch(error => {
-            console.error("Error updating Promotional Ad Title:", error);
-            showAdNotification("Failed to update Promotional Ad Title.");
-        });
+const title = document.getElementById('promo-ad-title').value.trim();
+database.ref('promotionalAdSpace/title').set(title)
+.then(() => showAdNotification("Ad Title updated successfully!"))
+.catch(error => {
+console.error("Error updating Promotional Ad Title:", error);
+showAdNotification("Failed to update Promotional Ad Title.");
+});
 }
 
 function savePromotionalAdLink() {
-    const link = document.getElementById('promo-ad-link').value.trim();
-    database.ref('promotionalAdSpace/link').set(link)
-        .then(() => showAdNotification("Ad Link updated successfully!"))
-        .catch(error => {
-            console.error("Error updating Promotional Ad Link:", error);
-            showAdNotification("Failed to update Promotional Ad Link.");
-        });
+const link = document.getElementById('promo-ad-link').value.trim();
+database.ref('promotionalAdSpace/link').set(link)
+.then(() => showAdNotification("Ad Link updated successfully!"))
+.catch(error => {
+console.error("Error updating Promotional Ad Link:", error);
+showAdNotification("Failed to update Promotional Ad Link.");
+});
 }
-
 
 // --- Utility Functions ---
 function showAdNotification(msg) {
@@ -1402,187 +1399,188 @@ return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-    currentSelectedMonth = monthKey; // Ensure this is always updated when a month is selected
+currentSelectedMonth = monthKey; // Ensure this is always updated when a month is selected
 
-    const [year, monthNum] = monthKey.split('-');
-    document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+const [year, monthNum] = monthKey.split('-');
+document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-    document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
-    if (clickedElement) {
-        clickedElement.classList.add('selected');
+document.querySelectorAll('.monthly-list-item').forEach(item => item.classList.remove('selected'));
+if (clickedElement) {
+    clickedElement.classList.add('selected');
+}
+
+const dailyStatsList = document.getElementById('daily-stats-list');
+dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
+
+const dayLabels = [];
+const fullDateLabels = [];
+const dayViews = [];
+const dayAdsShown = [];
+
+const visitorsDataForMonth = {};
+const adsDataForMonth = {};
+
+// Filter cached data for the selected month
+for (const dateKey in allDailyVisitorData) {
+    if (dateKey.startsWith(monthKey)) {
+        visitorsDataForMonth[dateKey] = allDailyVisitorData[dateKey];
     }
-
-    const dailyStatsList = document.getElementById('daily-stats-list');
-    dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-
-    const dayLabels = [];
-    const fullDateLabels = [];
-    const dayViews = [];
-    const dayAdsShown = [];
-
-    const visitorsDataForMonth = {};
-    const adsDataForMonth = {};
-
-    // Filter cached data for the selected month
-    for (const dateKey in allDailyVisitorData) {
-        if (dateKey.startsWith(monthKey)) {
-            visitorsDataForMonth[dateKey] = allDailyVisitorData[dateKey];
-        }
+}
+for (const dateKey in allDailyAdsData) {
+    if (dateKey.startsWith(monthKey)) {
+        adsDataForMonth[dateKey] = allDailyAdsData[dateKey];
     }
-    for (const dateKey in allDailyAdsData) {
-        if (dateKey.startsWith(monthKey)) {
-            adsDataForMonth[dateKey] = allDailyAdsData[dateKey];
-        }
-    }
+}
 
-    const allDatesInMonth = Array.from(new Set([
-        ...Object.keys(visitorsDataForMonth),
-        ...Object.keys(adsDataForMonth)
-    ]))
-    .filter(fullDateKey => fullDateKey.startsWith(monthKey))
-    .sort();
+const allDatesInMonth = Array.from(new Set([
+    ...Object.keys(visitorsDataForMonth),
+    ...Object.keys(adsDataForMonth)
+]))
+.filter(fullDateKey => fullDateKey.startsWith(monthKey))
+.sort();
 
-    dailyStatsList.innerHTML = '';
+dailyStatsList.innerHTML = '';
 
-    if (allDatesInMonth.length > 0) {
-        const table = document.createElement('table');
-        table.className = 'daily-details-table';
-        table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
-        const tbody = table.querySelector('tbody');
+if (allDatesInMonth.length > 0) {
+    const table = document.createElement('table');
+    table.className = 'daily-details-table';
+    table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
+    const tbody = table.querySelector('tbody');
 
-        allDatesInMonth.forEach(fullDateKey => {
-            const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+    allDatesInMonth.forEach(fullDateKey => {
+        const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
 
-            dayLabels.push(dayDay.toString());
-            fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+        dayLabels.push(dayDay.toString());
+        fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
 
-            const views = visitorsDataForMonth[fullDateKey] || 0;
-            const adsShown = adsDataForMonth[fullDateKey] || 0;
+        const views = visitorsDataForMonth[fullDateKey] || 0;
+        const adsShown = adsDataForMonth[fullDateKey] || 0;
 
-            dayViews.push(views);
-            dayAdsShown.push(adsShown);
+        dayViews.push(views);
+        dayAdsShown.push(adsShown);
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${dayDay}</td>
-                <td>${views}</td>
-                <td>${adsShown}</td>
-            `;
-            tbody.appendChild(row);
-        });
-        dailyStatsList.appendChild(table);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${dayDay}</td>
+            <td>${views}</td>
+            <td>${adsShown}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    dailyStatsList.appendChild(table);
 
-    } else {
-        dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
-    }
+} else {
+    dailyStatsList.innerHTML = '<p>No daily data available for this month.</p>';
+}
 
-    // Update or create chart as before
-    if (dailyMonthlyVisitorsChart) {
-        dailyMonthlyVisitorsChart.data.labels = dayLabels;
-        dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
-        dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown;
-        dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
-        dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels;
+// Update or create chart as before
+if (dailyMonthlyVisitorsChart) {
+    dailyMonthlyVisitorsChart.data.labels = dayLabels;
+    dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
+    dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown;
+    dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
+    dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels;
 
-        dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
-        dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views';
+    dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
+    dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views';
 
-        updateChartColors(dailyMonthlyVisitorsChart);
-        dailyMonthlyVisitorsChart.update();
+    updateChartColors(dailyMonthlyVisitorsChart);
+    dailyMonthlyVisitorsChart.update();
 
-    } else {
-        const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
-        dailyMonthlyVisitorsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dayLabels,
-                datasets: [
-                    {
-                        label: 'Daily Views',
-                        data: dayViews,
-                        backgroundColor: 'rgba(3, 218, 197, 0.4)',
-                        borderColor: 'rgba(3, 218, 197, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointHitRadius: 10,
-                        pointBackgroundColor: 'rgba(3, 218, 197, 1)',
-                        fullDateLabels: fullDateLabels
-                    },
-                    {
-                        label: 'Daily Ads Views',
-                        data: dayAdsShown,
-                        backgroundColor: 'rgba(98, 0, 234, 0.4)',
-                        borderColor: 'rgba(98, 0, 234, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointHitRadius: 10,
-                        pointBackgroundColor: 'rgba(98, 0, 234, 1)',
-                        fullDateLabels: fullDateLabels
-                    }
-                ]
+} else {
+    const ctx = document.getElementById('daily-monthly-visitors-chart').getContext('2d');
+    dailyMonthlyVisitorsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dayLabels,
+            datasets: [
+                {
+                    label: 'Daily Views',
+                    data: dayViews,
+                    backgroundColor: 'rgba(3, 218, 197, 0.4)',
+                    borderColor: 'rgba(3, 218, 197, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHitRadius: 10,
+                    pointBackgroundColor: 'rgba(3, 218, 197, 1)',
+                    fullDateLabels: fullDateLabels
+                },
+                {
+                    label: 'Daily Ads Views',
+                    data: dayAdsShown,
+                    backgroundColor: 'rgba(98, 0, 234, 0.4)',
+                    borderColor: 'rgba(98, 0, 234, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHitRadius: 10,
+                    pointBackgroundColor: 'rgba(98, 0, 234, 1)',
+                    fullDateLabels: fullDateLabels
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
-                        color: getChartTextColor(),
-                        font: {
-                            size: 18
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            color: getChartTextColor()
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                const fullDate = tooltipItems[0].dataset.fullDateLabels[tooltipItems[0].dataIndex];
-                                return fullDate;
-                            },
-                            label: function(tooltipItem) {
-                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                            }
-                        }
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`,
+                    color: getChartTextColor(),
+                    font: {
+                        size: 18
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: getChartTextColor(),
-                            precision: 0
+                legend: {
+                    labels: {
+                        color: getChartTextColor()
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const fullDate = tooltipItems[0].dataset.fullDateLabels[tooltipItems[0].dataIndex];
+                            return fullDate;
                         },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: getChartTextColor()
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
+                        label: function(tooltipItem) {
+                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
                         }
                     }
                 }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: getChartTextColor(),
+                        precision: 0
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: getChartTextColor()
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
             }
-        });
-    }
+        }
+    });
+}
+
 }
 
 function updateChartColors(chart) {
