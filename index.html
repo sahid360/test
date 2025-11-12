@@ -171,13 +171,28 @@
       color: #fff;
       margin-top: 10px;
     }
+    /* MODIFIED: Reverted .btn-success and created a new .btn-save-centered */
     .btn-success {
         background: var(--success);
         color: #fff;
-        padding: 8px 15px; /* Smaller padding for Save button */
-        font-size: 14px; /* Smaller font size */
-        margin-left: 10px; /* Space from input */
+        padding: 8px 15px;
+        font-size: 14px;
+        margin-left: 10px;
     }
+    .btn-save-centered {
+        background: var(--primary); /* Same color as btn-primary */
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px; /* Smaller padding */
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+        font-size: 15px; /* Smaller font size */
+        display: block; /* Make it a block element */
+        margin: 10px auto 0 auto; /* Center it horizontally with margin-top */
+    }
+
 
     .btn:hover {
       opacity: 0.9;
@@ -700,6 +715,14 @@
       .ad-network-toggles input[type="checkbox"]:checked::before {
           left: 16px; /* 30-12-2=16 */
       }
+
+      /* MODIFIED: Center the new save button on smaller screens */
+      .btn-save-centered {
+          width: 100%;
+          margin-top: 10px;
+          padding: 10px 15px;
+          font-size: 15px;
+      }
     }
   </style>
 
@@ -807,13 +830,14 @@
     <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
     <div class="input-with-button" style="margin-bottom: 10px;">
         <input type="text" id="facebook-follow-title" placeholder="type a Title">
-        <button class="btn btn-success" onclick="saveFacebookFollowTitle()">Save</button>
     </div>
-    <label for="facebook-profile-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+    <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button> <!-- MODIFIED -->
+
+    <label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label> <!-- MODIFIED margin-top -->
     <div class="input-with-button">
         <input type="text" id="facebook-profile-link" placeholder="type a URL">
-        <button class="btn btn-success" onclick="saveFacebookProfileLink()">Save</button>
     </div>
+    <button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button> <!-- MODIFIED -->
   </div>
 
   <!-- NEW: Promotional Ad Space Settings Card -->
@@ -822,13 +846,14 @@
     <label for="promo-ad-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Ad Title:</label>
     <div class="input-with-button" style="margin-bottom: 10px;">
         <input type="text" id="promo-ad-title" placeholder="type a Ad Title">
-        <button class="btn btn-success" onclick="savePromotionalAdTitle()">Save</button>
     </div>
-    <label for="promo-ad-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label>
+    <button class="btn btn-save-centered" onclick="savePromotionalAdTitle()">Save Ad Title</button> <!-- MODIFIED -->
+
+    <label for="promo-ad-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label> <!-- MODIFIED margin-top -->
     <div class="input-with-button">
         <input type="text" id="promo-ad-link" placeholder="type a Ad Link">
-        <button class="btn btn-success" onclick="savePromotionalAdLink()">Save</button>
     </div>
+    <button class="btn btn-save-centered" onclick="savePromotionalAdLink()">Save Ad Link</button> <!-- MODIFIED -->
   </div>
 
   <div class="card">
@@ -1572,7 +1597,3 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
-
-
-
-
