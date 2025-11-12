@@ -28,6 +28,8 @@
       --success: #28a745;
       --info: #17a2b8;
       --h3-color: var(--text-color);
+      --notification-bg: #28a745; /* Green background for notifications */
+      --notification-text: #ffffff; /* White text for notifications */
     }
 
     body.light-mode {
@@ -38,6 +40,8 @@
       --ad-item-bg: #f1f1f1;
       --border-color: #dddddd;
       background: #ffffff !important;
+      --notification-bg: #28a745; /* Green background for notifications in light mode */
+      --notification-text: #ffffff; /* White text for notifications in light mode */
     }
 
     * {
@@ -295,20 +299,24 @@
       background-color: rgba(98, 0, 234, 0.1);
     }
 
+    /* MODIFIED: Ad notification styles */
     .ad-notification {
       position: fixed;
-      top: 50%;
+      top: 20px; /* Position at the top */
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.9);
-      color: var(--light);
-      padding: 20px 40px;
-      border-radius: 12px;
+      transform: translateX(-50%);
+      background: var(--notification-bg); /* Use the new CSS variable for background */
+      color: var(--notification-text); /* Use the new CSS variable for text color */
+      padding: 10px 20px; /* Smaller padding */
+      border-radius: 8px; /* Slightly smaller border radius */
       z-index: 1000;
       display: none;
-      font-size: 18px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      font-size: 16px; /* Smaller font size */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Slightly smaller shadow */
+      text-align: center;
+      max-width: 80%; /* Limit width on larger screens */
     }
+
 
     .monthly-list-item {
         display: flex;
@@ -666,10 +674,11 @@
           gap: 15px;
       }
 
+      /* MODIFIED: Ad notification responsive styles */
       .ad-notification {
         width: 90%;
-        padding: 15px 25px;
-        font-size: 16px;
+        padding: 10px 15px;
+        font-size: 15px;
       }
       .ad-step-control {
         flex-direction: row;
@@ -1597,6 +1606,3 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
-
-
-
