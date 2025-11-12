@@ -494,6 +494,59 @@
         display: none;
     }
 
+    /* New toggle switch styles for Facebook Follow */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: var(--success);
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px var(--success);
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
 
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
@@ -717,30 +770,65 @@
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
     </div>
 
-<!-- Ad Network Toggles moved right after ad-pattern-buttons -->
+    <div id="ad-network-toggle-controls" class="ad-network-toggles">
+        <label>
+            <span>Monetag</span>
+            <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
+        </label>
+        <label>
+            <span>Gigapub</span>
+            <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
+        </label>
+        <label>
+            <span>Adexora</span>
+            <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
+        </label>
+        <label>
+            <span>Adexium</span>
+            <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
+        </label>
+        <label>
+            <span>Adextra</span>
+            <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
+        </label>
+    </div>
+  </div>
 
-<div id="ad-network-toggle-controls" class="ad-network-toggles">
-    <label>
-        <span>Monetag</span>
-        <input type="checkbox" id="toggle-monetag" onchange="toggleAdNetwork('monetag')">
-    </label>
-    <label>
-        <span>Gigapub</span>
-        <input type="checkbox" id="toggle-gigapub" onchange="toggleAdNetwork('gigapub')">
-    </label>
-    <label>
-        <span>Adexora</span>
-        <input type="checkbox" id="toggle-adexora" onchange="toggleAdNetwork('adexora')">
-    </label>
-    <label>
-        <span>Adexium</span>
-        <input type="checkbox" id="toggle-adexium" onchange="toggleAdNetwork('adexium')">
-    </label>
-    <label>
-        <span>Adextra</span>
-        <input type="checkbox" id="toggle-adextra" onchange="toggleAdNetwork('adextra')">
-    </label>
-</div>
+  <!-- NEW: Facebook Follow Settings Card -->
+  <div class="card">
+    <h2>Facebook Follow Settings</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <label for="toggle-facebook-follow" style="font-weight: bold;">Enable Last Step Facebook Follow:</label>
+        <label class="toggle-switch">
+            <input type="checkbox" id="toggle-facebook-follow" onchange="toggleFacebookFollow()">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Facebook Follow Title:</label>
+    <div class="input-with-button" style="margin-bottom: 10px;">
+        <input type="text" id="facebook-follow-title" placeholder="Follow My Facebook Account">
+        <button class="btn btn-success" onclick="saveFacebookFollowTitle()">Save</button>
+    </div>
+    <label for="facebook-profile-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Facebook Profile Link:</label>
+    <div class="input-with-button">
+        <input type="text" id="facebook-profile-link" placeholder="https://www.facebook.com/yourprofile">
+        <button class="btn btn-success" onclick="saveFacebookProfileLink()">Save</button>
+    </div>
+  </div>
+
+  <!-- NEW: Promotional Ad Space Settings Card -->
+  <div class="card">
+    <h2>Promotional Ad Space Settings</h2>
+    <label for="promo-ad-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Ad Title:</label>
+    <div class="input-with-button" style="margin-bottom: 10px;">
+        <input type="text" id="promo-ad-title" placeholder="💎 Ad Space Promote Your Channel">
+        <button class="btn btn-success" onclick="savePromotionalAdTitle()">Save</button>
+    </div>
+    <label for="promo-ad-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Ad Link:</label>
+    <div class="input-with-button">
+        <input type="text" id="promo-ad-link" placeholder="https://t.me/FCanvaOwner">
+        <button class="btn btn-success" onclick="savePromotionalAdLink()">Save</button>
+    </div>
   </div>
 
   <div class="card">
@@ -1015,6 +1103,22 @@ totalAdStepsInput.value = currentSteps;
 
 });
 
+// NEW: Load Facebook Follow Settings
+database.ref('facebookFollowSettings').on('value', (snapshot) => {
+    const settings = snapshot.val() || {};
+    document.getElementById('toggle-facebook-follow').checked = settings.enabled || false;
+    document.getElementById('facebook-follow-title').value = settings.title || 'Follow My Facebook Account';
+    document.getElementById('facebook-profile-link').value = settings.link || 'https://www.facebook.com/yourprofile';
+});
+
+// NEW: Load Promotional Ad Space Settings
+database.ref('promotionalAdSpace').on('value', (snapshot) => {
+    const settings = snapshot.val() || {};
+    document.getElementById('promo-ad-title').value = settings.title || '💎 Ad Space Promote Your Channel';
+    document.getElementById('promo-ad-link').value = settings.link || 'https://t.me/FCanvaOwner';
+});
+
+
 // Load Monthly Visitor Data - Now using .on() for real-time updates and auto-selecting current month
 database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => { // Changed .once to .on
     const monthlyStatsList = document.getElementById('monthly-stats-list');
@@ -1174,6 +1278,59 @@ showAdNotification("Please enter a valid link.");
 }
 
 }
+
+// NEW: Facebook Follow Settings Functions
+function toggleFacebookFollow() {
+    const isEnabled = document.getElementById('toggle-facebook-follow').checked;
+    database.ref('facebookFollowSettings/enabled').set(isEnabled)
+        .then(() => showAdNotification(`Facebook Follow is now ${isEnabled ? 'enabled' : 'disabled'}.`))
+        .catch(error => {
+            console.error("Error toggling Facebook Follow:", error);
+            showAdNotification("Failed to toggle Facebook Follow.");
+        });
+}
+
+function saveFacebookFollowTitle() {
+    const title = document.getElementById('facebook-follow-title').value.trim();
+    database.ref('facebookFollowSettings/title').set(title)
+        .then(() => showAdNotification("Facebook Follow Title updated successfully!"))
+        .catch(error => {
+            console.error("Error updating Facebook Follow Title:", error);
+            showAdNotification("Failed to update Facebook Follow Title.");
+        });
+}
+
+function saveFacebookProfileLink() {
+    const link = document.getElementById('facebook-profile-link').value.trim();
+    database.ref('facebookFollowSettings/link').set(link)
+        .then(() => showAdNotification("Facebook Profile Link updated successfully!"))
+        .catch(error => {
+            console.error("Error updating Facebook Profile Link:", error);
+            showAdNotification("Failed to update Facebook Profile Link.");
+        });
+}
+
+// NEW: Promotional Ad Space Settings Functions
+function savePromotionalAdTitle() {
+    const title = document.getElementById('promo-ad-title').value.trim();
+    database.ref('promotionalAdSpace/title').set(title)
+        .then(() => showAdNotification("Promotional Ad Title updated successfully!"))
+        .catch(error => {
+            console.error("Error updating Promotional Ad Title:", error);
+            showAdNotification("Failed to update Promotional Ad Title.");
+        });
+}
+
+function savePromotionalAdLink() {
+    const link = document.getElementById('promo-ad-link').value.trim();
+    database.ref('promotionalAdSpace/link').set(link)
+        .then(() => showAdNotification("Promotional Ad Link updated successfully!"))
+        .catch(error => {
+            console.error("Error updating Promotional Ad Link:", error);
+            showAdNotification("Failed to update Promotional Ad Link.");
+        });
+}
+
 
 // --- Utility Functions ---
 function showAdNotification(msg) {
