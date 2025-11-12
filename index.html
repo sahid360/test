@@ -797,11 +797,10 @@ let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
 
-// Caching variables for data loaded once
+// Caching variables for data loaded once - now these will be updated in real-time listeners
 let allMonthlyData = {};
 let allDailyVisitorData = {};
 let allDailyAdsData = {};
-
 
 // Helper function to get today's date in YYYY-MM-DD UTC format
 function getTodayKeyUTC() {
@@ -811,6 +810,15 @@ const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
 const day = now.getUTCDate().toString().padStart(2, '0');
 return `${year}-${month}-${day}`;
 }
+
+// Helper function to get current month key in YYYY-MM UTC format
+function getCurrentMonthKeyUTC() {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+}
+
 
 // Helper function to format a date in YYYY-MM-DD UTC format
 function getFormattedDateUTC(year, month, day) {
@@ -1007,8 +1015,8 @@ totalAdStepsInput.value = currentSteps;
 
 });
 
-// Load Monthly Visitor Data - Now using .once() and caching data
-database.ref('visitors/monthly').orderByKey().once('value', (snapshot) => { // Changed .on to .once
+// Load Monthly Visitor Data - Now using .on() for real-time updates and auto-selecting current month
+database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => { // Changed .once to .on
     const monthlyStatsList = document.getElementById('monthly-stats-list');
     monthlyStatsList.innerHTML = '';
 
@@ -1022,6 +1030,17 @@ database.ref('visitors/monthly').orderByKey().once('value', (snapshot) => { // C
             return monthB - monthA;
         });
 
+        const currentMonthKey = getCurrentMonthKeyUTC();
+        let monthToSelect = currentMonthKey; // Default to current month
+
+        // If current month is not in data, select the latest available month
+        if (!months.includes(currentMonthKey) && months.length > 0) {
+            monthToSelect = months[0]; // The latest month is at index 0 due to sort order
+        } else if (months.length === 0) {
+            monthToSelect = ''; // No months available
+        }
+
+
         months.forEach(monthKey => {
             const [year, monthNum] = monthKey.split('-');
             const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
@@ -1031,12 +1050,19 @@ database.ref('visitors/monthly').orderByKey().once('value', (snapshot) => { // C
             div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
             div.onclick = () => selectMonthForDailyView(monthKey, div);
             monthlyStatsList.appendChild(div);
+
+            // If this is the month to select, mark it
+            if (monthKey === monthToSelect) {
+                currentSelectedMonth = monthKey; // Update currentSelectedMonth
+            }
         });
 
-        if (months.length > 0) {
-            const latestMonthKey = months[0];
-            const latestMonthElement = monthlyStatsList.querySelector('.monthly-list-item');
-            selectMonthForDailyView(latestMonthKey, latestMonthElement);
+        // Trigger selection of the identified month (current or latest)
+        if (monthToSelect) {
+            const elementToSelect = monthlyStatsList.querySelector(`[onclick*="${monthToSelect}"]`);
+            if (elementToSelect) {
+                selectMonthForDailyView(monthToSelect, elementToSelect);
+            }
         }
 
     } else {
@@ -1045,6 +1071,8 @@ database.ref('visitors/monthly').orderByKey().once('value', (snapshot) => { // C
             dailyMonthlyVisitorsChart.destroy();
             dailyMonthlyVisitorsChart = null;
         }
+        document.getElementById('selected-month-display').textContent = 'N/A';
+        document.getElementById('daily-stats-list').innerHTML = '<p>No daily data available for this month.</p>';
     }
 }, (error) => {
     console.error("Error loading monthly data:", error);
@@ -1052,16 +1080,26 @@ database.ref('visitors/monthly').orderByKey().once('value', (snapshot) => { // C
 });
 
 
-// Load all daily visitor data once
-database.ref('visitors/daily').once('value', (snapshot) => {
+// Load all daily visitor data in real-time
+database.ref('visitors/daily').on('value', (snapshot) => {
     allDailyVisitorData = snapshot.val() || {};
+    // If a month is currently selected, refresh its daily view with new data
+    if (currentSelectedMonth) {
+        const selectedElement = document.querySelector(`.monthly-list-item.selected`);
+        selectMonthForDailyView(currentSelectedMonth, selectedElement);
+    }
 }, (error) => {
     console.error("Error loading all daily visitor data:", error);
 });
 
-// Load all daily ads data once
-database.ref('visitors/ads/daily').once('value', (snapshot) => {
+// Load all daily ads data in real-time
+database.ref('visitors/ads/daily').on('value', (snapshot) => {
     allDailyAdsData = snapshot.val() || {};
+    // If a month is currently selected, refresh its daily view with new data
+    if (currentSelectedMonth) {
+        const selectedElement = document.querySelector(`.monthly-list-item.selected`);
+        selectMonthForDailyView(currentSelectedMonth, selectedElement);
+    }
 }, (error) => {
     console.error("Error loading all daily ads data:", error);
 });
@@ -1173,7 +1211,8 @@ return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 }
 
 function selectMonthForDailyView(monthKey, clickedElement) {
-    currentSelectedMonth = monthKey;
+    currentSelectedMonth = monthKey; // Ensure this is always updated when a month is selected
+
     const [year, monthNum] = monthKey.split('-');
     document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
@@ -1184,8 +1223,6 @@ function selectMonthForDailyView(monthKey, clickedElement) {
 
     const dailyStatsList = document.getElementById('daily-stats-list');
     dailyStatsList.innerHTML = '<p>Loading daily data...</p>';
-
-    // No need to detach listeners, as we are using cached data from allDailyVisitorData and allDailyAdsData
 
     const dayLabels = [];
     const fullDateLabels = [];
