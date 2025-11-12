@@ -798,18 +798,18 @@
   <div class="card">
     <h2>Step Link Settings</h2>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <label for="toggle-facebook-follow" style="font-weight: bold;">Enable Step Ad</label>
+        <label for="toggle-facebook-follow" style="font-weight: bold;">Enable Step Ad Link</label>
         <label class="toggle-switch">
             <input type="checkbox" id="toggle-facebook-follow" onchange="toggleFacebookFollow()">
             <span class="slider"></span>
         </label>
     </div>
-    <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Title:</label>
+    <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
     <div class="input-with-button" style="margin-bottom: 10px;">
         <input type="text" id="facebook-follow-title" placeholder="type a Title">
         <button class="btn btn-success" onclick="saveFacebookFollowTitle()">Save</button>
     </div>
-    <label for="facebook-profile-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Link:</label>
+    <label for="facebook-profile-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
     <div class="input-with-button">
         <input type="text" id="facebook-profile-link" placeholder="type a URL">
         <button class="btn btn-success" onclick="saveFacebookProfileLink()">Save</button>
@@ -819,12 +819,12 @@
   <!-- NEW: Promotional Ad Space Settings Card -->
   <div class="card">
     <h2>Ad Space Settings</h2>
-    <label for="promo-ad-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Ad Title:</label>
+    <label for="promo-ad-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Ad Title:</label>
     <div class="input-with-button" style="margin-bottom: 10px;">
         <input type="text" id="promo-ad-title" placeholder="type a Ad Title">
         <button class="btn btn-success" onclick="savePromotionalAdTitle()">Save</button>
     </div>
-    <label for="promo-ad-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Ad Link:</label>
+    <label for="promo-ad-link" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label>
     <div class="input-with-button">
         <input type="text" id="promo-ad-link" placeholder="type a Ad Link">
         <button class="btn btn-success" onclick="savePromotionalAdLink()">Save</button>
@@ -1572,4 +1572,5 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+
 
