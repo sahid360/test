@@ -1308,7 +1308,7 @@ showAdNotification("Please enter a valid link.");
 function toggleFacebookFollow() {
     const isEnabled = document.getElementById('toggle-facebook-follow').checked;
     database.ref('facebookFollowSettings/enabled').set(isEnabled)
-        .then(() => showAdNotification(`Facebook Follow is now ${isEnabled ? 'enabled' : 'disabled'}.`))
+        .then(() => showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`))
         .catch(error => {
             console.error("Error toggling Facebook Follow:", error);
             showAdNotification("Failed to toggle Facebook Follow.");
@@ -1597,5 +1597,6 @@ document.documentElement.style.setProperty('--h3-color', document.body.classList
 
 </body>
 </html>
+
 
 
