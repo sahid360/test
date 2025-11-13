@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -318,6 +317,14 @@
       white-space: nowrap; /* Prevent text from wrapping */
     }
 
+    /* MODIFIED: Notification specific colors */
+    .ad-notification.success {
+        background: var(--success);
+    }
+    .ad-notification.error {
+        background: var(--danger);
+    }
+
 
     .monthly-list-item {
         display: flex;
@@ -572,6 +579,14 @@
         transform: translateX(26px);
     }
 
+    /* Styles for the new hidden sections in Step Ad Settings */
+    .facebook-follow-details {
+        display: none; /* Hidden by default */
+        margin-top: 15px;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 15px;
+    }
+
     /* --- Responsive Adjustments --- */
     @media (max-width: 768px) {
       body {
@@ -764,14 +779,14 @@
         <span id="total-visitors">0</span>
       </div>
       <div class="stat-item">
-        Today's Views (UTC)
-        <span id="daily-visitors">0</span>
+        Total Ads Views
+        <span id="total-ads-shown">0</span>
       </div>
     </div>
     <div class="stat-grid" style="margin-top: 15px;"> <!-- Added margin-top for separation -->
       <div class="stat-item">
-        Total Ads Views
-        <span id="total-ads-shown">0</span>
+        Today's Views (UTC)
+        <span id="daily-visitors">0</span>
       </div>
       <div class="stat-item">
         Today's Ads Views
@@ -839,19 +854,20 @@
             <span class="slider"></span>
         </label>
     </div>
-    <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
-    <div class="input-with-button" style="margin-bottom: 10px;">
-        <input type="text" id="facebook-follow-title" placeholder="type a Title">
+
+    <div id="facebook-follow-details" class="facebook-follow-details">
+        <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
+        <div class="input-with-button" style="margin-bottom: 10px;">
+            <input type="text" id="facebook-follow-title" placeholder="type a Title">
+        </div>
+        <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button>
+
+        <label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+        <div class="input-with-button">
+            <input type="text" id="facebook-profile-link" placeholder="type a URL">
+        </div>
+        <button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button>
     </div>
-    <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button> <!-- MODIFIED -->
-
-
-<label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label> <!-- MODIFIED margin-top -->
-
-<div class="input-with-button">
-    <input type="text" id="facebook-profile-link" placeholder="type a URL">
-</div>
-<button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button> <!-- MODIFIED -->
   </div>
 
   <!-- NEW: Promotional Ad Space Settings Card -->
@@ -862,15 +878,15 @@
     <div class="input-with-button" style="margin-bottom: 10px;">
         <input type="text" id="promo-ad-title" placeholder="type a Ad Title">
     </div>
-    <button class="btn btn-save-centered" onclick="savePromotionalAdTitle()">Save Ad Title</button> <!-- MODIFIED -->
+    <button class="btn btn-save-centered" onclick="savePromotionalAdTitle()">Save Ad Title</button>
 
 
-<label for="promo-ad-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label> <!-- MODIFIED margin-top -->
+<label for="promo-ad-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Ad Link:</label>
 
 <div class="input-with-button">
     <input type="text" id="promo-ad-link" placeholder="type a Ad Link">
 </div>
-<button class="btn btn-save-centered" onclick="savePromotionalAdLink()">Save Ad Link</button> <!-- MODIFIED -->
+<button class="btn btn-save-centered" onclick="savePromotionalAdLink()">Save Ad Link</button>
   </div>
 
   <div class="card">
@@ -907,22 +923,20 @@
   <script>
     // Firebase configuration (replace with your actual config)
    const firebaseConfig = {
-  apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4", // REPLACE THIS
-  authDomain: "test-9c2fe.firebaseapp.com",        // REPLACE THIS
-  databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com", // REPLACE THIS
-  projectId: "test-9c2fe",                        // REPLACE THIS
-  storageBucket: "test-9c2fe.firebasestorage.app", // REPLACE THIS
-  messagingSenderId: "940783022173",              // REPLACE THIS
-  appId: "1:940783022173:web:72826d42d138be8a219db4" // REPLACE THIS
+  apiKey: "AIzaSyBkaK2RflvXBZy90-02PPNs-go5kdLRhjw",
+  authDomain: "canvateambot.firebaseapp.com",
+  databaseURL: "https://canvateambot-default-rtdb.firebaseio.com",
+  projectId: "canvateambot",
+  storageBucket: "canvateambot.firebasestorage.app",
+  messagingSenderId: "674074897878",
+  appId: "1:674074897878:web:3e6b38f984f4cc4b4e4877"
 };
-
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // REPLACE THIS with your actual admin UID
+const ADMIN_UID = "dQ6ByI8pmfOrkPq6vBZBtf5gaSO2"; // REPLACE THIS with your actual admin UID
 let dailyMonthlyVisitorsChart;
 let currentSelectedMonth = '';
 let isInitialAuthCheckComplete = false;
@@ -1028,7 +1042,7 @@ const email = document.getElementById('admin-email').value;
 const password = document.getElementById('admin-password').value;
 
 if (!email || !password) {
-showAdNotification("Please enter both email and password.");
+showAdNotification("Please enter both email and password.", 'error');
 return;
 }
 
@@ -1043,7 +1057,7 @@ document.getElementById('login-container').style.display = 'none';
 // Data will be loaded by onAuthStateChanged once the user is verified
 } else {
 auth.signOut();
-showAdNotification("You are not authorized to access this panel.");
+showAdNotification("You are not authorized to access this panel.", 'error');
 hideLoadingOverlay();
 document.getElementById('login-container').style.display = 'block';
 document.getElementById('mode-toggle').style.display = 'none';
@@ -1051,7 +1065,7 @@ document.getElementById('mode-toggle').style.display = 'none';
 })
 .catch((error) => {
 console.error("Admin login failed:", error);
-showAdNotification("Login failed: " + error.message);
+showAdNotification("Login failed: " + error.message, 'error');
 hideLoadingOverlay();
 document.getElementById('login-container').style.display = 'block';
 document.getElementById('mode-toggle').style.display = 'none';
@@ -1063,13 +1077,13 @@ function logoutAdmin() {
 showLoadingOverlay("Logging out...");
 document.getElementById('mode-toggle').style.display = 'none';
 auth.signOut().then(() => {
-showAdNotification("Admin logged out.");
+showAdNotification("Admin logged out.", 'success');
 setTimeout(() => {
 hideLoadingOverlay();
 }, 500);
 }).catch((error) => {
 console.error("Logout error:", error);
-showAdNotification("Logout error: " + error.message);
+showAdNotification("Logout error: " + error.message, 'error');
 hideLoadingOverlay();
 });
 }
@@ -1147,9 +1161,19 @@ totalAdStepsInput.value = currentSteps;
 // NEW: Load Facebook Follow Settings
 database.ref('facebookFollowSettings').on('value', (snapshot) => {
 const settings = snapshot.val() || {};
-document.getElementById('toggle-facebook-follow').checked = settings.enabled || false;
+const toggleCheckbox = document.getElementById('toggle-facebook-follow');
+const detailsDiv = document.getElementById('facebook-follow-details');
+
+toggleCheckbox.checked = settings.enabled || false;
 document.getElementById('facebook-follow-title').value = settings.title || '';
 document.getElementById('facebook-profile-link').value = settings.link || '';
+
+// Show/hide details based on toggle state
+if (toggleCheckbox.checked) {
+    detailsDiv.style.display = 'block';
+} else {
+    detailsDiv.style.display = 'none';
+}
 });
 
 // NEW: Load Promotional Ad Space Settings
@@ -1260,7 +1284,7 @@ database.ref('adSettings/pattern').set(patternNumber)
 })
 .catch(error => {
 console.error("Error setting ad pattern:", error);
-showAdNotification("Failed to set ad pattern.");
+showAdNotification("Failed to set ad pattern.", 'error');
 });
 }
 
@@ -1279,11 +1303,11 @@ function saveTotalAdSteps() {
 const totalSteps = parseInt(document.getElementById('total-ad-steps').value);
 database.ref('adSettings/totalSteps').set(totalSteps)
 .then(() => {
-showAdNotification("Ad steps saved successfully!");
+showAdNotification("Ad steps saved successfully!", 'success');
 })
 .catch(error => {
 console.error("Error setting total ad steps:", error);
-showAdNotification("Failed to save total ad steps.");
+showAdNotification("Failed to save total ad steps.", 'error');
 });
 }
 
@@ -1292,11 +1316,11 @@ const checkbox = document.getElementById(`toggle-${networkName}`);
 const isEnabled = checkbox.checked;
 database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
 .then(() => {
-showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`);
+showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`, 'success');
 })
 .catch(error => {
 console.error(`Error toggling ${networkName} ads:`, error);
-showAdNotification(`Failed to toggle ${networkName} ads.`);
+showAdNotification(`Failed to toggle ${networkName} ads.`, 'error');
 checkbox.checked = !isEnabled; // Revert UI on error
 });
 }
@@ -1308,15 +1332,15 @@ const newLink = newLinkInput.value.trim();
 if (newLink) {
 database.ref('canvaLink').set(newLink)
 .then(() => {
-showAdNotification("Link updated successfully!");
+showAdNotification("Link updated successfully!", 'success');
 newLinkInput.value = '';
 })
 .catch((error) => {
 console.error("Error updating Canva link:", error);
-showAdNotification("Failed to update Canva Pro link.");
+showAdNotification("Failed to update Canva Pro link.", 'error');
 });
 } else {
-showAdNotification("Please enter a valid link.");
+showAdNotification("Please enter a valid link.", 'error');
 }
 
 }
@@ -1324,31 +1348,40 @@ showAdNotification("Please enter a valid link.");
 // NEW: Facebook Follow Settings Functions
 function toggleFacebookFollow() {
 const isEnabled = document.getElementById('toggle-facebook-follow').checked;
+const detailsDiv = document.getElementById('facebook-follow-details');
+
 database.ref('facebookFollowSettings/enabled').set(isEnabled)
-.then(() => showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`))
+.then(() => {
+    showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`, 'success');
+    if (isEnabled) {
+        detailsDiv.style.display = 'block';
+    } else {
+        detailsDiv.style.display = 'none';
+    }
+})
 .catch(error => {
 console.error("Error toggling Facebook Follow:", error);
-showAdNotification("Failed to toggle Facebook Follow.");
+showAdNotification("Failed to toggle Step Ad.", 'error');
 });
 }
 
 function saveFacebookFollowTitle() {
 const title = document.getElementById('facebook-follow-title').value.trim();
 database.ref('facebookFollowSettings/title').set(title)
-.then(() => showAdNotification("Title updated successfully!"))
+.then(() => showAdNotification("Title updated successfully!", 'success'))
 .catch(error => {
 console.error("Error updating Facebook Follow Title:", error);
-showAdNotification("Failed to update Facebook Follow Title.");
+showAdNotification("Failed to update Title.", 'error');
 });
 }
 
 function saveFacebookProfileLink() {
 const link = document.getElementById('facebook-profile-link').value.trim();
 database.ref('facebookFollowSettings/link').set(link)
-.then(() => showAdNotification("Link updated successfully!"))
+.then(() => showAdNotification("Link updated successfully!", 'success'))
 .catch(error => {
 console.error("Error updating Facebook Profile Link:", error);
-showAdNotification("Failed to update Facebook Profile Link.");
+showAdNotification("Failed to update Link.", 'error');
 });
 }
 
@@ -1356,27 +1389,29 @@ showAdNotification("Failed to update Facebook Profile Link.");
 function savePromotionalAdTitle() {
 const title = document.getElementById('promo-ad-title').value.trim();
 database.ref('promotionalAdSpace/title').set(title)
-.then(() => showAdNotification("Ad Title updated successfully!"))
+.then(() => showAdNotification("Ad Title updated successfully!", 'success'))
 .catch(error => {
 console.error("Error updating Promotional Ad Title:", error);
-showAdNotification("Failed to update Promotional Ad Title.");
+showAdNotification("Failed to update Ad Title.", 'error');
 });
 }
 
 function savePromotionalAdLink() {
 const link = document.getElementById('promo-ad-link').value.trim();
 database.ref('promotionalAdSpace/link').set(link)
-.then(() => showAdNotification("Ad Link updated successfully!"))
+.then(() => showAdNotification("Ad Link updated successfully!", 'success'))
 .catch(error => {
 console.error("Error updating Promotional Ad Link:", error);
-showAdNotification("Failed to update Promotional Ad Link.");
+showAdNotification("Failed to update Ad Link.", 'error');
 });
 }
 
 // --- Utility Functions ---
-function showAdNotification(msg) {
+function showAdNotification(msg, type = 'success') { // Added 'type' parameter
 const el = document.getElementById('ad-notification');
 el.textContent = msg;
+el.classList.remove('success', 'error'); // Clear previous types
+el.classList.add(type); // Add the new type
 el.style.display = 'block';
 setTimeout(() => {
 el.style.display = 'none';
