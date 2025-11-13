@@ -301,7 +301,7 @@
       top: 20px; /* Position at the top */
       left: 50%;
       transform: translateX(-50%); /* Center horizontally */
-      background: var(--success); /* Green background */
+      background: var(--success); /* Green background (default) */
       color: #fff; /* White text */
       padding: 10px 20px; /* Smaller padding for a compact look */
       border-radius: 8px; /* Slightly smaller border-radius */
@@ -318,7 +318,7 @@
         background: var(--success);
     }
     .ad-notification.error {
-        background: var(--danger);
+        background: var(--danger); /* Red background for error */
     }
 
 
@@ -814,7 +814,6 @@
         <button id="ad-pattern-2-btn" onclick="selectAdPattern(2)">All-Network</button>
     </div>
 
-
 <div id="ad-network-toggle-controls" class="ad-network-toggles">
     <label>
         <span>Monetag</span>
@@ -851,19 +850,19 @@
         </label>
     </div>
 
-    <div id="facebook-follow-details" class="facebook-follow-details">
-        <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
-        <div class="input-with-button" style="margin-bottom: 10px;">
-            <input type="text" id="facebook-follow-title" placeholder="type a Title">
-        </div>
-        <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button>
-
-        <label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
-        <div class="input-with-button">
-            <input type="text" id="facebook-profile-link" placeholder="type a URL">
-        </div>
-        <button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button>
+<div id="facebook-follow-details" class="facebook-follow-details">
+    <label for="facebook-follow-title" style="display: block; margin-bottom: 5px; font-weight: bold;">Enter New Title:</label>
+    <div class="input-with-button" style="margin-bottom: 10px;">
+        <input type="text" id="facebook-follow-title" placeholder="type a Title">
     </div>
+    <button class="btn btn-save-centered" onclick="saveFacebookFollowTitle()">Save Title</button>
+
+    <label for="facebook-profile-link" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Enter New Link:</label>
+    <div class="input-with-button">
+        <input type="text" id="facebook-profile-link" placeholder="type a URL">
+    </div>
+    <button class="btn btn-save-centered" onclick="saveFacebookProfileLink()">Save Link</button>
+</div>
   </div>
 
   <!-- NEW: Promotional Ad Space Settings Card -->
@@ -931,6 +930,7 @@
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
+
 
 const ADMIN_UID = "dQ6ByI8pmfOrkPq6vBZBtf5gaSO2"; // REPLACE THIS with your actual admin UID
 let dailyMonthlyVisitorsChart;
@@ -1166,9 +1166,9 @@ document.getElementById('facebook-profile-link').value = settings.link || '';
 
 // Show/hide details based on toggle state
 if (toggleCheckbox.checked) {
-    detailsDiv.style.display = 'block';
+detailsDiv.style.display = 'block';
 } else {
-    detailsDiv.style.display = 'none';
+detailsDiv.style.display = 'none';
 }
 });
 
@@ -1184,7 +1184,6 @@ database.ref('visitors/monthly').orderByKey().on('value', (snapshot) => { // Cha
 const monthlyStatsList = document.getElementById('monthly-stats-list');
 monthlyStatsList.innerHTML = '';
 
-
 if (snapshot.exists()) {
 const data = snapshot.val();
 allMonthlyData = data; // Cache the monthly data
@@ -1195,40 +1194,39 @@ if (yearA !== yearB) return yearB - yearA;
 return monthB - monthA;
 });
 
-
 const currentMonthKey = getCurrentMonthKeyUTC();
 let monthToSelect = currentMonthKey; // Default to current month
 
 // If current month is not in data, select the latest available month
 if (!months.includes(currentMonthKey) && months.length > 0) {
-    monthToSelect = months[0]; // The latest month is at index 0 due to sort order
+monthToSelect = months[0]; // The latest month is at index 0 due to sort order
 } else if (months.length === 0) {
-    monthToSelect = ''; // No months available
+monthToSelect = ''; // No months available
 }
 
-
 months.forEach(monthKey => {
-    const [year, monthNum] = monthKey.split('-');
-    const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
+const [year, monthNum] = monthKey.split('-');
+const formattedMonthName = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
-    const div = document.createElement('div');
-    div.className = 'monthly-list-item';
-    div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
-    div.onclick = () => selectMonthForDailyView(monthKey, div);
-    monthlyStatsList.appendChild(div);
+const div = document.createElement('div');
+div.className = 'monthly-list-item';
+div.innerHTML = `<span>${formattedMonthName}</span><span>${data[monthKey]} views</span>`;
+div.onclick = () => selectMonthForDailyView(monthKey, div);
+monthlyStatsList.appendChild(div);
 
-    // If this is the month to select, mark it
-    if (monthKey === monthToSelect) {
-        currentSelectedMonth = monthKey; // Update currentSelectedMonth
-    }
+// If this is the month to select, mark it
+if (monthKey === monthToSelect) {
+    currentSelectedMonth = monthKey; // Update currentSelectedMonth
+}
+
 });
 
 // Trigger selection of the identified month (current or latest)
 if (monthToSelect) {
-    const elementToSelect = monthlyStatsList.querySelector(`[onclick*="${monthToSelect}"]`);
-    if (elementToSelect) {
-        selectMonthForDailyView(monthToSelect, elementToSelect);
-    }
+const elementToSelect = monthlyStatsList.querySelector(`[onclick*="${monthToSelect}"]`);
+if (elementToSelect) {
+selectMonthForDailyView(monthToSelect, elementToSelect);
+}
 }
 
 } else {
@@ -1308,17 +1306,18 @@ showAdNotification("Failed to save total ad steps.", 'error');
 }
 
 function toggleAdNetwork(networkName) {
-const checkbox = document.getElementById(`toggle-${networkName}`);
-const isEnabled = checkbox.checked;
-database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
-.then(() => {
-showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`, 'success');
-})
-.catch(error => {
-console.error(`Error toggling ${networkName} ads:`, error);
-showAdNotification(`Failed to toggle ${networkName} ads.`, 'error');
-checkbox.checked = !isEnabled; // Revert UI on error
-});
+    const checkbox = document.getElementById(`toggle-${networkName}`);
+    const isEnabled = checkbox.checked;
+    database.ref(`adSettings/adNetworks/${networkName}`).set(isEnabled)
+        .then(() => {
+            const notificationType = isEnabled ? 'success' : 'error'; // Determine type here
+            showAdNotification(`${networkName} ads ${isEnabled ? 'enabled' : 'disabled'}.`, notificationType);
+        })
+        .catch(error => {
+            console.error(`Error toggling ${networkName} ads:`, error);
+            showAdNotification(`Failed to toggle ${networkName} ads.`, 'error');
+            checkbox.checked = !isEnabled; // Revert UI on error
+        });
 }
 
 function updateCanvaLink() {
@@ -1343,22 +1342,23 @@ showAdNotification("Please enter a valid link.", 'error');
 
 // NEW: Facebook Follow Settings Functions
 function toggleFacebookFollow() {
-const isEnabled = document.getElementById('toggle-facebook-follow').checked;
-const detailsDiv = document.getElementById('facebook-follow-details');
+    const isEnabled = document.getElementById('toggle-facebook-follow').checked;
+    const detailsDiv = document.getElementById('facebook-follow-details');
 
-database.ref('facebookFollowSettings/enabled').set(isEnabled)
-.then(() => {
-    showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`, 'success');
-    if (isEnabled) {
-        detailsDiv.style.display = 'block';
-    } else {
-        detailsDiv.style.display = 'none';
-    }
-})
-.catch(error => {
-console.error("Error toggling Facebook Follow:", error);
-showAdNotification("Failed to toggle Step Ad.", 'error');
-});
+    database.ref('facebookFollowSettings/enabled').set(isEnabled)
+        .then(() => {
+            const notificationType = isEnabled ? 'success' : 'error'; // Determine type here
+            showAdNotification(`Step Ad is now ${isEnabled ? 'enabled' : 'disabled'}.`, notificationType);
+            if (isEnabled) {
+                detailsDiv.style.display = 'block';
+            } else {
+                detailsDiv.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error("Error toggling Facebook Follow:", error);
+            showAdNotification("Failed to toggle Step Ad.", 'error');
+        });
 }
 
 function saveFacebookFollowTitle() {
@@ -1442,7 +1442,6 @@ return document.body.classList.contains('light-mode') ? '#000000' : '#ffffff';
 function selectMonthForDailyView(monthKey, clickedElement) {
 currentSelectedMonth = monthKey; // Ensure this is always updated when a month is selected
 
-
 const [year, monthNum] = monthKey.split('-');
 document.getElementById('selected-month-display').textContent = getFormattedMonthUTC(parseInt(year), parseInt(monthNum));
 
@@ -1489,26 +1488,26 @@ table.className = 'daily-details-table';
 table.innerHTML = `<thead> <tr> <th>Date</th> <th>Views</th> <th>Ads View</th> </tr> </thead> <tbody> </tbody>`;
 const tbody = table.querySelector('tbody');
 
-
 allDatesInMonth.forEach(fullDateKey => {
-    const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
+const [dayYear, dayMonth, dayDay] = fullDateKey.split('-').map(Number);
 
-    dayLabels.push(dayDay.toString());
-    fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
+dayLabels.push(dayDay.toString());
+fullDateLabels.push(getFormattedDateUTC(dayYear, dayMonth, dayDay));
 
-    const views = visitorsDataForMonth[fullDateKey] || 0;
-    const adsShown = adsDataForMonth[fullDateKey] || 0;
+const views = visitorsDataForMonth[fullDateKey] || 0;
+const adsShown = adsDataForMonth[fullDateKey] || 0;
 
-    dayViews.push(views);
-    dayAdsShown.push(adsShown);
+dayViews.push(views);
+dayAdsShown.push(adsShown);
 
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${dayDay}</td>
-        <td>${views}</td>
-        <td>${adsShown}</td>
-    `;
-    tbody.appendChild(row);
+const row = document.createElement('tr');
+row.innerHTML = `
+    <td>${dayDay}</td>
+    <td>${views}</td>
+    <td>${adsShown}</td>
+`;
+tbody.appendChild(row);
+
 });
 dailyStatsList.appendChild(table);
 
@@ -1523,7 +1522,6 @@ dailyMonthlyVisitorsChart.data.datasets[0].data = dayViews;
 dailyMonthlyVisitorsChart.data.datasets[1].data = dayAdsShown;
 dailyMonthlyVisitorsChart.data.datasets[0].fullDateLabels = fullDateLabels;
 dailyMonthlyVisitorsChart.data.datasets[1].fullDateLabels = fullDateLabels;
-
 
 dailyMonthlyVisitorsChart.options.plugins.title.text = `Daily Views & Ads Views for ${getFormattedMonthUTC(parseInt(year), parseInt(monthNum))}`;
 dailyMonthlyVisitorsChart.data.datasets[1].label = 'Daily Ads Views';
