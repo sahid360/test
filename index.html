@@ -112,7 +112,7 @@
             padding: 30px;
             display: flex;
             flex-direction: column;
-            margin-left: 250px; /* Offset for fixed sidebar */
+            margin-left: 0; /* Default to 0, adjusted by JS on desktop and when sidebar is active */
             transition: margin-left 0.3s ease-in-out;
         }
         
@@ -141,6 +141,7 @@
             padding: 15px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative; /* For menu toggle */
         }
 
         .header .logo {
@@ -177,9 +178,10 @@
             font-size: 1.5em;
             color: var(--text-light);
             cursor: pointer;
-            position: absolute;
-            top: 20px;
+            position: absolute; /* Position relative to header */
+            top: 50%;
             left: 20px;
+            transform: translateY(-50%);
             z-index: 1000; /* Above sidebar */
         }
         
@@ -538,10 +540,7 @@
             .header .logo h1 {
                 font-size: 1.5em;
             }
-            .main-content {
-                padding: 20px;
-                margin-left: 200px; /* Adjust for smaller sidebar */
-            }
+            /* main-content margin will be handled by JS for desktop view */
             .dashboard-grid {
                 gap: 20px;
             }
@@ -574,23 +573,23 @@
             }
 
             .main-content {
-                margin-left: 0; /* No offset when sidebar is hidden */
+                margin-left: 0; /* No offset when sidebar is hidden on mobile */
                 padding: 20px 15px;
             }
             .header {
-                flex-direction: column;
-                align-items: flex-start; /* Align logo left */
+                flex-direction: row; /* Keep row for menu and logo on mobile */
+                justify-content: space-between;
+                align-items: center;
                 padding: 15px 20px;
                 margin-bottom: 30px;
-                position: relative; /* For menu toggle positioning */
             }
             .header .logo {
-                margin-bottom: 10px; /* Less space than desktop */
+                margin-bottom: 0; /* Reset margin */
+                margin-left: 40px; /* Offset for menu toggle */
             }
             .header .user-info {
-                margin-top: 10px;
-                width: 100%; /* Full width for user info */
-                justify-content: flex-end; /* Align user info right */
+                margin-top: 0; /* Reset margin */
+                width: auto;
             }
             .login-card {
                 padding: 30px;
@@ -692,11 +691,11 @@
         <div class="overlay" id="admin-overlay"></div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" id="admin-main-content">
             <!-- Header -->
             <header class="header">
                 <div class="logo">
-                    <img src="cat-mod-logo.png" alt="Cat Mod Logo"> <!-- Place your logo file here -->
+                    <img src="cat-mod-logo.png" onerror="this.onerror=null;this.src='https://via.placeholder.com/40/6a0dad/ffffff?text=CM';" alt="Cat Mod Logo"> <!-- Place your logo file here -->
                     <h1>Cat Mod Admin</h1>
                 </div>
                 <div class="user-info">
@@ -835,6 +834,7 @@
         const logoutBtn = document.getElementById('logout-btn');
         const adminUserEmailSpan = document.getElementById('admin-user-email');
         const appListLoadingMessage = document.getElementById('app-list-loading-message');
+        const adminMainContent = document.getElementById('admin-main-content'); // Get main content
 
         // Modal elements
         const editAppModal = document.getElementById('editAppModal');
@@ -857,13 +857,15 @@
         function toggleAdminSidebar() {
             adminSidebar.classList.toggle('active');
             adminOverlay.classList.toggle('active');
-            // Adjust main content margin on desktop, but not on mobile
+            // Adjust main content margin only on desktop (window.innerWidth > 768)
             if (window.innerWidth > 768) {
                 if (adminSidebar.classList.contains('active')) {
-                    document.querySelector('.main-content').style.marginLeft = '250px';
+                    adminMainContent.style.marginLeft = '250px';
                 } else {
-                    document.querySelector('.main-content').style.marginLeft = '0';
+                    adminMainContent.style.marginLeft = '0';
                 }
+            } else {
+                adminMainContent.style.marginLeft = '0'; // Always 0 on mobile
             }
         }
 
@@ -880,13 +882,14 @@
                     loadAppsForAdmin(); // Load apps for admin after login
                     // Set active tab to 'Add New App' by default
                     document.querySelector('.sidebar ul li a[data-section="add-app"]').click();
-                    // Set sidebar to active by default on desktop, hidden on mobile
+                    
+                    // Set sidebar active/inactive based on screen size
                     if (window.innerWidth > 768) {
                          adminSidebar.classList.add('active');
-                         document.querySelector('.main-content').style.marginLeft = '250px';
+                         adminMainContent.style.marginLeft = '250px';
                     } else {
                         adminSidebar.classList.remove('active');
-                        document.querySelector('.main-content').style.marginLeft = '0';
+                        adminMainContent.style.marginLeft = '0';
                     }
                 } else {
                     loginScreen.style.display = 'flex';
@@ -997,15 +1000,16 @@
         // Edit and Delete button event listener (using event delegation)
         appList.addEventListener('click', (e) => {
             const target = e.target;
-            const appId = target.dataset.appId || target.closest('.btn')?.dataset.appId;
+            // Find the closest button or the target itself that has a data-app-id
+            const appId = target.dataset.appId || target.closest('button')?.dataset.appId;
 
             if (!appId) return;
 
-            if (target.classList.contains('delete-btn')) {
+            if (target.classList.contains('delete-btn') || target.closest('.delete-btn')) {
                 if (confirm('Are you sure you want to delete this app?')) {
                     deleteApp(appId);
                 }
-            } else if (target.classList.contains('edit-btn')) {
+            } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
                 openEditModal(appId);
             }
         });
@@ -1013,7 +1017,9 @@
         async function deleteApp(appId) {
             try {
                 await appsRef.child(appId).remove();
-                showMessage(addAppMessage, 'App deleted successfully!', 'success');
+                // The 'addAppMessage' is a bit misused here; ideally, you'd have a specific message area for app list actions.
+                // For now, it works, but consider a dedicated element for manage app messages.
+                showMessage(addAppMessage, 'App deleted successfully!', 'success'); 
                 // loadAppsForAdmin() automatically refreshes
             } catch (error) {
                 showMessage(addAppMessage, `Failed to delete app: ${error.message}`, 'error');
@@ -1090,6 +1096,9 @@
 
         // Sidebar navigation section switching
         const navLinks = document.querySelectorAll('.sidebar ul li a');
+        const addAppSection = document.getElementById('add-app-section');
+        const manageAppsSection = document.getElementById('manage-apps-section');
+
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1097,17 +1106,21 @@
                 link.classList.add('active');
 
                 const targetSection = link.dataset.section;
-                document.getElementById('add-app-section').style.display = 'none';
-                document.getElementById('manage-apps-section').style.display = 'none';
+                
+                // Hide all sections first
+                addAppSection.style.display = 'none';
+                manageAppsSection.style.display = 'none';
 
                 // Clear messages when switching sections
                 addAppMessage.style.display = 'none';
-                editAppMessage.style.display = 'none'; // Ensure edit message is hidden
+                editAppMessage.style.display = 'none';
 
                 if (targetSection === 'add-app') {
-                    document.getElementById('add-app-section').style.display = 'flex';
+                    addAppSection.style.display = 'flex';
                 } else if (targetSection === 'manage-apps') {
-                    document.getElementById('manage-apps-section').style.display = 'flex';
+                    manageAppsSection.style.display = 'flex';
+                } else if (link.id === 'logout-btn') {
+                    // Logout handled by its own click listener, no section to show
                 }
 
                 // Close sidebar on mobile after selection
@@ -1125,11 +1138,12 @@
             if (auth.currentUser && auth.currentUser.uid === ADMIN_UID) {
                 if (window.innerWidth > 768) {
                     adminSidebar.classList.add('active');
-                    document.querySelector('.main-content').style.marginLeft = '250px';
+                    adminMainContent.style.marginLeft = '250px';
                     adminOverlay.classList.remove('active'); // Hide overlay on desktop
                 } else {
                     adminSidebar.classList.remove('active'); // Hide sidebar by default on mobile
-                    document.querySelector('.main-content').style.marginLeft = '0';
+                    adminMainContent.style.marginLeft = '0';
+                    adminOverlay.classList.remove('active'); // Hide overlay when resizing to mobile from desktop
                 }
             }
         });
