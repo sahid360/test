@@ -3,554 +3,1037 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Telegram App</title>
-    
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Adexium Widget Script -->
-    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Ionicons for icons -->
-    <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
-    
+    <title>Cat Mod - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
         :root {
-            --primary: #6C63FF;
-            --primary-dark: #564FD8;
-            --secondary: #FF6B8B;
-            --dark: #1A1A2E;
-            --light: #F8F9FC;
-            --gray: #8A8EA8;
-            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --primary-color: #6a0dad; /* Purple */
+            --secondary-color: #4a007c; /* Darker Purple */
+            --accent-color: #00bcd4; /* Cyan/Light Blue */
+            --background-dark: #1a1a2e;
+            --background-light-dark: #272740;
+            --text-color: #e0e0e0;
+            --text-light: #f0f0f0;
+            --border-color: #3a3a5a;
+            --card-background: #2c2c4a;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
         }
-        
-        .dark-mode {
-            --dark: #F8F9FC;
-            --light: #1A1A2E;
-            --card-bg: rgba(26, 26, 46, 0.95);
-            --gray: #A2A5BD;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        * {
+
+        body {
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        body {
-            background: var(--light);
-            color: var(--dark);
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
             min-height: 100vh;
-            padding: 20px;
-            transition: var(--transition);
         }
-        
+
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: var(--transition);
+            display: flex;
+            width: 100%;
         }
-        
-        header {
-            background: var(--gradient);
-            color: white;
-            padding: 30px;
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar-header {
             text-align: center;
-            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header h2 {
+            color: var(--text-light);
+            margin: 0;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header (Admin specific - simpler) */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background-color: var(--background-light-dark);
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
         }
         
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
+        .header .logo img {
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .header .logo h1 {
+            color: var(--text-light);
+            font-size: 1.8em;
+            margin: 0;
+        }
+
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .header .user-info i {
+            margin-right: 10px;
+            font-size: 1.3em;
+            color: var(--accent-color);
+        }
+
+        /* Dashboard Sections (Cards) */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column for forms initially */
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-grow: 1;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            color: var(--text-light);
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="url"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--background-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 1em;
+            box-sizing: border-box; /* padding and border included in width */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.3); /* primary-color with opacity */
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-message {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            display: none; /* Hide by default */
+        }
+
+        .form-message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+
+        .form-message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Admin App Management List */
+        .app-management-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .app-management-list.empty-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+            font-size: 1.1em;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+
+        .manage-app-card {
+            background-color: var(--background-light-dark);
+            border-radius: 10px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .manage-app-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .manage-app-card .app-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .manage-app-card .app-logo {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-right: 15px;
+            background-color: var(--background-dark);
+            padding: 5px;
+        }
+
+        .manage-app-card .app-details h4 {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 1.2em;
+        }
+
+        .manage-app-card .app-details p {
+            margin: 5px 0 0 0;
+            font-size: 0.85em;
+            color: var(--text-color);
+            opacity: 0.8;
+            max-width: 300px; /* Limit description width */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .manage-app-card .app-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(30deg);
-        }
-        
-        .logo {
-            width: 90px;
-            height: 90px;
-            background: white;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: var(--primary);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-            border: 4px solid rgba(255, 255, 255, 0.5);
-        }
-        
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            font-size: 18px;
-            opacity: 0.9;
-            font-weight: 300;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .content {
-            padding: 40px;
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .feature-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-        
-        .feature-icon {
-            font-size: 40px;
-            margin-bottom: 20px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: var(--primary);
-        }
-        
-        .feature-title {
-            font-size: 22px;
-            margin-bottom: 15px;
-            color: var(--dark);
-            font-weight: 600;
-        }
-        
-        .feature-desc {
-            font-size: 16px;
-            color: var(--gray);
-            line-height: 1.6;
-            font-weight: 400;
-        }
-        
-        .ad-section {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 40px 0;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .section-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: var(--dark);
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .ad-container {
-            background: var(--light);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-            border: 2px dashed var(--gray);
-            transition: var(--transition);
-            cursor: pointer;
-            min-height: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .ad-container:hover {
-            border-color: var(--primary);
-            transform: scale(1.01);
-        }
-        
-        .ad-label {
-            display: inline-block;
-            background: var(--gradient);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        
-        .ad-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray);
-            font-style: italic;
-            padding: 20px;
-        }
-        
-        .ad-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        .ad-text {
-            font-size: 18px;
-            margin-bottom: 20px;
-            max-width: 400px;
-        }
-        
-        .ad-button {
-            background: var(--gradient);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
-        }
-        
-        .ad-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
-        }
-        
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 40px;
-        }
-        
-        .btn {
-            padding: 18px;
-            border: none;
-            border-radius: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 10px;
-            font-size: 16px;
+            flex-shrink: 0; /* Prevent buttons from shrinking */
         }
-        
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
-        }
-        
-        .btn-secondary {
-            background: var(--light);
-            color: var(--dark);
-            border: 2px solid var(--gray);
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-            font-size: 14px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            background: var(--card-bg);
-        }
-        
-        .stats {
+
+        /* Login Page Specific Styling */
+        .login-page {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 15px;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
         }
-        
-        .stat-item {
+
+        .login-card {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: var(--text-light);
+            font-size: 2em;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--background-light-dark);
+            padding: 20px 30px;
+            text-align: center;
+            color: var(--text-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto; /* Push footer to the bottom */
+            border-radius: 12px;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer .firebase-logo {
+            height: 20px;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        /* Button Designs */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            white-space: nowrap; /* Prevent button text from wrapping */
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-block {
+            width: 100%;
             display: flex;
-            flex-direction: column;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--background-light-dark);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--background-dark); /* Dark text for contrast */
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Modal for Editing */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            justify-content: center;
             align-items: center;
         }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: var(--primary);
+
+        .modal-content {
+            background-color: var(--card-background);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
         }
-        
-        .stat-label {
-            font-size: 14px;
-            color: var(--gray);
+
+        .close-button {
+            color: var(--text-color);
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            cursor: pointer;
+            transition: color 0.3s ease;
         }
-        
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--danger-color);
+            text-decoration: none;
+        }
+
+        .modal-content h3 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 200px;
+                padding: 15px;
+            }
+            .sidebar ul li a {
+                padding: 10px 12px;
+            }
+            .sidebar ul li a i {
+                margin-right: 10px;
+            }
+            .header .logo h1 {
+                font-size: 1.5em;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .dashboard-grid {
+                gap: 20px;
+            }
+            .card {
+                padding: 25px;
+            }
+            .card h3 {
+                font-size: 1.4em;
+            }
+            .manage-app-card .app-details p {
+                max-width: 200px;
+            }
+        }
+
         @media (max-width: 768px) {
-            .features {
-                grid-template-columns: 1fr;
+            .container {
+                flex-direction: column;
             }
-            
-            .buttons {
-                grid-template-columns: 1fr;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 15px 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             }
-            
-            header {
-                padding: 25px 15px;
+            .sidebar ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
             }
-            
-            .content {
-                padding: 25px 20px;
+            .sidebar ul li {
+                margin: 0 10px 10px 10px;
             }
-            
-            .logo {
-                width: 70px;
-                height: 70px;
-                font-size: 30px;
+            .sidebar ul li a {
+                padding: 8px 15px;
+                font-size: 0.9em;
             }
-            
-            h1 {
-                font-size: 26px;
+            .sidebar-header {
+                margin-bottom: 20px;
             }
-            
-            .subtitle {
-                font-size: 16px;
+            .header {
+                flex-direction: column;
+                padding: 15px 20px;
+                margin-bottom: 30px;
+            }
+            .header .user-info {
+                margin-top: 15px;
+            }
+            .main-content {
+                padding: 20px 15px;
+            }
+            .login-card {
+                padding: 30px;
+                max-width: 90%;
+            }
+            .manage-app-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .manage-app-card .app-info {
+                width: 100%;
+            }
+            .manage-app-card .app-details {
+                margin-bottom: 10px;
+            }
+            .manage-app-card .app-details p {
+                max-width: none;
+            }
+            .manage-app-card .app-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sidebar ul li {
+                width: 100%;
+                text-align: center;
+                margin: 0 0 10px 0;
+            }
+            .sidebar ul li a {
+                justify-content: center;
+            }
+            .header .logo h1 {
+                font-size: 1.3em;
+            }
+            .card {
+                padding: 20px;
+            }
+            .card h3 {
+                font-size: 1.2em;
+            }
+            .login-card h2 {
+                font-size: 1.5em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <i class="icon ion-md-contrast"></i>
-            </div>
-            <div class="logo">
-                <i class="icon ion-md-radio"></i>
-            </div>
-            <h1>Premium Telegram App</h1>
-            <p class="subtitle">Experience the next generation of mini apps with premium design and seamless ad integration</p>
-        </header>
-        
-        <div class="content">
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="icon ion-md-rocket"></i>
-                    </div>
-                    <h3 class="feature-title">Lightning Fast</h3>
-                    <p class="feature-desc">Optimized for performance with instant loading and smooth animations</p>
+    <div id="login-screen" class="login-page">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="login-email"><i class="fas fa-envelope"></i> Email:</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="icon ion-md-trending-up"></i>
-                    </div>
-                    <h3 class="feature-title">Ad Monetization</h3>
-                    <p class="feature-desc">Earn revenue through strategic, non-intrusive ad placements</p>
+                <div class="form-group">
+                    <label for="login-password"><i class="fas fa-lock"></i> Password:</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="icon ion-md-phone-portrait"></i>
-                    </div>
-                    <h3 class="feature-title">Mobile Optimized</h3>
-                    <p class="feature-desc">Designed specifically for mobile with intuitive touch interactions</p>
-                </div>
-            </div>
-            
-            <div class="ad-section">
-                <h2 class="section-title">Support Our App</h2>
-                <p style="color: var(--gray); margin-bottom: 20px;">Watch a short ad to help support the development of this free app</p>
-                
-                <div class="ad-container" onclick="loadAd()">
-                    <span class="ad-label">ADVERTISEMENT</span>
-                    <div id="adexium-ad" class="ad-placeholder">
-                        <i class="icon ion-md-desktop ad-icon"></i>
-                        <p class="ad-text">Click here to load an advertisement</p>
-                        <button class="ad-button">Load Ad</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn btn-primary" onclick="loadAd()">
-                    <i class="icon ion-md-play-circle"></i>
-                    <span>Show Ad</span>
-                </button>
-                <button class="btn btn-secondary" onclick="refreshApp()">
-                    <i class="icon ion-md-refresh"></i>
-                    <span>Refresh App</span>
-                </button>
-            </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <div id="login-message" class="form-message error"></div>
+            </form>
         </div>
-        
-        <footer>
-            <p>Premium Telegram Mini App with Adexium Ad Monetization</p>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-value">24.5K</span>
-                    <span class="stat-label">Users</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">98%</span>
-                    <span class="stat-label">Satisfaction</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">4.9</span>
-                    <span class="stat-label">Rating</span>
-                </div>
-            </div>
-        </footer>
     </div>
 
-    <script>
-        // Initialize Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
-        
-        // Initialize Adexium Widget
-        let adexiumWidget;
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            adexiumWidget = new AdexiumWidget({
-                wid: '21809a2d-702a-4545-9cdc-117c47414ca0', 
-                adFormat: 'interstitial'
-            });
-            
-            // Set initial theme based on system preference
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('dark-mode');
-            }
-        });
-        
-        // Function to load and show ad
-        function loadAd() {
-            const adContainer = document.getElementById('adexium-ad');
-            adContainer.innerHTML = `
-                <div class="ad-placeholder">
-                    <i class="icon ion-md-sync" style="animation: spin 1s linear infinite;"></i>
-                    <p class="ad-text">Loading advertisement...</p>
+    <div id="admin-dashboard" class="container" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-section="add-app"><i class="fas fa-plus-circle"></i> Add New App</a></li>
+                    <li><a href="#" data-section="manage-apps"><i class="fas fa-tasks"></i> Manage Apps</a></li>
+                    <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo">
+                    <img src="cat-mod-logo.png" alt="Cat Mod Logo"> <!-- Place your logo file here -->
+                    <h1>Cat Mod Admin</h1>
                 </div>
-            `;
-            
-            // In a real implementation, this would trigger the Adexium ad
-            setTimeout(() => {
-                adContainer.innerHTML = `
-                    <div class="ad-placeholder">
-                        <i class="icon ion-md-checkmark-circle" style="color: #4CAF50; font-size: 48px;"></i>
-                        <p class="ad-text">Advertisement loaded successfully!</p>
-                        <p style="color: var(--gray); font-size: 14px; margin-top: 10px;">Thank you for supporting our app</p>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i> <span id="admin-user-email">admin@example.com</span>
+                </div>
+            </header>
+
+            <!-- Dashboard Sections -->
+            <section class="dashboard-grid">
+                <!-- Add New App Form -->
+                <div id="add-app-section" class="card">
+                    <h3><i class="fas fa-plus-circle"></i> Add New App</h3>
+                    <form id="add-app-form">
+                        <div class="form-group">
+                            <label for="appName">App Name:</label>
+                            <input type="text" id="appName" placeholder="Enter app name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appDescription">Short Description:</label>
+                            <textarea id="appDescription" placeholder="Enter a short description of the app" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="appCategory">Category:</label>
+                            <select id="appCategory" required>
+                                <option value="">Select a Category</option>
+                                <option value="Tools">Tools</option>
+                                <option value="Games">Games</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Education">Education</option>
+                                <!-- Add more categories as needed -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appLogoUrl">Logo URL:</label>
+                            <input type="url" id="appLogoUrl" placeholder="Enter logo image URL (e.g., https://example.com/logo.png)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appDownloadUrl">Download URL:</label>
+                            <input type="url" id="appDownloadUrl" placeholder="Enter app download URL (e.g., https://example.com/app.apk)" required>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> Add App</button>
+                        <div id="add-app-message" class="form-message"></div>
+                    </form>
+                </div>
+
+                <!-- Manage Apps List -->
+                <div id="manage-apps-section" class="card" style="display: none;">
+                    <h3><i class="fas fa-tasks"></i> Manage Apps</h3>
+                    <div class="app-management-list" id="app-list">
+                        <p class="empty-message" id="app-list-loading-message">Loading apps...</p>
+                        <!-- Apps will be dynamically loaded here from Firebase -->
                     </div>
-                `;
-                adContainer.style.background = 'var(--light)';
-                adContainer.style.border = '2px solid #4CAF50';
-            }, 2000);
-        }
-        
-        // Function to refresh the app
-        function refreshApp() {
-            const adContainer = document.getElementById('adexium-ad');
-            adContainer.innerHTML = `
-                <div class="ad-placeholder">
-                    <i class="icon ion-md-desktop ad-icon"></i>
-                    <p class="ad-text">Click here to load an advertisement</p>
-                    <button class="ad-button">Load Ad</button>
                 </div>
-            `;
-            adContainer.style.background = 'var(--light)';
-            adContainer.style.border = '2px dashed var(--gray)';
-            
-            // Show a refresh animation
-            document.querySelector('.container').style.opacity = '0.8';
-            setTimeout(() => {
-                document.querySelector('.container').style.opacity = '1';
-            }, 300);
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>&copy; 2023 Cat Mod Admin. All rights reserved. Powered by Firebase <img src="https://www.gstatic.com/devrel-devsite/prod/vc3d1667b43a94cf48f86f44d51a66e60975e5b321c170d10d635c024d271f65d/firebase/images/touchicon-180.png" alt="Firebase Logo" class="firebase-logo"></p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Edit App Modal -->
+    <div id="editAppModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Edit App</h3>
+            <form id="edit-app-form">
+                <input type="hidden" id="editAppId">
+                <div class="form-group">
+                    <label for="editAppName">App Name:</label>
+                    <input type="text" id="editAppName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAppDescription">Short Description:</label>
+                    <textarea id="editAppDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editAppCategory">Category:</label>
+                    <select id="editAppCategory" required>
+                        <option value="Tools">Tools</option>
+                        <option value="Games">Games</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Education">Education</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editAppLogoUrl">Logo URL:</label>
+                    <input type="url" id="editAppLogoUrl" required>
+                </div>
+                <div class="form-group">
+                    <label for="editAppDownloadUrl">Download URL:</label>
+                    <input type="url" id="editAppDownloadUrl" required>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                <div id="edit-app-message" class="form-message"></div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOF9MywuavGgXCkm3ktWNaEU3j7ZfycU4",
+            authDomain: "test-9c2fe.firebaseapp.com",
+            databaseURL: "https://test-9c2fe-default-rtdb.firebaseio.com",
+            projectId: "test-9c2fe",
+            storageBucket: "test-9c2fe.firebasestorage.app",
+            messagingSenderId: "940783022173",
+            appId: "1:940783022173:web:72826d42d138be8a219db4"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const appsRef = database.ref('apps');
+
+        // Authorized Admin UID
+        const ADMIN_UID = "ypVaPoPt6LMKW9ZEo6KrdFV6DNR2"; // Your User UID here
+
+        const loginScreen = document.getElementById('login-screen');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const loginForm = document.getElementById('admin-login-form');
+        const loginMessage = document.getElementById('login-message');
+        const addAppForm = document.getElementById('add-app-form');
+        const addAppMessage = document.getElementById('add-app-message');
+        const appList = document.getElementById('app-list');
+        const logoutBtn = document.getElementById('logout-btn');
+        const adminUserEmailSpan = document.getElementById('admin-user-email');
+        const appListLoadingMessage = document.getElementById('app-list-loading-message');
+
+        // Modal elements
+        const editAppModal = document.getElementById('editAppModal');
+        const closeButton = document.querySelector('.close-button');
+        const editAppForm = document.getElementById('edit-app-form');
+        const editAppIdInput = document.getElementById('editAppId');
+        const editAppNameInput = document.getElementById('editAppName');
+        const editAppDescriptionInput = document.getElementById('editAppDescription');
+        const editAppCategorySelect = document.getElementById('editAppCategory');
+        const editAppLogoUrlInput = document.getElementById('editAppLogoUrl');
+        const editAppDownloadUrlInput = document.getElementById('editAppDownloadUrl');
+        const editAppMessage = document.getElementById('edit-app-message');
+
+
+        // Function to check login status
+        function checkLoginStatus() {
+            auth.onAuthStateChanged(user => {
+                if (user && user.uid === ADMIN_UID) {
+                    loginScreen.style.display = 'none';
+                    adminDashboard.style.display = 'flex';
+                    adminUserEmailSpan.textContent = user.email;
+                    loadAppsForAdmin(); // Load apps for admin after login
+                    // Set active tab to 'Add New App' by default
+                    document.querySelector('.sidebar ul li a[data-section="add-app"]').click();
+                } else {
+                    loginScreen.style.display = 'flex';
+                    adminDashboard.style.display = 'none';
+                }
+            });
         }
-        
-        // Toggle between light and dark mode
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const themeIcon = document.querySelector('.theme-toggle i');
-            
-            if (document.body.classList.contains('dark-mode')) {
-                themeIcon.classList.remove('ion-md-contrast');
-                themeIcon.classList.add('ion-md-sunny');
-            } else {
-                themeIcon.classList.remove('ion-md-sunny');
-                themeIcon.classList.add('ion-md-contrast');
-            }
-        }
-        
-        // Add CSS for spinner animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Handle theme changes from Telegram
-        tg.onEvent('themeChanged', () => {
-            if (tg.themeParams.bg_color) {
-                document.body.style.backgroundColor = tg.themeParams.bg_color;
+
+        // Login form submit handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                if (userCredential.user.uid === ADMIN_UID) {
+                    loginMessage.style.display = 'none';
+                    // Successful login, checkLoginStatus will show dashboard
+                } else {
+                    await auth.signOut(); // Logout if not the authorized admin
+                    showMessage(loginMessage, 'This user is not authorized as an admin.', 'error');
+                }
+            } catch (error) {
+                showMessage(loginMessage, `Login failed: ${error.message}`, 'error');
             }
         });
+
+        // Logout handler
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                console.log("Admin logged out.");
+            } catch (error) {
+                console.error("Logout failed:", error);
+            }
+        });
+
+        // Add New App form submit handler
+        addAppForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const appName = document.getElementById('appName').value;
+            const appDescription = document.getElementById('appDescription').value;
+            const appCategory = document.getElementById('appCategory').value;
+            const appLogoUrl = document.getElementById('appLogoUrl').value;
+            const appDownloadUrl = document.getElementById('appDownloadUrl').value;
+
+            if (!appName || !appDescription || !appCategory || !appLogoUrl || !appDownloadUrl) {
+                showMessage(addAppMessage, 'Please fill in all fields.', 'error');
+                return;
+            }
+
+            try {
+                await appsRef.push({
+                    name: appName,
+                    description: appDescription,
+                    category: appCategory,
+                    logoUrl: appLogoUrl,
+                    downloadUrl: appDownloadUrl,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                showMessage(addAppMessage, 'App added successfully!', 'success');
+                addAppForm.reset();
+                // loadAppsForAdmin() will automatically refresh due to .on('value')
+            } catch (error) {
+                showMessage(addAppMessage, `Failed to add app: ${error.message}`, 'error');
+            }
+        });
+
+        // Function to load and display apps for admin management
+        function loadAppsForAdmin() {
+            appListLoadingMessage.style.display = 'block'; // Show loading message
+            appList.innerHTML = ''; // Clear previous apps
+
+            appsRef.on('value', (snapshot) => {
+                const apps = snapshot.val();
+                if (!apps) {
+                    appList.innerHTML = '<p class="empty-message">No apps available yet. Add one!</p>';
+                    appListLoadingMessage.style.display = 'none';
+                    return;
+                }
+
+                appList.innerHTML = ''; // Clear if apps are present
+                for (let id in apps) {
+                    const app = apps[id];
+                    const appCard = `
+                        <div class="manage-app-card" data-app-id="${id}">
+                            <div class="app-info">
+                                <img src="${app.logoUrl}" onerror="this.onerror=null;this.src='https://via.placeholder.com/50/cccccc/333333?text=App';" alt="${app.name} Logo" class="app-logo">
+                                <div class="app-details">
+                                    <h4>${app.name} (${app.category})</h4>
+                                    <p>${app.description}</p>
+                                </div>
+                            </div>
+                            <div class="app-actions">
+                                <button class="btn btn-warning btn-sm edit-btn" data-app-id="${id}"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-app-id="${id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    appList.innerHTML += appCard;
+                }
+                appListLoadingMessage.style.display = 'none'; // Hide loading message
+            });
+        }
+
+        // Edit and Delete button event listener (using event delegation)
+        appList.addEventListener('click', (e) => {
+            const target = e.target;
+            const appId = target.dataset.appId || target.closest('.btn')?.dataset.appId;
+
+            if (!appId) return;
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm('Are you sure you want to delete this app?')) {
+                    deleteApp(appId);
+                }
+            } else if (target.classList.contains('edit-btn')) {
+                openEditModal(appId);
+            }
+        });
+
+        async function deleteApp(appId) {
+            try {
+                await appsRef.child(appId).remove();
+                showMessage(addAppMessage, 'App deleted successfully!', 'success');
+                // loadAppsForAdmin() automatically refreshes
+            } catch (error) {
+                showMessage(addAppMessage, `Failed to delete app: ${error.message}`, 'error');
+            }
+        }
+
+        // Open Edit Modal
+        async function openEditModal(appId) {
+            try {
+                const snapshot = await appsRef.child(appId).once('value');
+                const app = snapshot.val();
+
+                if (app) {
+                    editAppIdInput.value = appId;
+                    editAppNameInput.value = app.name;
+                    editAppDescriptionInput.value = app.description;
+                    editAppCategorySelect.value = app.category;
+                    editAppLogoUrlInput.value = app.logoUrl;
+                    editAppDownloadUrlInput.value = app.downloadUrl;
+                    editAppMessage.style.display = 'none'; // Clear previous messages
+                    editAppModal.style.display = 'flex'; // Show modal
+                } else {
+                    showMessage(addAppMessage, 'App not found for editing.', 'error');
+                }
+            } catch (error) {
+                showMessage(addAppMessage, `Failed to load app for editing: ${error.message}`, 'error');
+            }
+        }
+
+        // Close Modal
+        closeButton.addEventListener('click', () => {
+            editAppModal.style.display = 'none';
+        });
+
+        // Close modal if clicked outside
+        window.addEventListener('click', (event) => {
+            if (event.target === editAppModal) {
+                editAppModal.style.display = 'none';
+            }
+        });
+
+        // Save changes from Edit Modal
+        editAppForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const appId = editAppIdInput.value;
+            const updatedApp = {
+                name: editAppNameInput.value,
+                description: editAppDescriptionInput.value,
+                category: editAppCategorySelect.value,
+                logoUrl: editAppLogoUrlInput.value,
+                downloadUrl: editAppDownloadUrlInput.value
+            };
+
+            try {
+                await appsRef.child(appId).update(updatedApp);
+                showMessage(editAppMessage, 'App updated successfully!', 'success');
+                editAppModal.style.display = 'none'; // Close modal on success
+                // loadAppsForAdmin() automatically refreshes
+            } catch (error) {
+                showMessage(editAppMessage, `Failed to update app: ${error.message}`, 'error');
+            }
+        });
+
+
+        // Utility function to show messages
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `form-message ${type}`;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000); // Hide message after 5 seconds
+        }
+
+        // Sidebar navigation section switching
+        const navLinks = document.querySelectorAll('.sidebar ul li a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                const targetSection = link.dataset.section;
+                document.getElementById('add-app-section').style.display = 'none';
+                document.getElementById('manage-apps-section').style.display = 'none';
+
+                if (targetSection === 'add-app') {
+                    document.getElementById('add-app-section').style.display = 'flex';
+                } else if (targetSection === 'manage-apps') {
+                    document.getElementById('manage-apps-section').style.display = 'flex';
+                }
+            });
+        });
+
+        // Check login status on page load
+        checkLoginStatus();
     </script>
 </body>
 </html>
